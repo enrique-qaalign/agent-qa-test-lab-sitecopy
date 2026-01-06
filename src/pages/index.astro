@@ -1,7 +1,8 @@
 ---
 const site = {
   title: "QA Test Lab",
-  tagline: "Production-realistic QA automation practice—without enterprise overhead.",
+  tagline:
+    "Production-realistic QA automation practice—without enterprise overhead.",
 };
 
 const sprintHighlights = [
@@ -53,14 +54,27 @@ const personas = [
   {
     title: "CI Architect",
     mission: "Make pipelines boring and trustworthy.",
-    outputs: ["MR pipeline always runs", "Artifacts always available", "Promotion path dev → qa → stage"],
-    rules: ["No manual steps except deliberate approvals", "Failures diagnosable from artifacts alone"],
+    outputs: [
+      "MR pipeline always runs",
+      "Artifacts always available",
+      "Promotion path dev → qa → stage",
+    ],
+    rules: [
+      "No manual steps except deliberate approvals",
+      "Failures diagnosable from artifacts alone",
+    ],
   },
   {
     title: "Flake Detective",
     mission: "Reduce noise without hiding risk.",
-    outputs: ["Flake taxonomy", "At least one principled flake elimination per cycle"],
-    rules: ["No waitForTimeout as a fix", "Don’t increase timeouts until the failure mode is explained"],
+    outputs: [
+      "Flake taxonomy",
+      "At least one principled flake elimination per cycle",
+    ],
+    rules: [
+      "No waitForTimeout as a fix",
+      "Don’t increase timeouts until the failure mode is explained",
+    ],
   },
   {
     title: "Release Gatekeeper",
@@ -72,7 +86,10 @@ const personas = [
     title: "New Hire",
     mission: "Make the system understandable in 30 minutes.",
     outputs: ["One-page setup", "Top 10 troubleshooting failures"],
-    rules: ["If it’s not documented, it doesn’t exist", "No tribal knowledge dependencies"],
+    rules: [
+      "If it’s not documented, it doesn’t exist",
+      "No tribal knowledge dependencies",
+    ],
   },
 ];
 
@@ -95,8 +112,8 @@ const publicVsPrivate = {
 };
 
 // Helper: simple video block placeholder
-
 ---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -105,57 +122,207 @@ const publicVsPrivate = {
     <title>{site.title}</title>
     <meta name="description" content={site.tagline} />
     <style>
-      :root { --bg:#0b0e14; --panel:#121827; --text:#e6e9ef; --muted:#aab2c5; --link:#7aa2ff; --border:#24304d; }
-      * { box-sizing:border-box; }
-      html { scroll-behavior:smooth; }
-      body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background:var(--bg); color:var(--text); }
-      a { color:var(--link); text-decoration:none; }
-      a:hover { text-decoration:underline; }
-      .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 18px 54px; }
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a {
+        color: var(--link);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 18px 54px;
+      }
       .nav {
-        position: sticky; top: 0; z-index: 20;
+        position: sticky;
+        top: 0;
+        z-index: 20;
         backdrop-filter: blur(10px);
-        background: rgba(11,14,20,.78);
+        background: rgba(11, 14, 20, 0.78);
         border-bottom: 1px solid var(--border);
         padding: 12px 0;
       }
-      .nav-inner { display:flex; align-items:center; justify-content:space-between; gap: 16px; flex-wrap:wrap; }
-      .brand { font-weight: 750; letter-spacing:.2px; }
-      .navlinks { display:flex; gap: 14px; flex-wrap:wrap; font-size: 14px; }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .brand {
+        font-weight: 750;
+        letter-spacing: 0.2px;
+      }
+      .navlinks {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 14px;
+      }
       .pill {
-        display:inline-block; border:1px solid var(--border); background: rgba(255,255,255,.04);
-        padding: 7px 10px; border-radius: 999px;
+        display: inline-block;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 7px 10px;
+        border-radius: 999px;
       }
 
-      section { scroll-margin-top: 84px; }
-      .hero { padding: 26px 0 10px; }
-      .h1 { font-size: 40px; line-height:1.1; margin:0 0 10px; letter-spacing: -0.6px; }
-      .lead { color: var(--muted); font-size: 16px; line-height: 1.6; max-width: 850px; }
-      .row { display:flex; gap: 14px; flex-wrap:wrap; margin-top: 14px; }
-      .cta { border:1px solid var(--border); background: var(--panel); padding: 12px 14px; border-radius: 14px; }
-      .cta strong { display:block; margin-bottom: 4px; }
-      .grid { display:grid; gap: 14px; }
-      .grid2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .grid3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      section {
+        scroll-margin-top: 84px;
+      }
+      .hero {
+        padding: 26px 0 10px;
+      }
+      .h1 {
+        font-size: 40px;
+        line-height: 1.1;
+        margin: 0 0 10px;
+        letter-spacing: -0.6px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.6;
+        max-width: 850px;
+      }
+      .row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .cta {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        padding: 12px 14px;
+        border-radius: 14px;
+      }
+      .cta strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+      .grid2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .grid3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
 
-      .card { background: var(--panel); border:1px solid var(--border); border-radius: 14px; padding: 18px; }
-      .muted { color: var(--muted); }
-      h2 { margin:0 0 10px; font-size: 22px; }
-      h3 { margin:0 0 10px; font-size: 16px; }
-      ul { margin: 10px 0 0 18px; color: var(--text); }
-      li { margin: 6px 0; color: var(--muted); }
-      .kpi { display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
-      .kpi span { border:1px solid var(--border); border-radius: 999px; padding: 6px 10px; color: var(--muted); background: rgba(255,255,255,.03); font-size: 13px;}
-      .divider { height: 1px; background: var(--border); margin: 22px 0; }
-      .video iframe { border-radius: 12px; border: 1px solid var(--border); }
-      .mini { font-size: 13px; color: var(--muted); }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+      ul {
+        margin: 10px 0 0 18px;
+        color: var(--text);
+      }
+      li {
+        margin: 6px 0;
+        color: var(--muted);
+      }
+      .kpi {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .kpi span {
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 6px 10px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        font-size: 13px;
+      }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 22px 0;
+      }
+      .video iframe {
+        border-radius: 12px;
+        border: 1px solid var(--border);
+      }
+      .mini {
+        font-size: 13px;
+        color: var(--muted);
+      }
 
-      .table { width:100%; border-collapse: collapse; margin-top: 10px; }
-      .table td { border-top:1px solid var(--border); padding: 10px 6px; vertical-align: top; }
-      .table td:first-child { color: var(--muted); width: 160px; }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .table td {
+        border-top: 1px solid var(--border);
+        padding: 10px 6px;
+        vertical-align: top;
+      }
+      .table td:first-child {
+        color: var(--muted);
+        width: 160px;
+      }
 
-      footer { margin-top: 30px; padding-top: 16px; border-top:1px solid var(--border); color: var(--muted); font-size: 14px; }
-      @media (max-width: 920px) { .grid2,.grid3 { grid-template-columns: 1fr; } .h1 { font-size: 32px; } }
+      footer {
+        margin-top: 30px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 14px;
+      }
+      @media (max-width: 920px) {
+        .grid2,
+        .grid3 {
+          grid-template-columns: 1fr;
+        }
+        .h1 {
+          font-size: 32px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -165,6 +332,7 @@ const publicVsPrivate = {
           <div class="brand">{site.title}</div>
           <div class="navlinks">
             <a class="pill" href="#start-here">Start Here</a>
+            <a class="pill" href="#about">About</a>
             <a class="pill" href="#architecture">Architecture</a>
             <a class="pill" href="#sprints">Sprint Plan</a>
             <a class="pill" href="#personas">Personas</a>
@@ -180,57 +348,85 @@ const publicVsPrivate = {
       <section class="hero" id="start-here">
         <div class="h1">A Living QA Test Lab</div>
         <p class="lead">
-	 <div class="card" style="margin-top:14px;">
-  <h2 style="margin-bottom:8px;">30-second review</h2>
+          <div class="card" style="margin-top:14px;">
+            <h2 style="margin-bottom:8px;">30-second review</h2>
 
-  <div class="grid grid3" style="margin-top:10px;">
-    <div>
-      <h3>What this is</h3>
-      <p class="muted" style="margin:0;">
-        A production-realistic QA test lab that separates <strong>runner</strong> and <strong>SUT</strong>, deploys environments via
-        Docker Compose, and validates releases through CI gates—built to stay hands-on without enterprise overhead.
-      </p>
-    </div>
+            <div class="grid grid3" style="margin-top:10px;">
+              <div>
+                <h3>What this is</h3>
+                <p class="muted" style="margin:0;">
+                  A production-realistic QA test lab that separates <strong
+                    >runner</strong
+                  > and <strong>SUT</strong>, deploys environments via Docker
+                  Compose, and validates releases through CI gates—designed for
+                  hands-on practice without enterprise overhead.
+                </p>
+              </div>
 
-    <div>
-      <h3>What proof exists today</h3>
-      <ul style="margin:8px 0 0 18px;">
-        <li>Runner → SUT network boundary (no localhost shortcuts)</li>
-        <li>Stable hostnames (<code>sut.testlab</code>) and environment config via <code>BASE_URL</code></li>
-        <li>Live SUT deployed via Docker Compose (dev) and reachable by name</li>
-      </ul>
-    </div>
+              <div>
+                <h3>What proof exists today</h3>
+                <ul style="margin:8px 0 0 18px;">
+                  <li>
+                    Runner → SUT network boundary (no localhost shortcuts)
+                  </li>
+                  <li>
+                    Stable hostnames (<code>sut.testlab</code>) and environment
+                    config via <code>BASE_URL</code>
+                  </li>
+                  <li>
+                    Live SUT deployed via Docker Compose (dev) and reachable by
+                    name
+                  </li>
+                </ul>
+              </div>
 
-    <div>
-      <h3>Where to start (Sprint 1–3)</h3>
-      <ul style="margin:8px 0 0 18px;">
-        <li><a href="#sprints">Sprint 1:</a> Topology baseline (Runner → SUT)</li>
-        <li><a href="#sprints">Sprint 2:</a> <code>BASE_URL</code> discipline (env-driven navigation)</li>
-        <li><a href="#sprints">Sprint 3:</a> CI artifacts (debug without rerun)</li>
-      </ul>
-      <p class="mini" style="margin-top:10px;">
-        If you only have two minutes: read Sprint 1–3 and skim the architecture section.
-      </p>
-    </div>
-  </div>
-</div>
-	
-          I maintain a personal QA test lab that mirrors corporate setups—separate runner and SUT, environment promotion, CI gates,
-          and realistic failure modes—without the cost and operational overhead of enterprise infrastructure.
+              <div>
+                <h3>Where to start (Sprint 1–3)</h3>
+                <ul style="margin:8px 0 0 18px;">
+                  <li>
+                    <a href="#sprints">Sprint 1:</a> Topology baseline (Runner → SUT)
+                  </li>
+                  <li>
+                    <a href="#sprints">Sprint 2:</a>
+                    <code>BASE_URL</code> discipline (env-driven navigation)
+                  </li>
+                  <li>
+                    <a href="#sprints">Sprint 3:</a> CI artifacts (debug without rerun)
+                  </li>
+                </ul>
+                <p class="mini" style="margin-top:10px;">
+                  If you only have two minutes: read Sprint 1–3 and skim the
+                  architecture section.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          A production-realistic QA test lab designed to practice automation,
+          CI, and release discipline under real constraints—without enterprise
+          overhead.
         </p>
 
         <div class="row">
           <div class="cta">
-            <strong>What this proves</strong>
-            <div class="mini">Systems thinking, diagnosable CI, stability discipline, and release risk reasoning.</div>
+            <strong>What this shows</strong>
+            <div class="mini">
+              How CI signals, failure diagnosis, and release decisions behave
+              under realistic constraints.
+            </div>
           </div>
           <div class="cta">
             <strong>What this is not</strong>
-            <div class="mini">Not a localhost demo. Not a tool collection. Not a green-build vanity project.</div>
+            <div class="mini">
+              Not a localhost demo. Not a tool collection. Not a green-build
+              vanity project.
+            </div>
           </div>
           <div class="cta">
             <strong>Videos</strong>
-            <div class="mini">Each sprint includes a short demo clip (added progressively).</div>
+            <div class="mini">
+              Each sprint will includes a short demo clip (added progressively).
+            </div>
           </div>
         </div>
 
@@ -246,30 +442,88 @@ const publicVsPrivate = {
 
       <div class="divider"></div>
 
+      <!-- ABOUT -->
+      <section id="about">
+        <h2>About</h2>
+        <div class="grid grid2" style="margin-top:14px;">
+          <div class="card">
+            <h3>What this lab is</h3>
+            <p class="muted">
+              QA Test Lab is a production-realistic environment built to stay
+              current with modern automation, CI/CD, and test infrastructure—
+              without the cost or operational overhead of full enterprise
+              systems. It is intentionally designed to surface real failure
+              modes, not hide them behind localhost shortcuts.
+            </p>
+            <div class="kpi" style="margin-top:12px;">
+              <span>Production-real topology</span>
+              <span>Env-driven config</span>
+              <span>Artifacts-first CI</span>
+              <span>Risk-based gates</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>How it’s run</h3>
+            <p class="muted">
+              Work is organized into sprints. Each sprint delivers a concrete
+              capability, a short demo video, and an accompanying runbook that
+              documents setup, intent, expected outputs, and operational
+              considerations. The goal is repeatability: decisions are
+              explained, failure modes are named, and every improvement is
+              traceable.
+            </p>
+            <p class="mini" style="margin-top:10px;">
+              If it’s not documented, it doesn’t exist.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
       <!-- ARCHITECTURE -->
       <section id="architecture">
-        <h2>Architecture (Production-Style, Not Tutorial-Style)</h2>
+        <h2>Architecture (Production-Real Baseline)</h2>
         <div class="grid grid2">
           <div class="card">
             <h3>Core idea</h3>
             <p class="muted">
-              Tests run from a dedicated runner and target a remote SUT over a real network boundary. This prevents false confidence that
-              happens when everything runs on the same machine.
+              Tests run from a dedicated runner and target a remote SUT over a
+              real network boundary. This prevents false confidence that happens
+              when everything runs on the same machine.
             </p>
             <table class="table">
-              <tr><td>Runner</td><td>CI executor (MacBook Pro) + also supports ad-hoc remote runs</td></tr>
-              <tr><td>SUT</td><td>Service host (Mac mini) running Docker Compose environments</td></tr>
-              <tr><td>DNS</td><td>Stable hostnames via <code>/etc/hosts</code> (e.g., <code>sut.testlab</code>)</td></tr>
-              <tr><td>Config</td><td><code>BASE_URL</code> drives navigation and avoids hardcoded domains</td></tr>
+              <tr
+                ><td>Runner</td><td
+                  >CI executor (MacBook Pro) + also supports ad-hoc remote runs</td
+                ></tr
+              >
+              <tr
+                ><td>SUT</td><td
+                  >Service host (Mac mini) running Docker Compose environments</td
+                ></tr
+              >
+              <tr
+                ><td>DNS</td><td
+                  >Stable hostnames via <code>/etc/hosts</code> (e.g., <code
+                    >sut.testlab</code
+                  >)</td
+                ></tr
+              >
+              <tr
+                ><td>Config</td><td
+                  ><code>BASE_URL</code> drives navigation and avoids hardcoded domains</td
+                ></tr
+              >
             </table>
           </div>
 
           <div class="card">
             <h3>Single-slide diagram (text version for now)</h3>
-            <p class="muted">
-              Replace this block later with a proper diagram image (one slide). For now, this is the architecture in one view:
-            </p>
-            <pre style="margin:0; white-space:pre; color:var(--muted); background:rgba(255,255,255,.03); border:1px solid var(--border); padding:14px; border-radius:12px;">
+            <p class="muted">Rudamentory diagram for architecture:</p>
+            <pre
+              style="margin:0; white-space:pre; color:var(--muted); background:rgba(255,255,255,.03); border:1px solid var(--border); padding:14px; border-radius:12px;">
 [GitLab CI Runner / MBP]
         |
         |  Playwright tests (BASE_URL)
@@ -281,7 +535,8 @@ const publicVsPrivate = {
    - ... stage/prod (later)
             </pre>
             <p class="mini" style="margin-top:10px;">
-              The goal is realism: environment separation, deploy/test flow, and failures that look like corporate failures.
+              The goal is realism: environment separation, deploy/test flow, and
+              failures that look like corporate failures.
             </p>
           </div>
         </div>
@@ -291,39 +546,50 @@ const publicVsPrivate = {
 
       <!-- SPRINTS -->
       <section id="sprints">
-        <h2>First 6 Sprints (Designed to Be a Slam Dunk)</h2>
+        <h2>First 6 Sprints</h2>
         <p class="muted">
-          These six sprints are intentionally sequenced to produce high hiring signal: topology realism, environment discipline, CI diagnosability,
-          flake elimination, data/state control, and risk-based release gates.
+          These six sprints are intentionally sequenced to produce topology
+          realism, environment discipline, CI diagnosability, flake elimination,
+          data/state control, and risk-based release gates.
         </p>
 
         <div class="grid" style="margin-top:14px;">
-          {sprintHighlights.map(s => (
-            <div class="card">
-              <h3> Sprint {s.num}: {s.title}</h3>
-              <p class="muted"><strong>What it proves:</strong> {s.proof}</p>
-              <p class="muted"><strong>Deliverable:</strong> {s.deliverable}</p>
-
-              {/* Optional video embed once you have a YouTube ID */}
-              {s.video?.youtubeId ? (
-                <div class="video" style="margin-top:12px;">
-                  <iframe
-                    width="100%"
-                    height="420"
-                    src={`https://www.youtube.com/embed/${s.video.youtubeId}`}
-                    title={s.video.label}
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                  />
-                </div>
-              ) : (
-                <p class="mini" style="margin-top:10px;">
-                  Video: placeholder (add YouTube ID or switch to local MP4 later).
+          {
+            sprintHighlights.map((s) => (
+              <div class="card">
+                <h3>
+                  {" "}
+                  Sprint {s.num}: {s.title}
+                </h3>
+                <p class="muted">
+                  <strong>What it proves:</strong> {s.proof}
                 </p>
-              )}
-            </div>
-          ))}
+                <p class="muted">
+                  <strong>Deliverable:</strong> {s.deliverable}
+                </p>
+
+                {/* Optional video embed once you have a YouTube ID */}
+                {s.video?.youtubeId ? (
+                  <div class="video" style="margin-top:12px;">
+                    <iframe
+                      width="100%"
+                      height="420"
+                      src={`https://www.youtube.com/embed/${s.video.youtubeId}`}
+                      title={s.video.label}
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                    />
+                  </div>
+                ) : (
+                  <p class="mini" style="margin-top:10px;">
+                    Video: placeholder (add YouTube ID or switch to local MP4
+                    later).
+                  </p>
+                )}
+              </div>
+            ))
+          }
         </div>
       </section>
 
@@ -333,27 +599,45 @@ const publicVsPrivate = {
       <section id="personas">
         <h2>Personas (Deliberate Practice Roles)</h2>
         <p class="muted">
-          Personas create structured pressure: pipeline design, flake elimination, release risk thinking, and onboarding clarity.
-          Each one drives a different kind of engineering maturity.
+          Personas create structured pressure: pipeline design, flake
+          elimination, release risk thinking, and onboarding clarity. Each one
+          drives a different kind of engineering maturity.
         </p>
 
         <div class="grid grid2" style="margin-top:14px;">
-          {personas.map(p => (
-            <div class="card">
-              <h3>{p.title}</h3>
-              <p class="muted"><strong>Mission:</strong> {p.mission}</p>
+          {
+            personas.map((p) => (
+              <div class="card">
+                <h3>{p.title}</h3>
+                <p class="muted">
+                  <strong>Mission:</strong> {p.mission}
+                </p>
 
-              <p style="margin-top:10px;"><strong>Outputs</strong></p>
-              <ul>{p.outputs.map(o => <li>{o}</li>)}</ul>
+                <p style="margin-top:10px;">
+                  <strong>Outputs</strong>
+                </p>
+                <ul>
+                  {p.outputs.map((o) => (
+                    <li>{o}</li>
+                  ))}
+                </ul>
 
-              <p style="margin-top:10px;"><strong>Rules</strong></p>
-              <ul>{p.rules.map(r => <li>{r}</li>)}</ul>
+                <p style="margin-top:10px;">
+                  <strong>Rules</strong>
+                </p>
+                <ul>
+                  {p.rules.map((r) => (
+                    <li>{r}</li>
+                  ))}
+                </ul>
 
-              <p class="mini" style="margin-top:10px;">
-                Printable cards: keep this page clean; export a PDF from the browser print dialog.
-              </p>
-            </div>
-          ))}
+                <p class="mini" style="margin-top:10px;">
+                  Printable cards: keep this page clean; export a PDF from the
+                  browser print dialog.
+                </p>
+              </div>
+            ))
+          }
         </div>
       </section>
 
@@ -361,7 +645,7 @@ const publicVsPrivate = {
 
       <!-- RUNBOOKS -->
       <section id="runbooks">
-        <h2>Runbooks (Reproducible, Interview-Ready)</h2>
+        <h2>Runbooks</h2>
         <div class="grid grid2" style="margin-top:14px;">
           <div class="card">
             <h3>What you’ll see in each runbook</h3>
@@ -382,9 +666,7 @@ const publicVsPrivate = {
               <li>Runbook 03 — BASE_URL discipline and proof</li>
               <li>Runbook 04 — CI artifacts + “debug without rerun”</li>
             </ul>
-            <p class="mini" style="margin-top:10px;">
-              Keep runbooks short. Employers want signal, not volume.
-            </p>
+            <p class="mini" style="margin-top:10px;"></p>
           </div>
         </div>
       </section>
@@ -393,38 +675,30 @@ const publicVsPrivate = {
 
       <!-- PUBLIC VS PRIVATE -->
       <section id="public-private">
-        <h2>Public vs Private (Sanitized Realism)</h2>
+        <h2>Public vs Private</h2>
         <p class="muted">
-          I publish patterns and reasoning, and redact anything that increases attack surface.
+          I publish patterns and reasoning, and redact anything that increases
+          attack surface.
         </p>
 
         <div class="grid grid2" style="margin-top:14px;">
           <div class="card">
             <h3>Safe to publish</h3>
             <ul>
-              {publicVsPrivate.safe.map(x => <li>{x}</li>)}
+              {publicVsPrivate.safe.map((x) => <li>{x}</li>)}
             </ul>
           </div>
 
           <div class="card">
             <h3>Keep private</h3>
             <ul>
-              {publicVsPrivate.private.map(x => <li>{x}</li>)}
+              {publicVsPrivate.private.map((x) => <li>{x}</li>)}
             </ul>
           </div>
         </div>
-
-        <div class="card" style="margin-top:14px;">
-          <h3>Rule of thumb</h3>
-          <p class="muted">
-            Publish the pattern and the proof. Redact the specifics that fingerprint your home network or expose access paths.
-          </p>
-        </div>
       </section>
 
-      <footer>
-        <div><strong>Quiet brand principle:</strong> engineering documentation that happens to include video, not “content.”</div>
-      </footer>
+      <footer></footer>
     </div>
   </body>
 </html>
