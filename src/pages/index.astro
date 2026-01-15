@@ -466,12 +466,9 @@ const publicVsPrivate = {
           <div class="card">
             <h3>How it’s run</h3>
             <p class="muted">
-              Work is organized into sprints. Each sprint delivers a concrete
-              capability, a short demo video, and an accompanying runbook that
-              documents setup, intent, expected outputs, and operational
-              considerations. The goal is repeatability: decisions are
-              explained, failure modes are named, and every improvement is
-              traceable.
+            Each sprint delivers a concrete capability, 
+            an optional demo video, and an accompanying 
+            runbook documenting setup, validation, and failure modes.
             </p>
             <p class="mini" style="margin-top:10px;">
               If it’s not documented, it doesn’t exist.
@@ -648,24 +645,43 @@ const publicVsPrivate = {
         <h2>Runbooks</h2>
         <div class="grid grid2" style="margin-top:14px;">
           <div class="card">
-            <h3>What you’ll see in each runbook</h3>
+            <h3>Expected outputs (screenshots/log snippets)</h3>
             <ul>
               <li>Objective + success criteria</li>
               <li>Exact commands</li>
               <li>Expected outputs (screenshots/log snippets)</li>
               <li>Failure modes + how to diagnose</li>
-              <li>Why it matters (real systems + interview framing)</li>
+              <li>Why it matters (production relevance)</li>
             </ul>
           </div>
 
           <div class="card">
-            <h3>Suggested first runbook titles</h3>
+            <h3>Runbooks</h3>
             <ul>
-              <li>Runbook 01 — Runner → SUT connectivity and naming</li>
-              <li>Runbook 02 — Compose deploy (dev) + health check</li>
-              <li>Runbook 03 — BASE_URL discipline and proof</li>
-              <li>Runbook 04 — CI artifacts + “debug without rerun”</li>
+              <li>
+                <a href="runbooks/runbook-01-runner-to-sut.html">
+                  Runbook 01 — Runner → SUT connectivity and naming
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-02-compose-deploy.html">
+                  Runbook 02 — Compose deploy (dev) + health check
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-03-base-url-discipline.html">
+                  Runbook 03 — BASE_URL discipline and proof
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-04-ci-artifacts.html">
+                  Runbook 04 — CI artifacts + “debug without rerun”
+                </a>
+              </li>
             </ul>
+            <p class="mini" style="margin-top:10px;">
+              Runbooks are command/expected-output documents. Examples are sanitized.
+            </p>
             <p class="mini" style="margin-top:10px;"></p>
           </div>
         </div>
