@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 01 — Runner → SUT connectivity and naming</title>
+    <meta
+      name="description"
+      content="Runbook 01 — Runner → SUT connectivity and naming (QA Test Lab)"
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a {
+        color: var(--link);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 18px 18px 54px;
+      }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 12px 0;
+      }
+      .brand {
+        font-weight: 750;
+        letter-spacing: 0.2px;
+      }
+      .navlinks {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 14px;
+      }
+      .pill {
+        display: inline-block;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 7px 10px;
+        border-radius: 999px;
+      }
+
+      .hero {
+        padding: 14px 0 0;
+      }
+      .h1 {
+        font-size: 34px;
+        line-height: 1.15;
+        margin: 0 0 8px;
+        letter-spacing: -0.5px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.7;
+        max-width: 900px;
+        margin: 0;
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 18px 0;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+      .grid2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+      }
+      h3 {
+        margin: 0 0 8px;
+        font-size: 15px;
+      }
+      p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+      ul {
+        margin: 8px 0 0 18px;
+        color: var(--muted);
+      }
+      li {
+        margin: 6px 0;
+      }
+      .mini {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .kpi {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .kpi span {
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 6px 10px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        font-size: 13px;
+      }
+
+      pre {
+        margin: 10px 0 0;
+        white-space: pre;
+        overflow-x: auto;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        padding: 14px;
+        border-radius: 12px;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+        font-size: 13px;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .table td {
+        border-top: 1px solid var(--border);
+        padding: 10px 6px;
+        vertical-align: top;
+      }
+      .table td:first-child {
+        color: var(--muted);
+        width: 210px;
+      }
+
+      footer {
+        margin-top: 26px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      section {
+        scroll-margin-top: 84px;
+      }
+
+      @media (max-width: 920px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+        .h1 {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="nav">
+      <div class="wrap">
+        <div class="nav-inner">
+          <div class="brand">QA Test Lab</div>
+          <div class="navlinks">
+            <a class="pill" href="../">Home</a>
+            <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#commands">Commands</a>
+            <a class="pill" href="#expected">Expected</a>
+            <a class="pill" href="#failure-modes">Failure modes</a>
+            <a class="pill" href="#why">Production relevance</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <section class="hero">
+        <div class="h1">Runbook 01 — Runner → SUT connectivity and naming</div>
+        <p class="lead">
+          Validation of real runner-to-SUT network boundary and stable naming.
+          Localhost access must not be possible.
+        </p>
+        <div class="kpi">
+          <span>localhost negative proof</span>
+          <span>remote HTTP positive proof</span>
+          <span>TCP transport proof</span>
+          <span>routing proof</span>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section id="objective">
+        <div class="card">
+          <h2>Objective + success criteria</h2>
+      
+          <p>
+            <strong>Objective:</strong> Validate that automated tests execute from an isolated runner and reach
+            the System Under Test (SUT) exclusively over a real network boundary using stable naming.
+            “Localhost” must not be an acceptable target.
+          </p>
+      
+          <p style="margin-top: 12px;">
+            <strong>Success criteria:</strong>
+          </p>
+          <ul>
+            <li>
+              <strong>Localhost negative proof:</strong>
+              Requests to <code>http://localhost:${SUT_PORT}</code> on the runner do not return the SUT application
+              (connection refused/timeout is acceptable; <code>200 OK</code> is a failure signal).
+            </li>
+            <li>
+              <strong>Remote positive proof:</strong>
+              Requests to <code>${BASE_URL}</code> return an HTTP response from the SUT (example: <code>HTTP/1.1 200 OK</code>).
+            </li>
+            <li>
+              <strong>DNS proof:</strong>
+              <code>sut.testlab</code> resolves to the expected LAN IP.
+            </li>
+            <li>
+              <strong>TCP transport proof:</strong>
+              TCP handshake to <code>${SUT_IP}:${SUT_PORT}</code> succeeds.
+            </li>
+            <li>
+              <strong>Automation proof:</strong>
+              A Playwright test passes when targeting <code>${BASE_URL}</code>.
+            </li>
+          </ul>
+        </div>
+      </section>
+      
+
+      <div class="divider"></div>
+      <section id="commands">
+        <div class="card">
+          <h2>Exact commands</h2>
+      
+          <h3>Environment variables (runner)</h3>
+          <pre><code>export SUT_IP="192.168.0.31"
+      export SUT_PORT="3001"
+      export SUT_HOST="sut.testlab"
+      export BASE_URL="http://${SUT_HOST}:${SUT_PORT}"</code></pre>
+      
+          <h3 style="margin-top: 14px;">Confirm values</h3>
+          <pre><code>echo "SUT_IP=$SUT_IP"
+      echo "SUT_PORT=$SUT_PORT"
+      echo "SUT_HOST=$SUT_HOST"
+      echo "BASE_URL=$BASE_URL"</code></pre>
+      
+          <h3 style="margin-top: 14px;">DNS resolution proof (runner)</h3>
+          <pre><code>getent hosts "${SUT_HOST}" || nslookup "${SUT_HOST}" || dig +short "${SUT_HOST}"</code></pre>
+      
+          <h3 style="margin-top: 14px;">Localhost negative proof (runner)</h3>
+          <pre><code># Success = connection refused / timeout.
+      # Failure = HTTP response (means something is listening locally on the runner).
+      curl -sv --max-time 2 "http://localhost:${SUT_PORT}/" | head -n 12</code></pre>
+      
+          <h3 style="margin-top: 14px;">Remote HTTP positive proof (runner)</h3>
+          <pre><code># Your real observed proof:
+      curl -sS -I "${BASE_URL}/" | head -n 1
+      
+      # Optional: show headers for visibility
+      curl -sS -o /dev/null -D - --max-time 3 "${BASE_URL}/" | head -n 12</code></pre>
+      
+          <h3 style="margin-top: 14px;">TCP transport validation (runner)</h3>
+          <pre><code># macOS-friendly flags:
+      nc -vz -w 2 "${SUT_IP}" "${SUT_PORT}"</code></pre>
+      
+          <h3 style="margin-top: 14px;">Network routing validation (runner, macOS)</h3>
+          <pre><code>route -n get "${SUT_IP}" | egrep 'destination|gateway|interface'</code></pre>
+      
+          <div class="divider"></div>
+      
+          <h3>Sprint 1 demo proof (runner)</h3>
+          <pre><code># 1) Boundary proof
+      export BASE_URL="http://sut.testlab:3001"
+      curl -sS -I "$BASE_URL/" | head -n 1
+      
+      # 2) Automation proof
+      BASE_URL="http://sut.testlab:3001" \
+      npx playwright test tests/e2e/todo.core.todo.spec.js -g "TODO\.NEW\.001"</code></pre>
+      
+          <div class="divider"></div>
+      
+          <h3>CI proof block (GitLab job log)</h3>
+          <pre><code>echo "Runner host: $(hostname)"
+      echo "BASE_URL=${BASE_URL}"
+      curl -sS -I "${BASE_URL}/" | head -n 1</code></pre>
+      
+          <p class="mini" style="margin-top: 12px;">
+            Note: sanitize hostnames and LAN IPs if publishing outputs publicly.
+          </p>
+        </div>
+      </section>
+
+
+      <section id="expected">
+        <div class="card">
+          <h2>Expected outputs (logs, screenshots, artifacts)</h2>
+      
+          <table class="table">
+            <tr>
+              <td>DNS resolution proof</td>
+              <td>
+                <code>sut.testlab</code> resolves to the intended IP (example: <code>192.168.0.31</code>).
+              </td>
+            </tr>
+            <tr>
+              <td>Localhost negative proof</td>
+              <td>
+                <strong>Expected:</strong> connection refused / timeout to
+                <code>http://localhost:${SUT_PORT}</code> from the runner.
+                <br />
+                <strong>Red flag:</strong> <code>HTTP/1.1 200 OK</code> (means a local service is listening; boundary is being bypassed).
+              </td>
+            </tr>
+            <tr>
+              <td>Remote HTTP positive proof</td>
+              <td>
+                An <code>HTTP/1.1</code> status line returned from the SUT.
+                For Sprint 1 demo: <code>HTTP/1.1 200 OK</code>.
+              </td>
+            </tr>
+            <tr>
+              <td>TCP transport validation</td>
+              <td>
+                TCP handshake succeeds (example: <code>succeeded</code> or equivalent).
+              </td>
+            </tr>
+            <tr>
+              <td>Network routing validation</td>
+              <td>
+                Route output shows a non-loopback interface (example: <code>en6</code>), confirming traffic exits the runner.
+              </td>
+            </tr>
+            <tr>
+              <td>Automation proof</td>
+              <td>
+                A Playwright test passes while targeting <code>${BASE_URL}</code>.
+                Example: <code>3 passed</code>.
+              </td>
+            </tr>
+          </table>
+      
+          <p class="mini" style="margin-top: 12px;">
+            Store evidence as sanitized snippets or screenshots. Avoid publishing internal tokens, credentials, or network fingerprint details.
+          </p>
+        </div>
+      </section>
+      
+      
+
+      <div class="divider"></div>
+
+      <section id="failure-modes">
+        <div class="card">
+          <h2>Failure modes + how to diagnose</h2>
+
+          <h3>Localhost succeeds unexpectedly</h3>
+          <p>
+            <strong>Symptom:</strong> <code>curl http://localhost:${SUT_PORT}</code> returns an HTTP response.
+          </p>
+          <p>
+            <strong>Diagnosis:</strong> A service is running locally on the runner, or
+            forwarding/proxying is masking the boundary.
+          </p>
+
+          <div class="divider"></div>
+
+          <h3>Remote hostname does not resolve</h3>
+          <p><strong>Symptom:</strong> hostname resolution fails or connects to an unintended host.</p>
+          <p><strong>Diagnosis:</strong></p>
+          <pre><code>nslookup sut.testlab</code></pre>
+          <p>
+            <strong>Action:</strong> Correct hostname mapping (e.g., <code>/etc/hosts</code>) to the intended SUT IP.
+          </p>
+
+          <div class="divider"></div>
+
+          <h3>TCP connection fails</h3>
+          <p><strong>Symptom:</strong> <code>nc</code> reports timeout or connection refused.</p>
+          <p>
+            <strong>Diagnosis:</strong> service is down, port is not exposed, or traffic is blocked.
+          </p>
+          <p>
+            <strong>Action:</strong> Verify service state on the SUT, confirm port exposure, and review firewall controls.
+          </p>
+
+          <div class="divider"></div>
+
+          <h3>Service bound to loopback on SUT</h3>
+          <p><strong>Symptom:</strong> service responds locally on the SUT but is unreachable from the runner.</p>
+          <p>
+            <strong>Diagnosis:</strong> service is listening on <code>127.0.0.1:${SUT_PORT}</code> only.
+          </p>
+          <p>
+            <strong>Action:</strong> bind to <code>0.0.0.0</code> or the LAN interface and restart the service.
+          </p>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section id="why">
+        <div class="card">
+          <h2>Why it matters (production relevance)</h2>
+          <p>
+            This validation eliminates false confidence caused by localhost coupling and shared execution
+            environments. By enforcing a real network boundary early, subsequent automation results reflect
+            deployment conditions: name resolution, routing, port exposure, and service availability.
+          </p>
+          <p>
+            Failures observed after this point represent genuine infrastructure or application issues rather
+            than test-environment artifacts, improving diagnosability, change safety, and release confidence.
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        <div class="mini">
+          Runbooks are command/expected-output documents. Examples are sanitized.
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
