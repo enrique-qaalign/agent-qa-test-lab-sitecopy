@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 00 — Golden VM baseline (Ubuntu Server + SSH keys + snapshot)</title>
+    <meta
+      name="description"
+      content="Golden baseline for a lab VM: clean Ubuntu Server install, fully patched, deterministic SSH access, and snapshot rollback point."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      code, pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 22px 18px 54px; }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin: 14px 0;
+      }
+      .pill {
+        display: inline-block;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      h1 { margin: 10px 0 8px; font-size: 28px; letter-spacing: -0.4px; }
+      h2 { margin: 18px 0 8px; font-size: 18px; }
+      h3 { margin: 14px 0 6px; font-size: 15px; }
+      p, li { color: var(--muted); line-height: 1.6; }
+      pre {
+        background: rgba(255,255,255,.03);
+        border: 1px solid var(--border);
+        padding: 14px;
+        border-radius: 12px;
+        overflow: auto;
+        color: var(--text);
+        margin: 10px 0 0;
+      }
+      .kpi { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+      .kpi span {
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 6px 10px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        font-size: 13px;
+      }
+      .small { font-size: 13px; color: var(--muted); }
+      .topnav { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+      .hr { height: 1px; background: var(--border); margin: 18px 0; }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .table td {
+        border-top: 1px solid var(--border);
+        padding: 10px 6px;
+        vertical-align: top;
+      }
+      .table td:first-child {
+        color: var(--muted);
+        width: 200px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <div class="topnav">
+        <a class="pill" href="/#runbooks">← Back to Runbooks</a>
+        <span class="pill">Public / sanitized</span>
+      </div>
+
+      <div class="card">
+        <div class="pill">Runbook 00</div>
+        <h1>Golden VM baseline — Ubuntu Server + SSH keys + snapshot</h1>
+        <p>
+          This runbook establishes a repeatable baseline VM for the lab: a clean Ubuntu Server install,
+          patched to current updates, reachable via SSH using keys, with a snapshot used as the permanent rollback point.
+        </p>
+        <div class="kpi">
+          <span>Deterministic access</span>
+          <span>Known-good rollback</span>
+          <span>Repeatable rebuild</span>
+          <span>Lab-safe defaults</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Scope (sanitized)</h2>
+        <p class="small">
+          Examples use localhost port-forwarding to avoid publishing home LAN specifics. In a private lab, the same checks apply
+          with bridged networking and a LAN IP/hostname.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Objective</h2>
+        <ul>
+          <li>Create a clean Ubuntu Server VM suitable for lab/SUT use.</li>
+          <li>Enable SSH and transition to key-based authentication.</li>
+          <li>Patch the OS to current updates.</li>
+          <li>Snapshot the baseline before installing any “real stack” services.</li>
+        </ul>
+
+        <h2>Success criteria</h2>
+        <ul>
+          <li>Passwordless SSH: <code>ssh -p 2222 sut@127.0.0.1</code></li>
+          <li>System patched: <code>sudo apt update &amp;&amp; sudo apt upgrade -y</code></li>
+          <li>Snapshot exists: <code>baseline-ubuntu-sshkeys</code></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Baseline contract (keep consistent)</h2>
+        <table class="table">
+          <tr><td>VM user</td><td><code>sut</code></td></tr>
+          <tr><td>VM hostname</td><td><code>sut-ubuntu</code> (example)</td></tr>
+          <tr><td>SSH model</td><td>Port forward on host: <code>127.0.0.1:2222</code> → guest: <code>:22</code></td></tr>
+          <tr><td>Snapshot name</td><td><code>baseline-ubuntu-sshkeys</code></td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Procedure</h2>
+
+        <h3>1) VirtualBox VM creation</h3>
+        <ul>
+          <li>Select the Ubuntu Server ISO.</li>
+          <li>Enable <strong>Skip Unattended Installation</strong> (manual install).</li>
+          <li>Allocate resources appropriate for the lab (example: 4GB RAM, 2–4 CPUs, 40GB disk).</li>
+          <li>Networking: NAT is acceptable for this runbook (SSH via port forwarding).</li>
+        </ul>
+
+        <h3>2) Ubuntu Server install (inside installer)</h3>
+        <ul>
+          <li>Create the user: <code>sut</code>.</li>
+          <li>Install OpenSSH server when prompted (or install after first boot).</li>
+          <li>Complete install. When prompted to remove installation media, eject the ISO (VirtualBox → Storage → Optical Drive → Remove disk).</li>
+        </ul>
+
+        <h3>3) Confirm network address (inside VM)</h3>
+        <pre><code>ip a</code></pre>
+        <p class="small">Expected: interface <code>enp0s3</code> shows an IP (often <code>10.0.2.x</code> on NAT).</p>
+
+        <h3>4) Ensure SSH is running (inside VM)</h3>
+        <pre><code>sudo systemctl enable --now ssh
+systemctl status ssh
+ss -tlnp | grep :22</code></pre>
+        <p class="small">Expected: <code>ssh.service</code> active/running and port <code>22</code> listening.</p>
+
+        <h3>5) Add port forwarding in VirtualBox (host UI)</h3>
+        <p class="small">VirtualBox → VM Settings → Network → Advanced → Port Forwarding</p>
+        <pre><code>Name: ssh
+Protocol: TCP
+Host IP: 127.0.0.1
+Host Port: 2222
+Guest IP: (blank)   # or guest IP if you prefer
+Guest Port: 22</code></pre>
+
+        <h3>6) Verify the host is listening on 2222 (host terminal)</h3>
+        <pre><code>lsof -iTCP:2222 -sTCP:LISTEN</code></pre>
+        <p class="small">Expected: a VirtualBox process is listening on <code>localhost:2222</code>.</p>
+
+        <h3>7) Test SSH password login (host → VM)</h3>
+        <pre><code>ssh -p 2222 sut@127.0.0.1</code></pre>
+
+        <h3>8) Patch baseline (inside VM)</h3>
+        <pre><code>sudo apt update
+sudo apt upgrade -y</code></pre>
+
+        <h3>9) Install SSH key (host → VM)</h3>
+        <p class="small">
+          If <code>~/.ssh/id_ed25519</code> already exists on the host, reuse it. Do not overwrite.
+        </p>
+        <pre><code>ssh-copy-id -p 2222 sut@127.0.0.1</code></pre>
+
+        <h3>10) Verify passwordless SSH</h3>
+        <pre><code>ssh -p 2222 sut@127.0.0.1</code></pre>
+        <p class="small">Expected: login succeeds without a password prompt.</p>
+
+        <div class="hr"></div>
+
+        <h3>11) Optional: disable password authentication (after keys work)</h3>
+        <p class="small">
+          Safety rule: keep your current session open; validate changes in a separate terminal before closing anything.
+        </p>
+        <pre><code>sudo nano /etc/ssh/sshd_config
+
+# Set:
+# PasswordAuthentication no
+# PermitRootLogin no
+
+sudo systemctl restart ssh</code></pre>
+
+        <h3>12) Snapshot baseline</h3>
+        <ul>
+          <li>Create a VirtualBox snapshot named: <code>baseline-ubuntu-sshkeys</code></li>
+          <li>Rule: snapshot before installing Docker, services, CI agents, or test stacks.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Common failure modes</h2>
+
+        <h3>SSH timeout</h3>
+        <p class="small">
+          Usually indicates the host port forward is missing, wrong, or not bound. Check:
+          <code>lsof -iTCP:2222 -sTCP:LISTEN</code> and confirm the VM is running.
+        </p>
+
+        <h3>Connection refused</h3>
+        <p class="small">
+          Host is reachable but nothing is listening on 2222. Confirm the port-forward rule, then reboot the VM and re-check <code>lsof</code>.
+        </p>
+
+        <h3>Permission denied</h3>
+        <p class="small">
+          Username mismatch (<code>sut</code> vs another user) or key not installed. Re-run:
+          <code>ssh-copy-id -p 2222 sut@127.0.0.1</code>
+        </p>
+
+        <h3>Confusing host vs guest terminal</h3>
+        <p class="small">
+          VM prompt typically looks like <code>sut@sut-ubuntu:~$</code>. macOS host prompt is different. Run host commands on the host.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Why this baseline matters</h2>
+        <ul>
+          <li>Snapshots eliminate “unknown state” debugging and make experiments reversible.</li>
+          <li>Key-based SSH is the default access model for CI runners and lab automation.</li>
+          <li>With a baseline contract, every runbook that follows becomes predictable and testable.</li>
+        </ul>
+      </div>
+
+      <p class="small">
+        Back: <a href="/#runbooks">Runbooks</a>
+      </p>
+    </div>
+  </body>
+</html>

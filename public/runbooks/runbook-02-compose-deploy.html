@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Runbook 02 — Compose deploy (dev) + health check</title>
+    <title>Runbook 02 — Explicit Targeting + Reachability (Sprint 2)</title>
     <meta
       name="description"
-      content="Runbook 02 — Compose deploy (dev) + health check (QA Test Lab)"
+      content="Runbook 02 — Explicit Targeting + Reachability (Sprint 2) (QA Test Lab)"
     />
     <style>
       :root {
@@ -136,6 +136,22 @@
         font-size: 14px;
       }
       section { scroll-margin-top: 84px; }
+
+      details {
+        margin-top: 12px;
+        border: 1px dashed var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.02);
+      }
+      summary {
+        cursor: pointer;
+        color: var(--text);
+        font-weight: 650;
+        list-style: none;
+      }
+      summary::-webkit-details-marker { display: none; }
+
       @media (max-width: 920px) {
         .h1 { font-size: 28px; }
       }
@@ -161,15 +177,15 @@
 
     <div class="wrap">
       <section class="hero">
-        <div class="h1">Runbook 02 — Compose deploy (dev) + health check</div>
+        <div class="h1">Runbook 02 — Explicit Targeting + Reachability (Sprint 2)</div>
         <p class="lead">
-          Deploy the dev environment via Docker Compose on the SUT host and validate basic service availability
-          from both SUT and runner perspectives.
+          Enforce an explicit target (<code>BASE_URL</code>) and prove the system is reachable over the network by hostname.
+          No defaults. No localhost illusions.
         </p>
         <div class="kpi">
-          <span>compose up/down</span>
+          <span>target discipline</span>
+          <span>compose availability</span>
           <span>port exposure</span>
-          <span>service availability</span>
           <span>runner reachability</span>
         </div>
       </section>
@@ -179,17 +195,29 @@
       <section id="objective">
         <div class="card">
           <h2>Objective + success criteria</h2>
+
           <p>
-            <strong>Objective:</strong> Deploy the dev SUT environment with Docker Compose and verify the service
-            is available on the expected port and reachable over the network.
+            <strong>Objective:</strong> Run tests only against an explicitly named, network-reachable SUT.
+            Validate service availability locally on the SUT host and remotely from the runner via hostname.
           </p>
+
           <p style="margin-top: 12px;"><strong>Success criteria:</strong></p>
           <ul>
-            <li>Compose stack starts cleanly and containers are running</li>
-            <li>Service port is exposed on the SUT host (expected: <code>3001</code>)</li>
+            <li>Target is explicit (no implicit defaults)</li>
+            <li>Target rejects localhost/loopback</li>
+            <li>Service ports are exposed on the SUT host (LAN-reachable, not loopback-only)</li>
             <li>HTTP response is returned locally on the SUT host</li>
-            <li>HTTP response is returned remotely from the runner using SUT hostname/IP</li>
+            <li>HTTP response is returned remotely from the runner using SUT hostname</li>
+            <li>Dependencies are validated behind boundaries (DB verified from SUT, not exposed to runner)</li>
           </ul>
+
+          <details>
+            <summary>Private (operator): actuals + environment notes</summary>
+            <p>
+              Private notes hold raw outputs, LAN IPs, and exact evidence blocks.
+              Keep these out of public pages.
+            </p>
+          </details>
         </div>
       </section>
 
@@ -197,34 +225,85 @@
 
       <section id="commands">
         <div class="card">
-          <h2>Exact commands</h2>
+          <h2>Commands</h2>
 
-          <h3>Deploy dev stack (SUT host)</h3>
+          <h3>Service availability (SUT host)</h3>
+          <p>
+            Prove the stack is up and the expected ports are listening on a network-reachable interface.
+          </p>
+
           <pre><code>cd /path/to/sut-compose
+docker compose up -d
+docker compose ps
+
+# verify listeners for expected ports
+ss -lntp | grep ':3000' || true
+ss -lntp | grep ':3001' || true</code></pre>
+
+          <details>
+            <summary>Private (operator): build/pull + shutdown</summary>
+            <pre><code>cd /path/to/sut-compose
 docker compose pull
-docker compose up -d</code></pre>
+docker compose up -d --build --remove-orphans
 
-          <h3 style="margin-top: 14px;">Verify containers (SUT host)</h3>
-          <pre><code>docker compose ps</code></pre>
+# optional shutdown
+docker compose down</code></pre>
+          </details>
 
-          <h3 style="margin-top: 14px;">Verify port is listening (SUT host)</h3>
-          <pre><code>lsof -nP -iTCP:3001 -sTCP:LISTEN || ss -lntp | grep ':3001' || netstat -an | grep '\.3001 ' </code></pre>
+          <h3 style="margin-top: 14px;">Local HTTP checks (SUT host)</h3>
+          <p>
+            Validate service response from the SUT host using the published ports.
+          </p>
 
-          <h3 style="margin-top: 14px;">Local HTTP check (SUT host)</h3>
-          <pre><code>curl -sS -o /dev/null -D - --max-time 3 "http://localhost:3001/" | head -n 12</code></pre>
+          <pre><code>curl -sS -o /dev/null -D - --max-time 3 "http://127.0.0.1:3000/" | head -n 12
+curl -sS -o /dev/null -D - --max-time 3 "http://127.0.0.1:3001/" | head -n 12</code></pre>
 
-          <h3 style="margin-top: 14px;">Remote HTTP check (Runner)</h3>
-          <pre><code>export SUT_IP="192.168.0.31"
-export SUT_PORT="3001"
-export BASE_URL="http://sut.testlab:${SUT_PORT}"
+          <details>
+            <summary>Private (operator): localhost variants (kept private by policy)</summary>
+            <pre><code># kept private: diagnostic convenience only (not a target discipline pattern)
+curl -sS -o /dev/null -D - --max-time 3 "http://localhost:3001/" | head -n 12</code></pre>
+          </details>
 
-curl -sS -o /dev/null -D - --max-time 3 "${BASE_URL}/" | head -n 12</code></pre>
+          <h3 style="margin-top: 14px;">Remote checks (Runner → SUT)</h3>
+          <p>
+            Validate runner reachability using hostname-based targeting.
+          </p>
 
-          <h3 style="margin-top: 14px;">Shutdown (optional, SUT host)</h3>
-          <pre><code>docker compose down</code></pre>
+          <pre><code>export BASE_URL="https://sut.testlab"
+
+# DNS proof
+# (platform-specific resolver commands may vary; use the native tool for your runner)
+# Example intent: confirm sut.testlab resolves to the SUT LAN address.
+
+# TCP + HTTP proof
+nc -vz sut.testlab 3000
+nc -vz sut.testlab 3001
+curl -sS -o /dev/null -D - --max-time 3 "http://sut.testlab:3000/" | head -n 12
+curl -sS -o /dev/null -D - --max-time 3 "http://sut.testlab:3001/" | head -n 12</code></pre>
+
+          <details>
+            <summary>Private (operator): LAN IP evidence blocks</summary>
+            <pre><code># record IP evidence privately (do not publish)
+# arp / ping / route / hostfile updates, etc.</code></pre>
+          </details>
+
+          <h3 style="margin-top: 14px;">Dependency boundary proof (SUT host)</h3>
+          <p>
+            Validate internal dependencies from the SUT without exposing them to the runner.
+          </p>
+
+          <pre><code>docker exec -it conduit-mongo mongosh --quiet --eval 'db.adminCommand({ ping: 1 })'</code></pre>
+
+          <details>
+            <summary>Private (operator): DB state visibility</summary>
+            <pre><code>docker exec -it conduit-mongo mongosh --quiet --eval '
+db = db.getSiblingDB("conduit");
+db.getCollectionNames();
+'</code></pre>
+          </details>
 
           <p class="mini" style="margin-top: 12px;">
-            Sanitize hostnames and LAN IPs if publishing outputs.
+            Public rule: outputs must be sanitized. Private blocks may contain actuals.
           </p>
         </div>
       </section>
@@ -237,19 +316,23 @@ curl -sS -o /dev/null -D - --max-time 3 "${BASE_URL}/" | head -n 12</code></pre>
           <table class="table">
             <tr>
               <td>docker compose ps</td>
-              <td>Containers show <code>Up</code> / healthy state (if healthchecks exist).</td>
+              <td>Containers show <code>Up</code> state.</td>
             </tr>
             <tr>
               <td>Port listening</td>
-              <td>SUT host shows a listener on <code>0.0.0.0:3001</code> or the LAN interface, not loopback-only.</td>
+              <td>SUT host shows listeners on published ports bound to <code>0.0.0.0</code> or LAN interface (not loopback-only).</td>
             </tr>
             <tr>
-              <td>Local HTTP check</td>
+              <td>Local HTTP</td>
               <td>Returns an <code>HTTP/1.1</code> status line and headers.</td>
             </tr>
             <tr>
-              <td>Remote HTTP check</td>
-              <td>Runner receives an <code>HTTP/1.1</code> status line and headers from the SUT.</td>
+              <td>Remote HTTP</td>
+              <td>Runner receives an <code>HTTP/1.1</code> status line and headers from the SUT via hostname.</td>
+            </tr>
+            <tr>
+              <td>DB ping (SUT)</td>
+              <td>Mongo returns <code>{ ok: 1 }</code>.</td>
             </tr>
           </table>
         </div>
@@ -269,8 +352,8 @@ curl -sS -o /dev/null -D - --max-time 3 "${BASE_URL}/" | head -n 12</code></pre>
           <div class="divider"></div>
 
           <h3>Port not listening</h3>
-          <p><strong>Symptom:</strong> no listener on <code>:3001</code>.</p>
-          <p><strong>Diagnosis:</strong> verify container ports and published ports.</p>
+          <p><strong>Symptom:</strong> no listener on expected port.</p>
+          <p><strong>Diagnosis:</strong> verify published ports and container health.</p>
           <pre><code>docker compose ps
 docker compose port &lt;service-name&gt; 3001 || true</code></pre>
 
@@ -279,17 +362,22 @@ docker compose port &lt;service-name&gt; 3001 || true</code></pre>
           <h3>Local HTTP fails but port is listening</h3>
           <p><strong>Symptom:</strong> connection succeeds but HTTP returns errors/timeouts.</p>
           <p><strong>Diagnosis:</strong></p>
-          <pre><code>docker compose logs --tail=200
-curl -sv --max-time 3 "http://localhost:3001/" || true</code></pre>
+          <pre><code>docker compose logs --tail=200</code></pre>
 
           <div class="divider"></div>
 
           <h3>Remote HTTP fails but local HTTP succeeds</h3>
           <p><strong>Symptom:</strong> SUT is healthy locally; runner cannot reach it.</p>
           <p><strong>Diagnosis (Runner):</strong></p>
-          <pre><code>nc -vz -G 2 192.168.0.31 3001
-route -n get 192.168.0.31 | egrep 'destination|gateway|interface'</code></pre>
-          <p><strong>Action:</strong> check host firewall controls and network segmentation.</p>
+          <pre><code>nc -vz sut.testlab 3001</code></pre>
+          <p><strong>Action:</strong> check firewall controls, port publishing, and network segmentation.</p>
+
+          <details>
+            <summary>Private (operator): route and IP-level checks</summary>
+            <pre><code># kept private: LAN IPs and routes
+# route -n get &lt;SUT_IP&gt;
+# arp -a | grep &lt;SUT_IP&gt;</code></pre>
+          </details>
         </div>
       </section>
 
@@ -299,16 +387,19 @@ route -n get 192.168.0.31 | egrep 'destination|gateway|interface'</code></pre>
         <div class="card">
           <h2>Why it matters (production relevance)</h2>
           <p>
-            Deployment and availability validation reduces uncertainty before test execution. It ensures the system is
-            reachable over expected ports and that failures in automation reflect real service or network conditions rather
-            than incomplete environment startup.
+            Availability validation reduces uncertainty before test execution.
+            Target discipline ensures failures reflect real service or network conditions
+            rather than incomplete startup or local substitution.
+          </p>
+          <p>
+            If a system is not reachable by name across the network, it is not production-real.
           </p>
         </div>
       </section>
 
       <footer>
         <div class="mini">
-          Runbooks are command/expected-output documents. Examples are sanitized.
+          Runbooks are command/expected-output documents. Public sections are sanitized. Private sections contain operator notes and are not intended for public sharing.
         </div>
       </footer>
     </div>
