@@ -18,6 +18,7 @@
         --border: #24304d;
       }
       * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
       body {
         margin: 0;
         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -46,6 +47,10 @@
         font-size: 13px;
         color: var(--muted);
       }
+      button.pill {
+        cursor: pointer;
+        color: var(--text);
+      }
       h1 { margin: 10px 0 8px; font-size: 28px; letter-spacing: -0.4px; }
       h2 { margin: 18px 0 8px; font-size: 18px; }
       h3 { margin: 14px 0 6px; font-size: 15px; }
@@ -58,6 +63,7 @@
         overflow: auto;
         color: var(--text);
         margin: 10px 0 0;
+        white-space: pre;
       }
       .kpi { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
       .kpi span {
@@ -85,6 +91,27 @@
         color: var(--muted);
         width: 200px;
       }
+
+      /* Private/operator sections */
+      .private {
+        margin-top: 12px;
+        border: 1px dashed var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .private summary {
+        cursor: pointer;
+        color: var(--text);
+        font-weight: 650;
+        list-style: none;
+      }
+      .private summary::-webkit-details-marker { display: none; }
+
+      /* Default: public mode hides private blocks */
+      body:not(.mode-private) .private {
+        display: none;
+      }
     </style>
   </head>
 
@@ -92,7 +119,13 @@
     <div class="wrap">
       <div class="topnav">
         <a class="pill" href="/#runbooks">← Back to Runbooks</a>
-        <span class="pill">Public / sanitized</span>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <span id="modeBadge" class="pill">Mode: Public</span>
+          <button id="modeToggle" class="pill" type="button" aria-pressed="false">
+            Toggle Operator Mode
+          </button>
+        </div>
       </div>
 
       <div class="card">
@@ -108,6 +141,14 @@
           <span>Repeatable rebuild</span>
           <span>Lab-safe defaults</span>
         </div>
+
+        <details class="private">
+          <summary>Private (operator): evidence bundle guidance</summary>
+          <p class="small" style="margin-top:8px;">
+            Operator mode is where you keep raw outputs and exact environment notes (hostnames, LAN IPs, screenshots, key fingerprints).
+            Public pages stay sanitized. If you need true secrecy, keep operator pages in a private repo (not just hidden in HTML).
+          </p>
+        </details>
       </div>
 
       <div class="card">
@@ -116,6 +157,17 @@
           Examples use localhost port-forwarding to avoid publishing home LAN specifics. In a private lab, the same checks apply
           with bridged networking and a LAN IP/hostname.
         </p>
+
+        <details class="private">
+          <summary>Private (operator): your actual topology notes</summary>
+          <pre><code># Fill with your actuals (do not publish)
+# Hypervisor: VirtualBox
+# Adapter: NAT (baseline) OR Bridged (lab)
+# Host NIC (example): en6 (Belkin USB-C LAN)
+# Guest NIC: enp0s3
+# Snapshot name: baseline-ubuntu-sshkeys
+</code></pre>
+        </details>
       </div>
 
       <div class="card">
@@ -133,6 +185,17 @@
           <li>System patched: <code>sudo apt update &amp;&amp; sudo apt upgrade -y</code></li>
           <li>Snapshot exists: <code>baseline-ubuntu-sshkeys</code></li>
         </ul>
+
+        <details class="private">
+          <summary>Private (operator): proof checklist (copy/paste evidence)</summary>
+          <pre><code># Capture and keep these blocks for “proof of baseline”
+uname -a
+lsb_release -a || cat /etc/os-release
+ip -4 -br a
+sudo systemctl status ssh --no-pager | sed -n '1,14p'
+sudo ss -lntp | grep -E '(:22\s)'
+</code></pre>
+        </details>
       </div>
 
       <div class="card">
@@ -143,6 +206,15 @@
           <tr><td>SSH model</td><td>Port forward on host: <code>127.0.0.1:2222</code> → guest: <code>:22</code></td></tr>
           <tr><td>Snapshot name</td><td><code>baseline-ubuntu-sshkeys</code></td></tr>
         </table>
+
+        <details class="private">
+          <summary>Private (operator): stable naming conventions</summary>
+          <pre><code># Recommended operator convention (adjust once, then keep stable)
+# VM name: sut-ubuntu (baseline-ubuntu-24.04.3-sshkeys)
+# Snapshot: baseline-ubuntu-sshkeys
+# SSH host alias (optional): Host ~/.ssh/config uses localhost:2222
+</code></pre>
+        </details>
       </div>
 
       <div class="card">
@@ -156,6 +228,16 @@
           <li>Networking: NAT is acceptable for this runbook (SSH via port forwarding).</li>
         </ul>
 
+        <details class="private">
+          <summary>Private (operator): bridged adapter evidence (if used)</summary>
+          <pre><code># If you switch to Bridged, record adapter selection:
+# VirtualBox → Network → Attached to: Bridged Adapter
+# Name: (host NIC) e.g. en6: Belkin USB-C LAN
+# Promiscuous Mode: Deny
+# Cable Connected: checked
+</code></pre>
+        </details>
+
         <h3>2) Ubuntu Server install (inside installer)</h3>
         <ul>
           <li>Create the user: <code>sut</code>.</li>
@@ -166,6 +248,13 @@
         <h3>3) Confirm network address (inside VM)</h3>
         <pre><code>ip a</code></pre>
         <p class="small">Expected: interface <code>enp0s3</code> shows an IP (often <code>10.0.2.x</code> on NAT).</p>
+
+        <details class="private">
+          <summary>Private (operator): capture actual IP block</summary>
+          <pre><code>ip -4 -br a
+ip route
+</code></pre>
+        </details>
 
         <h3>4) Ensure SSH is running (inside VM)</h3>
         <pre><code>sudo systemctl enable --now ssh
@@ -182,6 +271,17 @@ Host Port: 2222
 Guest IP: (blank)   # or guest IP if you prefer
 Guest Port: 22</code></pre>
 
+        <details class="private">
+          <summary>Private (operator): proof that 2222 is bound</summary>
+          <pre><code># Host-side proof (macOS)
+lsof -nP -iTCP:2222 -sTCP:LISTEN
+
+# If nothing is listening:
+# - confirm the VM is running
+# - re-check the VirtualBox port-forward rule
+</code></pre>
+        </details>
+
         <h3>6) Verify the host is listening on 2222 (host terminal)</h3>
         <pre><code>lsof -iTCP:2222 -sTCP:LISTEN</code></pre>
         <p class="small">Expected: a VirtualBox process is listening on <code>localhost:2222</code>.</p>
@@ -193,6 +293,18 @@ Guest Port: 22</code></pre>
         <pre><code>sudo apt update
 sudo apt upgrade -y</code></pre>
 
+        <details class="private">
+          <summary>Private (operator): prove patch state</summary>
+          <pre><code># inside VM
+sudo apt update
+sudo apt upgrade -y
+sudo apt autoremove -y
+
+# optional proof
+uname -r
+</code></pre>
+        </details>
+
         <h3>9) Install SSH key (host → VM)</h3>
         <p class="small">
           If <code>~/.ssh/id_ed25519</code> already exists on the host, reuse it. Do not overwrite.
@@ -202,6 +314,17 @@ sudo apt upgrade -y</code></pre>
         <h3>10) Verify passwordless SSH</h3>
         <pre><code>ssh -p 2222 sut@127.0.0.1</code></pre>
         <p class="small">Expected: login succeeds without a password prompt.</p>
+
+        <details class="private">
+          <summary>Private (operator): key fingerprint capture</summary>
+          <pre><code># Host key / known_hosts hygiene (host)
+ssh-keygen -R '[127.0.0.1]:2222' || true
+ssh -p 2222 sut@127.0.0.1
+
+# Record fingerprint once you accept it (do not publish)
+# (fingerprint shown at first connect)
+</code></pre>
+        </details>
 
         <div class="hr"></div>
 
@@ -217,11 +340,30 @@ sudo apt upgrade -y</code></pre>
 
 sudo systemctl restart ssh</code></pre>
 
+        <details class="private">
+          <summary>Private (operator): post-change verification</summary>
+          <pre><code># Keep one session open.
+# In a second terminal on host:
+ssh -p 2222 sut@127.0.0.1
+
+# Confirm sshd is still healthy (inside VM):
+sudo systemctl status ssh --no-pager | sed -n '1,14p'
+</code></pre>
+        </details>
+
         <h3>12) Snapshot baseline</h3>
         <ul>
           <li>Create a VirtualBox snapshot named: <code>baseline-ubuntu-sshkeys</code></li>
           <li>Rule: snapshot before installing Docker, services, CI agents, or test stacks.</li>
         </ul>
+
+        <details class="private">
+          <summary>Private (operator): snapshot discipline note</summary>
+          <p class="small" style="margin-top:8px;">
+            Operator rule: if you ever have to “wonder what changed,” you missed a snapshot. Baseline snapshots are the lab’s
+            equivalent of “golden AMI” discipline.
+          </p>
+        </details>
       </div>
 
       <div class="card">
@@ -248,6 +390,18 @@ sudo systemctl restart ssh</code></pre>
         <p class="small">
           VM prompt typically looks like <code>sut@sut-ubuntu:~$</code>. macOS host prompt is different. Run host commands on the host.
         </p>
+
+        <details class="private">
+          <summary>Private (operator): rapid triage commands</summary>
+          <pre><code># Host side
+lsof -nP -iTCP:2222 -sTCP:LISTEN || true
+ssh -vvv -p 2222 sut@127.0.0.1 || true
+
+# Guest side (inside VM)
+sudo systemctl status ssh --no-pager | sed -n '1,18p'
+sudo ss -lntp | grep -E '(:22\s)' || true
+</code></pre>
+        </details>
       </div>
 
       <div class="card">
@@ -263,5 +417,48 @@ sudo systemctl restart ssh</code></pre>
         Back: <a href="/#runbooks">Runbooks</a>
       </p>
     </div>
+
+    <script>
+      (function () {
+        const KEY = "qa_test_lab_mode";
+        const params = new URLSearchParams(window.location.search);
+
+        function setMode(mode) {
+          const isPrivate = mode === "private";
+          document.body.classList.toggle("mode-private", isPrivate);
+
+          const badge = document.getElementById("modeBadge");
+          if (badge) badge.textContent = isPrivate ? "Mode: Operator" : "Mode: Public";
+
+          const btn = document.getElementById("modeToggle");
+          if (btn) btn.setAttribute("aria-pressed", String(isPrivate));
+
+          try { localStorage.setItem(KEY, mode); } catch {}
+        }
+
+        const urlMode = params.get("mode");
+        const savedMode = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
+
+        const initial = (urlMode === "private" || urlMode === "public")
+          ? urlMode
+          : (savedMode === "private" || savedMode === "public")
+            ? savedMode
+            : "public";
+
+        setMode(initial);
+
+        const btn = document.getElementById("modeToggle");
+        if (btn) {
+          btn.addEventListener("click", function () {
+            const next = document.body.classList.contains("mode-private") ? "public" : "private";
+            setMode(next);
+
+            const p = new URLSearchParams(window.location.search);
+            p.set("mode", next);
+            history.replaceState(null, "", window.location.pathname + "?" + p.toString() + window.location.hash);
+          });
+        }
+      })();
+    </script>
   </body>
 </html>

@@ -17,26 +17,16 @@
         --link: #7aa2ff;
         --border: #24304d;
       }
-      * {
-        box-sizing: border-box;
-      }
-      html {
-        scroll-behavior: smooth;
-      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
       body {
         margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-          Arial;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
         background: var(--bg);
         color: var(--text);
       }
-      a {
-        color: var(--link);
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
 
       .nav {
         position: sticky;
@@ -46,11 +36,7 @@
         background: rgba(11, 14, 20, 0.78);
         border-bottom: 1px solid var(--border);
       }
-      .wrap {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 18px 18px 54px;
-      }
+      .wrap { max-width: 1000px; margin: 0 auto; padding: 18px 18px 54px; }
       .nav-inner {
         display: flex;
         align-items: center;
@@ -59,16 +45,8 @@
         flex-wrap: wrap;
         padding: 12px 0;
       }
-      .brand {
-        font-weight: 750;
-        letter-spacing: 0.2px;
-      }
-      .navlinks {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        font-size: 14px;
-      }
+      .brand { font-weight: 750; letter-spacing: 0.2px; }
+      .navlinks { display: flex; gap: 10px; flex-wrap: wrap; font-size: 14px; }
       .pill {
         display: inline-block;
         border: 1px solid var(--border);
@@ -77,9 +55,7 @@
         border-radius: 999px;
       }
 
-      .hero {
-        padding: 14px 0 0;
-      }
+      .hero { padding: 14px 0 0; }
       .h1 {
         font-size: 34px;
         line-height: 1.15;
@@ -94,19 +70,7 @@
         margin: 0;
       }
 
-      .divider {
-        height: 1px;
-        background: var(--border);
-        margin: 18px 0;
-      }
-
-      .grid {
-        display: grid;
-        gap: 14px;
-      }
-      .grid2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+      .divider { height: 1px; background: var(--border); margin: 18px 0; }
 
       .card {
         background: var(--panel);
@@ -114,30 +78,13 @@
         border-radius: 14px;
         padding: 18px;
       }
-      h2 {
-        margin: 0 0 10px;
-        font-size: 18px;
-      }
-      h3 {
-        margin: 0 0 8px;
-        font-size: 15px;
-      }
-      p {
-        margin: 8px 0 0;
-        color: var(--muted);
-        line-height: 1.7;
-      }
-      ul {
-        margin: 8px 0 0 18px;
-        color: var(--muted);
-      }
-      li {
-        margin: 6px 0;
-      }
-      .mini {
-        font-size: 13px;
-        color: var(--muted);
-      }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      h3 { margin: 0 0 8px; font-size: 15px; }
+      p { margin: 8px 0 0; color: var(--muted); line-height: 1.7; }
+      ul { margin: 8px 0 0 18px; color: var(--muted); }
+      li { margin: 6px 0; }
+      .mini { font-size: 13px; color: var(--muted); }
+
       .kpi {
         display: flex;
         gap: 10px;
@@ -164,8 +111,7 @@
         border-radius: 12px;
       }
       code {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          "Liberation Mono", "Courier New", monospace;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
         font-size: 13px;
       }
 
@@ -179,10 +125,7 @@
         padding: 10px 6px;
         vertical-align: top;
       }
-      .table td:first-child {
-        color: var(--muted);
-        width: 210px;
-      }
+      .table td:first-child { color: var(--muted); width: 240px; }
 
       footer {
         margin-top: 26px;
@@ -192,17 +135,25 @@
         font-size: 14px;
       }
 
-      section {
-        scroll-margin-top: 84px;
+      section { scroll-margin-top: 84px; }
+
+      details {
+        margin-top: 12px;
+        border: 1px dashed var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.02);
       }
+      summary {
+        cursor: pointer;
+        color: var(--text);
+        font-weight: 650;
+        list-style: none;
+      }
+      summary::-webkit-details-marker { display: none; }
 
       @media (max-width: 920px) {
-        .grid2 {
-          grid-template-columns: 1fr;
-        }
-        .h1 {
-          font-size: 28px;
-        }
+        .h1 { font-size: 28px; }
       }
     </style>
   </head>
@@ -228,14 +179,15 @@
       <section class="hero">
         <div class="h1">Runbook 01 — Runner → SUT connectivity and naming</div>
         <p class="lead">
-          Validation of real runner-to-SUT network boundary and stable naming.
-          Localhost access must not be possible.
+          Prove a real runner-to-SUT network boundary and stable naming.
+          Localhost must not be an acceptable target.
         </p>
         <div class="kpi">
           <span>localhost negative proof</span>
-          <span>remote HTTP positive proof</span>
+          <span>DNS proof</span>
           <span>TCP transport proof</span>
-          <span>routing proof</span>
+          <span>remote HTTP positive proof</span>
+          <span>automation proof</span>
         </div>
       </section>
 
@@ -244,162 +196,170 @@
       <section id="objective">
         <div class="card">
           <h2>Objective + success criteria</h2>
-      
+
           <p>
             <strong>Objective:</strong> Validate that automated tests execute from an isolated runner and reach
             the System Under Test (SUT) exclusively over a real network boundary using stable naming.
             “Localhost” must not be an acceptable target.
           </p>
-      
-          <p style="margin-top: 12px;">
-            <strong>Success criteria:</strong>
+
+          <p style="margin-top: 12px;"><strong>Success criteria:</strong></p>
+          <ul>
+            <li><strong>Localhost negative proof:</strong> requests to <code>http://localhost:${SUT_PORT}</code> on the runner do not return the SUT application (connection refused/timeout is acceptable; <code>200 OK</code> is a failure).</li>
+            <li><strong>DNS proof:</strong> <code>${SUT_HOST}</code> resolves to the intended SUT host.</li>
+            <li><strong>TCP transport proof:</strong> TCP handshake to <code>${SUT_HOST}:${SUT_PORT}</code> (or <code>${SUT_IP}:${SUT_PORT}</code>) succeeds.</li>
+            <li><strong>Remote positive proof:</strong> requests to <code>${BASE_URL}</code> return an HTTP response from the SUT.</li>
+            <li><strong>Automation proof:</strong> a Playwright test passes while targeting <code>${BASE_URL}</code>.</li>
+          </ul>
+
+          <div class="divider"></div>
+
+          <h3>✅ Sprint 1 — Completed (sanitized)</h3>
+          <p>
+            Sprint 1 is complete. Runner-to-SUT reachability is proven by name across a real network boundary,
+            and localhost access is treated as a failure signal.
           </p>
           <ul>
-            <li>
-              <strong>Localhost negative proof:</strong>
-              Requests to <code>http://localhost:${SUT_PORT}</code> on the runner do not return the SUT application
-              (connection refused/timeout is acceptable; <code>200 OK</code> is a failure signal).
-            </li>
-            <li>
-              <strong>Remote positive proof:</strong>
-              Requests to <code>${BASE_URL}</code> return an HTTP response from the SUT (example: <code>HTTP/1.1 200 OK</code>).
-            </li>
-            <li>
-              <strong>DNS proof:</strong>
-              <code>sut.testlab</code> resolves to the expected LAN IP.
-            </li>
-            <li>
-              <strong>TCP transport proof:</strong>
-              TCP handshake to <code>${SUT_IP}:${SUT_PORT}</code> succeeds.
-            </li>
-            <li>
-              <strong>Automation proof:</strong>
-              A Playwright test passes when targeting <code>${BASE_URL}</code>.
-            </li>
+            <li>Runner resolves <code>sut.testlab</code> and reaches the SUT over TCP</li>
+            <li>Runner receives HTTP response from SUT via <code>BASE_URL</code></li>
+            <li>Localhost is not a valid target (negative proof is enforced)</li>
           </ul>
+
+          <details>
+            <summary>Private (operator): evidence blocks (actuals)</summary>
+            <pre><code># Runner DNS proof (macOS example)
+dscacheutil -q host -a name sut.testlab
+
+# Runner TCP + HTTP proof (hostname)
+nc -vz sut.testlab 3001
+curl -sS -D- http://sut.testlab:3001/ -o /dev/null | sed -n '1,12p'
+
+# Localhost negative proof (runner)
+curl -sv --max-time 2 http://localhost:3001/ | head -n 12</code></pre>
+          </details>
         </div>
       </section>
-      
 
       <div class="divider"></div>
+
       <section id="commands">
         <div class="card">
-          <h2>Exact commands</h2>
-      
+          <h2>Commands</h2>
+
           <h3>Environment variables (runner)</h3>
-          <pre><code>export SUT_IP="192.168.0.31"
-      export SUT_PORT="3001"
-      export SUT_HOST="sut.testlab"
-      export BASE_URL="http://${SUT_HOST}:${SUT_PORT}"</code></pre>
-      
-          <h3 style="margin-top: 14px;">Confirm values</h3>
-          <pre><code>echo "SUT_IP=$SUT_IP"
-      echo "SUT_PORT=$SUT_PORT"
-      echo "SUT_HOST=$SUT_HOST"
-      echo "BASE_URL=$BASE_URL"</code></pre>
-      
+          <pre><code>export SUT_HOST="sut.testlab"
+export SUT_PORT="3001"
+export BASE_URL="http://${SUT_HOST}:${SUT_PORT}"</code></pre>
+
+          <details>
+            <summary>Private (operator): optional explicit IP variable</summary>
+            <pre><code># Keep raw IPs private on public pages.
+# export SUT_IP="&lt;LAN-IP&gt;"</code></pre>
+          </details>
+
+          <h3 style="margin-top: 14px;">Confirm values (runner)</h3>
+          <pre><code>echo "SUT_HOST=$SUT_HOST"
+echo "SUT_PORT=$SUT_PORT"
+echo "BASE_URL=$BASE_URL"</code></pre>
+
           <h3 style="margin-top: 14px;">DNS resolution proof (runner)</h3>
-          <pre><code>getent hosts "${SUT_HOST}" || nslookup "${SUT_HOST}" || dig +short "${SUT_HOST}"</code></pre>
-      
+          <p class="mini">
+            Use the runner-native resolver tool. macOS differs from Linux.
+          </p>
+          <pre><code># macOS
+dscacheutil -q host -a name "${SUT_HOST}"
+
+# portable fallbacks (if installed)
+getent hosts "${SUT_HOST}" || nslookup "${SUT_HOST}" || dig +short "${SUT_HOST}"</code></pre>
+
           <h3 style="margin-top: 14px;">Localhost negative proof (runner)</h3>
-          <pre><code># Success = connection refused / timeout.
-      # Failure = HTTP response (means something is listening locally on the runner).
-      curl -sv --max-time 2 "http://localhost:${SUT_PORT}/" | head -n 12</code></pre>
-      
+          <p class="mini">
+            Deterministic: this block FAILS if localhost returns HTTP, PASS if it refuses/timeouts.
+          </p>
+          <pre><code># PASS if curl fails (connection refused/timeout). FAIL if curl succeeds.
+curl -fsS --max-time 2 "http://localhost:${SUT_PORT}/" >/dev/null \
+  && { echo "FAIL: localhost returned HTTP (boundary bypass)"; exit 1; } \
+  || echo "PASS: localhost did not respond (boundary enforced)"</code></pre>
+
           <h3 style="margin-top: 14px;">Remote HTTP positive proof (runner)</h3>
-          <pre><code># Your real observed proof:
-      curl -sS -I "${BASE_URL}/" | head -n 1
-      
-      # Optional: show headers for visibility
-      curl -sS -o /dev/null -D - --max-time 3 "${BASE_URL}/" | head -n 12</code></pre>
-      
+          <pre><code>curl -sS -I "${BASE_URL}/" | head -n 1
+curl -sS -o /dev/null -D - --max-time 3 "${BASE_URL}/" | head -n 12</code></pre>
+
           <h3 style="margin-top: 14px;">TCP transport validation (runner)</h3>
-          <pre><code># macOS-friendly flags:
-      nc -vz -w 2 "${SUT_IP}" "${SUT_PORT}"</code></pre>
-      
+          <pre><code># hostname-first
+nc -vz -w 2 "${SUT_HOST}" "${SUT_PORT}"</code></pre>
+
+          <details>
+            <summary>Private (operator): TCP by IP (if needed)</summary>
+            <pre><code># nc -vz -w 2 "${SUT_IP}" "${SUT_PORT}"</code></pre>
+          </details>
+
           <h3 style="margin-top: 14px;">Network routing validation (runner, macOS)</h3>
-          <pre><code>route -n get "${SUT_IP}" | egrep 'destination|gateway|interface'</code></pre>
-      
+          <pre><code># If you are using SUT_IP in private notes:
+# route -n get "${SUT_IP}" | egrep 'destination|gateway|interface'
+
+# (optional) show active interfaces (sanitized in public pages)
+ifconfig | sed -n '1,60p'</code></pre>
+
           <div class="divider"></div>
-      
-          <h3>Sprint 1 demo proof (runner)</h3>
-          <pre><code># 1) Boundary proof
-      export BASE_URL="http://sut.testlab:3001"
-      curl -sS -I "$BASE_URL/" | head -n 1
-      
-      # 2) Automation proof
-      BASE_URL="http://sut.testlab:3001" \
-      npx playwright test tests/e2e/todo.core.todo.spec.js -g "TODO\.NEW\.001"</code></pre>
-      
+
+          <h3>Automation proof (runner)</h3>
+          <pre><code>BASE_URL="http://sut.testlab:3001" \
+npx playwright test tests/e2e/todo.core.todo.spec.js -g "TODO\.NEW\.001"</code></pre>
+
           <div class="divider"></div>
-      
-          <h3>CI proof block (GitLab job log)</h3>
+
+          <h3>CI proof block (job log)</h3>
           <pre><code>echo "Runner host: $(hostname)"
-      echo "BASE_URL=${BASE_URL}"
-      curl -sS -I "${BASE_URL}/" | head -n 1</code></pre>
-      
+echo "BASE_URL=${BASE_URL}"
+curl -sS -I "${BASE_URL}/" | head -n 1</code></pre>
+
           <p class="mini" style="margin-top: 12px;">
-            Note: sanitize hostnames and LAN IPs if publishing outputs publicly.
+            Public rule: sanitize hostnames and LAN IPs if publishing outputs publicly.
+            Private blocks may contain actuals.
           </p>
         </div>
       </section>
 
+      <div class="divider"></div>
 
       <section id="expected">
         <div class="card">
           <h2>Expected outputs (logs, screenshots, artifacts)</h2>
-      
+
           <table class="table">
             <tr>
               <td>DNS resolution proof</td>
-              <td>
-                <code>sut.testlab</code> resolves to the intended IP (example: <code>192.168.0.31</code>).
-              </td>
+              <td><code>${SUT_HOST}</code> resolves to the intended SUT host.</td>
             </tr>
             <tr>
               <td>Localhost negative proof</td>
               <td>
-                <strong>Expected:</strong> connection refused / timeout to
-                <code>http://localhost:${SUT_PORT}</code> from the runner.
+                <strong>Expected:</strong> localhost does not respond (curl fails / timeout / refused).
                 <br />
-                <strong>Red flag:</strong> <code>HTTP/1.1 200 OK</code> (means a local service is listening; boundary is being bypassed).
+                <strong>Red flag:</strong> localhost returns HTTP (boundary is being bypassed).
               </td>
             </tr>
             <tr>
               <td>Remote HTTP positive proof</td>
-              <td>
-                An <code>HTTP/1.1</code> status line returned from the SUT.
-                For Sprint 1 demo: <code>HTTP/1.1 200 OK</code>.
-              </td>
+              <td>An <code>HTTP/1.1</code> status line returned from the SUT (example: <code>200 OK</code>).</td>
             </tr>
             <tr>
               <td>TCP transport validation</td>
-              <td>
-                TCP handshake succeeds (example: <code>succeeded</code> or equivalent).
-              </td>
-            </tr>
-            <tr>
-              <td>Network routing validation</td>
-              <td>
-                Route output shows a non-loopback interface (example: <code>en6</code>), confirming traffic exits the runner.
-              </td>
+              <td>TCP handshake succeeds (example: <code>succeeded</code>).</td>
             </tr>
             <tr>
               <td>Automation proof</td>
-              <td>
-                A Playwright test passes while targeting <code>${BASE_URL}</code>.
-                Example: <code>3 passed</code>.
-              </td>
+              <td>A Playwright test passes while targeting <code>${BASE_URL}</code>.</td>
             </tr>
           </table>
-      
+
           <p class="mini" style="margin-top: 12px;">
-            Store evidence as sanitized snippets or screenshots. Avoid publishing internal tokens, credentials, or network fingerprint details.
+            Store evidence as sanitized snippets or screenshots. Avoid publishing internal tokens, credentials,
+            or network fingerprint details.
           </p>
         </div>
       </section>
-      
-      
 
       <div class="divider"></div>
 
@@ -408,45 +368,31 @@
           <h2>Failure modes + how to diagnose</h2>
 
           <h3>Localhost succeeds unexpectedly</h3>
-          <p>
-            <strong>Symptom:</strong> <code>curl http://localhost:${SUT_PORT}</code> returns an HTTP response.
-          </p>
-          <p>
-            <strong>Diagnosis:</strong> A service is running locally on the runner, or
-            forwarding/proxying is masking the boundary.
-          </p>
+          <p><strong>Symptom:</strong> localhost returns HTTP (negative proof fails).</p>
+          <p><strong>Diagnosis:</strong> a local service is listening on the runner, or a proxy/forward is masking the boundary.</p>
 
           <div class="divider"></div>
 
           <h3>Remote hostname does not resolve</h3>
-          <p><strong>Symptom:</strong> hostname resolution fails or connects to an unintended host.</p>
-          <p><strong>Diagnosis:</strong></p>
-          <pre><code>nslookup sut.testlab</code></pre>
-          <p>
-            <strong>Action:</strong> Correct hostname mapping (e.g., <code>/etc/hosts</code>) to the intended SUT IP.
-          </p>
+          <p><strong>Symptom:</strong> DNS resolution fails or resolves to an unintended host.</p>
+          <p><strong>Diagnosis (runner):</strong></p>
+          <pre><code>dscacheutil -q host -a name sut.testlab
+nslookup sut.testlab || true</code></pre>
+          <p><strong>Action:</strong> correct the mapping (e.g., <code>/etc/hosts</code> on the runner) to the intended SUT.</p>
 
           <div class="divider"></div>
 
           <h3>TCP connection fails</h3>
           <p><strong>Symptom:</strong> <code>nc</code> reports timeout or connection refused.</p>
-          <p>
-            <strong>Diagnosis:</strong> service is down, port is not exposed, or traffic is blocked.
-          </p>
-          <p>
-            <strong>Action:</strong> Verify service state on the SUT, confirm port exposure, and review firewall controls.
-          </p>
+          <p><strong>Diagnosis:</strong> service is down, port is not exposed, or traffic is blocked.</p>
+          <p><strong>Action:</strong> verify service state on the SUT, confirm port exposure, and review firewall controls.</p>
 
           <div class="divider"></div>
 
           <h3>Service bound to loopback on SUT</h3>
           <p><strong>Symptom:</strong> service responds locally on the SUT but is unreachable from the runner.</p>
-          <p>
-            <strong>Diagnosis:</strong> service is listening on <code>127.0.0.1:${SUT_PORT}</code> only.
-          </p>
-          <p>
-            <strong>Action:</strong> bind to <code>0.0.0.0</code> or the LAN interface and restart the service.
-          </p>
+          <p><strong>Diagnosis:</strong> service is listening on <code>127.0.0.1:${SUT_PORT}</code> only.</p>
+          <p><strong>Action:</strong> bind to <code>0.0.0.0</code> or the LAN interface and restart the service.</p>
         </div>
       </section>
 
@@ -469,7 +415,7 @@
 
       <footer>
         <div class="mini">
-          Runbooks are command/expected-output documents. Examples are sanitized.
+          Runbooks are command/expected-output documents. Public sections are sanitized. Private sections contain operator notes and are not intended for public sharing.
         </div>
       </footer>
     </div>

@@ -211,12 +211,44 @@
             <li>Dependencies are validated behind boundaries (DB verified from SUT, not exposed to runner)</li>
           </ul>
 
+          <div class="divider"></div>
+
+          <h3>✅ Sprint 2 — Completed (sanitized)</h3>
+          <p>
+            Sprint 2 is complete. The SUT is reachable by hostname from the runner, ports are explicitly published on the
+            SUT host, and internal dependencies are validated strictly within the SUT boundary.
+          </p>
+          <ul>
+            <li>Runner DNS → TCP → HTTP reachability proven via <code>sut.testlab</code></li>
+            <li>Ports <code>3000</code> (web) and <code>3001</code> (api) are LAN-reachable (not loopback-only)</li>
+            <li>DB dependency verified from inside the SUT only (<code>mongosh</code> ping returns <code>{ ok: 1 }</code>)</li>
+            <li>No implicit targets; no “localhost as environment” pattern</li>
+          </ul>
+
           <details>
-            <summary>Private (operator): actuals + environment notes</summary>
-            <p>
-              Private notes hold raw outputs, LAN IPs, and exact evidence blocks.
-              Keep these out of public pages.
-            </p>
+            <summary>Private (operator): evidence blocks (actuals)</summary>
+            <pre><code># SUT host (compose + published ports)
+cd ~/conduit
+docker compose up -d
+docker compose ps
+sudo ss -lntp | grep -E '(:3000\s|:3001\s)'
+
+# SUT host (local HTTP)
+curl -I http://127.0.0.1:3000/ | sed -n '1,8p'
+curl -I http://127.0.0.1:3001/ | sed -n '1,12p'
+
+# SUT host (hostname resolution)
+getent hosts sut.testlab
+
+# Runner (DNS + TCP + HTTP via hostname)
+dscacheutil -q host -a name sut.testlab
+nc -vz sut.testlab 3000
+nc -vz sut.testlab 3001
+curl -sS -D- http://sut.testlab:3000/ -o /dev/null | sed -n '1,8p'
+curl -sS -D- http://sut.testlab:3001/ -o /dev/null | sed -n '1,12p'
+
+# Dependency boundary proof (SUT host only)
+docker exec -it conduit-mongo mongosh --quiet --eval 'db.adminCommand({ ping: 1 })'</code></pre>
           </details>
         </div>
       </section>
@@ -228,21 +260,18 @@
           <h2>Commands</h2>
 
           <h3>Service availability (SUT host)</h3>
-          <p>
-            Prove the stack is up and the expected ports are listening on a network-reachable interface.
-          </p>
+          <p>Prove the stack is up and ports are published on a network-reachable interface.</p>
 
-          <pre><code>cd /path/to/sut-compose
+          <pre><code>cd ~/conduit
 docker compose up -d
 docker compose ps
 
 # verify listeners for expected ports
-ss -lntp | grep ':3000' || true
-ss -lntp | grep ':3001' || true</code></pre>
+sudo ss -lntp | grep -E '(:3000\s|:3001\s)' || echo "NO LISTENER 3000/3001"</code></pre>
 
           <details>
-            <summary>Private (operator): build/pull + shutdown</summary>
-            <pre><code>cd /path/to/sut-compose
+            <summary>Private (operator): rebuild/pull + shutdown</summary>
+            <pre><code>cd ~/conduit
 docker compose pull
 docker compose up -d --build --remove-orphans
 
@@ -251,46 +280,42 @@ docker compose down</code></pre>
           </details>
 
           <h3 style="margin-top: 14px;">Local HTTP checks (SUT host)</h3>
-          <p>
-            Validate service response from the SUT host using the published ports.
-          </p>
+          <p>Validate service response from the SUT host using published ports.</p>
 
-          <pre><code>curl -sS -o /dev/null -D - --max-time 3 "http://127.0.0.1:3000/" | head -n 12
-curl -sS -o /dev/null -D - --max-time 3 "http://127.0.0.1:3001/" | head -n 12</code></pre>
+          <pre><code>curl -I http://127.0.0.1:3000/ | sed -n '1,8p'
+curl -I http://127.0.0.1:3001/ | sed -n '1,12p'</code></pre>
 
           <details>
-            <summary>Private (operator): localhost variants (kept private by policy)</summary>
-            <pre><code># kept private: diagnostic convenience only (not a target discipline pattern)
-curl -sS -o /dev/null -D - --max-time 3 "http://localhost:3001/" | head -n 12</code></pre>
+            <summary>Private (operator): localhost variants (diagnostic convenience)</summary>
+            <pre><code># diagnostic only; not used as a targeting pattern
+curl -I http://localhost:3001/ | sed -n '1,12p'</code></pre>
           </details>
 
           <h3 style="margin-top: 14px;">Remote checks (Runner → SUT)</h3>
-          <p>
-            Validate runner reachability using hostname-based targeting.
-          </p>
+          <p>Validate runner reachability using hostname-based targeting.</p>
 
-          <pre><code>export BASE_URL="https://sut.testlab"
+          <pre><code># keep this consistent with the proofs below (no implied TLS)
+export BASE_URL="http://sut.testlab:3000"
 
-# DNS proof
-# (platform-specific resolver commands may vary; use the native tool for your runner)
-# Example intent: confirm sut.testlab resolves to the SUT LAN address.
+# DNS proof (runner)
+dscacheutil -q host -a name sut.testlab
 
-# TCP + HTTP proof
+# TCP proof (runner)
 nc -vz sut.testlab 3000
 nc -vz sut.testlab 3001
-curl -sS -o /dev/null -D - --max-time 3 "http://sut.testlab:3000/" | head -n 12
-curl -sS -o /dev/null -D - --max-time 3 "http://sut.testlab:3001/" | head -n 12</code></pre>
+
+# HTTP proof (runner)
+curl -sS -D- http://sut.testlab:3000/ -o /dev/null | sed -n '1,8p'
+curl -sS -D- http://sut.testlab:3001/ -o /dev/null | sed -n '1,12p'</code></pre>
 
           <details>
             <summary>Private (operator): LAN IP evidence blocks</summary>
-            <pre><code># record IP evidence privately (do not publish)
-# arp / ping / route / hostfile updates, etc.</code></pre>
+            <pre><code># keep raw IPs and resolver specifics private
+# /etc/hosts entry, DHCP lease evidence, route/arp checks, etc.</code></pre>
           </details>
 
           <h3 style="margin-top: 14px;">Dependency boundary proof (SUT host)</h3>
-          <p>
-            Validate internal dependencies from the SUT without exposing them to the runner.
-          </p>
+          <p>Validate internal dependencies from the SUT without exposing them to the runner.</p>
 
           <pre><code>docker exec -it conduit-mongo mongosh --quiet --eval 'db.adminCommand({ ping: 1 })'</code></pre>
 
@@ -320,7 +345,7 @@ db.getCollectionNames();
             </tr>
             <tr>
               <td>Port listening</td>
-              <td>SUT host shows listeners on published ports bound to <code>0.0.0.0</code> or LAN interface (not loopback-only).</td>
+              <td>SUT host shows listeners on <code>0.0.0.0:3000</code> and <code>0.0.0.0:3001</code> (or LAN interface), not loopback-only.</td>
             </tr>
             <tr>
               <td>Local HTTP</td>
@@ -347,34 +372,39 @@ db.getCollectionNames();
           <h3>Containers not running / crash looping</h3>
           <p><strong>Symptom:</strong> <code>docker compose ps</code> shows exited containers.</p>
           <p><strong>Diagnosis:</strong></p>
-          <pre><code>docker compose logs --tail=200</code></pre>
+          <pre><code>cd ~/conduit
+docker compose logs --tail=200</code></pre>
 
           <div class="divider"></div>
 
           <h3>Port not listening</h3>
           <p><strong>Symptom:</strong> no listener on expected port.</p>
           <p><strong>Diagnosis:</strong> verify published ports and container health.</p>
-          <pre><code>docker compose ps
-docker compose port &lt;service-name&gt; 3001 || true</code></pre>
+          <pre><code>cd ~/conduit
+docker compose ps
+docker compose port web 80 || true
+docker compose port api 3000 || true</code></pre>
 
           <div class="divider"></div>
 
           <h3>Local HTTP fails but port is listening</h3>
           <p><strong>Symptom:</strong> connection succeeds but HTTP returns errors/timeouts.</p>
           <p><strong>Diagnosis:</strong></p>
-          <pre><code>docker compose logs --tail=200</code></pre>
+          <pre><code>cd ~/conduit
+docker compose logs --tail=200</code></pre>
 
           <div class="divider"></div>
 
           <h3>Remote HTTP fails but local HTTP succeeds</h3>
           <p><strong>Symptom:</strong> SUT is healthy locally; runner cannot reach it.</p>
           <p><strong>Diagnosis (Runner):</strong></p>
-          <pre><code>nc -vz sut.testlab 3001</code></pre>
+          <pre><code>nc -vz sut.testlab 3000
+nc -vz sut.testlab 3001</code></pre>
           <p><strong>Action:</strong> check firewall controls, port publishing, and network segmentation.</p>
 
           <details>
             <summary>Private (operator): route and IP-level checks</summary>
-            <pre><code># kept private: LAN IPs and routes
+            <pre><code># keep raw IPs private
 # route -n get &lt;SUT_IP&gt;
 # arp -a | grep &lt;SUT_IP&gt;</code></pre>
           </details>
