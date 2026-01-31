@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 07 — Custom fixtures (UI + API) + composition rules</title>
+    <meta
+      name="description"
+      content="Runbook 07 — Custom fixtures (UI + API) + composition rules. Establishes a single fixture contract, auth strategy, and scope guidance so tests read like business workflows and failures are diagnosable."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 20px 18px 54px; }
+      .topbar {
+        position: sticky; top: 0; z-index: 10;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar-inner { display:flex; justify-content:space-between; gap:12px; padding: 12px 0; flex-wrap: wrap; }
+      .brand { font-weight: 750; }
+      .pill {
+        display:inline-block; border:1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        padding: 7px 10px; border-radius: 999px; font-size: 13px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 14px;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
+      }
+      h1 { margin: 10px 0 0; font-size: 24px; }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      h3 { margin: 0 0 10px; font-size: 16px; }
+      p { margin: 10px 0; color: var(--muted); line-height: 1.6; }
+      ul, ol { margin: 10px 0 0 18px; color: var(--muted); }
+      li { margin: 6px 0; }
+      code { color: var(--text); }
+      section { scroll-margin-top: 90px; }
+      .divider { height: 1px; background: var(--border); margin: 18px 0; }
+      .callout {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        border-radius: 12px;
+        padding: 12px 12px;
+        margin-top: 12px;
+      }
+      .callout.good { border-color: rgba(68,209,159,.45); }
+      .tag {
+        display:inline-block; font-size: 12px; padding: 4px 8px;
+        border-radius: 999px; border: 1px solid var(--border);
+        background: rgba(255,255,255,.03); color: var(--muted);
+        margin-right: 6px;
+      }
+      pre {
+        margin: 10px 0 0;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        color: var(--muted);
+        overflow: auto;
+      }
+      .ok { color: var(--good); }
+      .warn { color: var(--warn); }
+      .bad { color: var(--bad); }
+      .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+      .table td {
+        border-top: 1px solid var(--border);
+        padding: 10px 6px;
+        vertical-align: top;
+      }
+      .table td:first-child { width: 210px; color: var(--muted); }
+      footer { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 14px; color: var(--muted); font-size: 13px; }
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <div class="wrap">
+        <div class="topbar-inner">
+          <div class="brand">QA Test Lab • Runbook 07</div>
+          <div>
+            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <h1>Runbook 07 — Custom fixtures (UI + API) + composition rules</h1>
+
+      <div class="card">
+        <h2>Objective</h2>
+        <p>
+          Establish a single, documented fixture contract so tests read like business workflows.
+          Sprint 7 standardizes: (1) UI auth via storageState, (2) API auth via an API client fixture,
+          (3) Page Objects as domain primitives, and (4) composition rules (what is worker vs test scope).
+        </p>
+
+        <div class="callout good">
+          <span class="tag">Verified auth contract</span>
+          <span class="tag">One fixture entrypoint</span>
+          <p style="margin:8px 0 0;">
+            <strong>Contract:</strong> UI auth is created once in <code>globalSetup</code> and stored in
+            <code>.auth/storageState.json</code>. Logged-out state is always available via
+            <code>.auth/emptyState.json</code>. Tests select auth state by choosing the Playwright project:
+            <code>auth-chromium</code> or <code>unauth-chromium</code>.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>What “done” means</h2>
+        <ul>
+          <li><span class="ok">✔</span> Tests import from a single entrypoint: <code>const { test, expect } = require('../fixtures/rw')</code>.</li>
+          <li><span class="ok">✔</span> UI auth is deterministic via <code>globalSetup</code> + <code>storageState</code> (no token injection “side path”).</li>
+          <li><span class="ok">✔</span> API auth is deterministic via <code>api</code> fixture that logs in and stores JWT in the client.</li>
+          <li><span class="ok">✔</span> Page Objects are provided by fixtures (<code>home</code>, <code>editor</code>, <code>profile</code>, etc.).</li>
+          <li><span class="ok">✔</span> Scope rules are documented (what runs once vs per-test, what is safe to share).</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Canonical auth strategy (choose one)</h2>
+        <table class="table">
+          <tr>
+            <td>Selected for this lab</td>
+            <td><strong>StorageState + globalSetup</strong> (matches your <code>playwright.config.js</code>)</td>
+          </tr>
+          <tr>
+            <td>Why</td>
+            <td>It is CI-friendly, fast (login once), and keeps tests clean (no per-test UI login).</td>
+          </tr>
+          <tr>
+            <td>What to avoid</td>
+            <td>Competing auth strategies (e.g., localStorage token injection) living alongside storageState.</td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <p style="margin:0;">
+            <strong>Rule:</strong> one blessed UI auth path. If another auth approach exists in the repo,
+            it must be clearly marked <em>legacy</em> or removed, so new hires don’t “pick a random way.”
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Fixture contract (what tests are allowed to assume)</h2>
+        <p>From <code>fixtures/rw.js</code> (canonical):</p>
+        <ul>
+          <li><code>api</code> — authenticated API client with JWT set (via <code>/users/login</code>).</li>
+          <li><code>home</code>, <code>auth</code>, <code>editor</code>, <code>article</code>, <code>profile</code>, <code>settings</code> — Page Objects bound to the current <code>page</code>.</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <h3>Composition rules</h3>
+        <ul>
+          <li><strong>Tests do not fetch env vars.</strong> Fixtures own env parsing (<code>getEnv()</code>).</li>
+          <li><strong>Tests do not login.</strong> Logged-in UI is a project selection; API auth is the <code>api</code> fixture.</li>
+          <li><strong>Tests do not “newContext” ad-hoc.</strong> If a test needs a different state, create a new project or a new fixture.</li>
+          <li><strong>Pages do mechanics; tests describe intent.</strong> (Page Objects are the API.)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Scope guidance (worker vs test)</h2>
+        <table class="table">
+          <tr>
+            <td>Worker-scoped (runs once per worker)</td>
+            <td>
+              <strong>globalSetup</strong> (UI login + write storageState),
+              anything expensive & shareable, environment contract verification.
+            </td>
+          </tr>
+          <tr>
+            <td>Test-scoped (runs per test)</td>
+            <td>
+              Page Object instances bound to <code>page</code>, API clients bound to <code>request</code>,
+              test-specific data creation, assertions, and evidence capture.
+            </td>
+          </tr>
+          <tr>
+            <td>Anti-pattern</td>
+            <td>Hidden “once per suite” state inside tests (order dependency).</td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <p style="margin:0;">
+            <strong>Interpretation for your lab:</strong> <code>globalSetup</code> proves auth once.
+            Each test should remain independently runnable, with state seeded via API when needed (Sprint 5),
+            and UI workflows tested via Page Objects (Sprint 8).
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Folder/ownership map</h2>
+        <pre>fixtures/
+  rw.js                 # canonical test entrypoint (UI pages + API client fixture)
+  global-setup.js        # UI login once, writes .auth/storageState.json
+
+helpers/
+  env.js                 # env contract: WEB_BASE_URL/API_BASE_URL/RW_USER_*
+  apiClient.js            # loginAndGetToken + create/get article, etc.
+  releaseGate.js          # gate wrapper w/ annotations (Sprint 6)
+
+pages/
+  BasePage.js
+  HomePage.js
+  EditorPage.js
+  ProfilePage.js
+  SettingsPage.js
+  ArticlePage.js
+  AuthPage.js
+
+.auth/
+  emptyState.json         # always exists; unauth project uses this
+  storageState.json       # produced by globalSetup; auth project uses this</pre>
+      </div>
+
+      <div class="card">
+        <h2>Commands</h2>
+        <p>Required env vars (your suite enforces these):</p>
+        <pre>export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
+export RW_USER_EMAIL="rwuser_pw@yourdomain.test"
+export RW_USER_PASSWORD="yourpassword"</pre>
+
+        <div class="divider"></div>
+
+        <p>Run a logged-in test (uses storageState):</p>
+        <pre>npx playwright test specs/sprint7 --project=auth-chromium --workers=1 --reporter=line</pre>
+
+        <p>Run a logged-out test (forces unauth state):</p>
+        <pre>npx playwright test specs/sprint7 --project=unauth-chromium --workers=1 --reporter=line</pre>
+
+        <div class="divider"></div>
+
+        <p>Skip globalSetup (useful for debugging auth failures fast):</p>
+        <pre>SKIP_GLOBAL_SETUP=1 npx playwright test specs/sprint7 --project=unauth-chromium --workers=1 --reporter=line</pre>
+      </div>
+
+      <div class="card">
+        <h2>Expected outputs</h2>
+        <ul>
+          <li><span class="ok">✔</span> <code>.auth/emptyState.json</code> exists before tests start (no races).</li>
+          <li><span class="ok">✔</span> In auth project, navbar shows authenticated items without UI login steps in the test.</li>
+          <li><span class="ok">✔</span> API fixture can seed state (create article, fetch article) without UI.</li>
+          <li><span class="ok">✔</span> Failures have trace/video/screenshot in <code>test-results/</code> and HTML report in <code>playwright-report/</code>.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Failure modes and diagnosis</h2>
+        <ul>
+          <li>
+            <strong>Auth state missing:</strong> <code>.auth/storageState.json</code> not present →
+            run a single test with globalSetup enabled; check <code>[globalSetup]</code> logs and the saved screenshot
+            (<code>global-setup-failure.png</code>).
+          </li>
+          <li>
+            <strong>Wrong project selected:</strong> tests behave logged-out in an auth flow →
+            ensure you ran <code>--project=auth-chromium</code>.
+          </li>
+          <li>
+            <strong>Conflicting auth strategy:</strong> token injection code changes behavior →
+            remove/rename legacy fixtures so only storageState is “the way.”
+          </li>
+          <li>
+            <strong>Env contract broken:</strong> hard fail at startup →
+            confirm <code>WEB_BASE_URL</code>, <code>API_BASE_URL</code>, <code>RW_USER_EMAIL</code>, <code>RW_USER_PASSWORD</code>.
+          </li>
+          <li>
+            <strong>API auth fails:</strong> <code>/users/login</code> non-200 →
+            capture status/body in the API client error; confirm API base URL includes <code>/api</code>.
+          </li>
+        </ul>
+
+        <div class="callout">
+          <p style="margin:0;">
+            <strong>Rule:</strong> do not “fix” these by waiting longer.
+            Fix the contract (env/auth/project selection) so the suite stays deterministic.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Why this matters (production relevance)</h2>
+        <p>
+          Without a single fixture contract, teams drift: multiple login strategies, inconsistent environment reads,
+          and tests that are impossible to reason about. Sprint 7 makes the suite scalable by ensuring
+          every test begins from a known state, uses shared domain primitives, and produces reliable evidence.
+        </p>
+      </div>
+
+      <footer>
+        <div>Runbook 07 • QA Test Lab</div>
+      </footer>
+    </div>
+  </body>
+</html>

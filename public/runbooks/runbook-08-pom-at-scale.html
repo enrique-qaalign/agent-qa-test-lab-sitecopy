@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 08 — Page Objects at scale (pages/components/flows)</title>
+    <meta
+      name="description"
+      content="Runbook 08 — Page Objects at scale. Establishes scalable POM structure, locator standards, and a new-page recipe so the suite stays maintainable at 50–200+ tests."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 20px 18px 54px; }
+      .topbar {
+        position: sticky; top: 0; z-index: 10;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar-inner { display:flex; justify-content:space-between; gap:12px; padding: 12px 0; flex-wrap: wrap; }
+      .brand { font-weight: 750; }
+      .pill {
+        display:inline-block; border:1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        padding: 7px 10px; border-radius: 999px; font-size: 13px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 14px;
+      }
+      h1 { margin: 10px 0 0; font-size: 24px; }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      h3 { margin: 0 0 10px; font-size: 16px; }
+      p { margin: 10px 0; color: var(--muted); line-height: 1.6; }
+      ul { margin: 10px 0 0 18px; color: var(--muted); }
+      li { margin: 6px 0; }
+      code { color: var(--text); }
+      section { scroll-margin-top: 90px; }
+      .divider { height: 1px; background: var(--border); margin: 18px 0; }
+      .callout {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        border-radius: 12px;
+        padding: 12px 12px;
+        margin-top: 12px;
+      }
+      .tag {
+        display:inline-block; font-size: 12px; padding: 4px 8px;
+        border-radius: 999px; border: 1px solid var(--border);
+        background: rgba(255,255,255,.03); color: var(--muted);
+        margin-right: 6px;
+      }
+      pre {
+        margin: 10px 0 0;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        color: var(--muted);
+        overflow: auto;
+      }
+      .ok { color: var(--good); }
+      .warn { color: var(--warn); }
+      .bad { color: var(--bad); }
+      .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+      .table td {
+        border-top: 1px solid var(--border);
+        padding: 10px 6px;
+        vertical-align: top;
+      }
+      .table td:first-child { width: 190px; color: var(--muted); }
+      .toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      footer { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 14px; color: var(--muted); font-size: 13px; }
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <div class="wrap">
+        <div class="topbar-inner">
+          <div class="brand">QA Test Lab • Runbook 08</div>
+          <div>
+            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <h1>Runbook 08 — Page Objects at scale (pages/components/flows)</h1>
+
+      <div class="card">
+        <h2>Quick links</h2>
+        <div class="callout" style="margin-top:10px;">
+          <span class="tag">Navigation</span>
+          <p style="margin:8px 0 0;">
+            Use these anchors to skim like a checklist.
+          </p>
+          <div class="toc">
+            <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#done">Done</a>
+            <a class="pill" href="#structure">Structure</a>
+            <a class="pill" href="#locators">Locator standards</a>
+            <a class="pill" href="#contract">POM contract</a>
+            <a class="pill" href="#recipe">New page recipe</a>
+            <a class="pill" href="#commands">Commands</a>
+            <a class="pill" href="#expected">Expected outputs</a>
+            <a class="pill" href="#failures">Failure modes</a>
+            <a class="pill" href="#why">Why it matters</a>
+          </div>
+        </div>
+      </div>
+
+      <section id="objective" class="card">
+        <h2>Objective</h2>
+        <p>
+          Establish a scalable Page Object Model (POM) architecture so UI automation stays maintainable
+          as the test suite grows. This runbook defines folder structure, locator standards,
+          and a “new page recipe” that a new hire can follow without tribal knowledge.
+        </p>
+        <div class="callout">
+          <span class="tag">Maintainability</span>
+          <span class="tag">Locator policy</span>
+          <span class="tag">Flows</span>
+          <p style="margin:8px 0 0;">
+            <strong>Rule:</strong> tests should describe workflows; pages/components/flows own mechanics.
+          </p>
+        </div>
+      </section>
+
+      <section id="done" class="card">
+        <h2>What “done” means</h2>
+        <ul>
+          <li><span class="ok">✔</span> Standard structure exists: <code>pages/</code>, <code>components/</code>, <code>flows/</code>, <code>assertions/</code>.</li>
+          <li><span class="ok">✔</span> Locator policy is documented and used (role/label/testid first).</li>
+          <li><span class="ok">✔</span> A “new page recipe” spec proves how to add a page cleanly.</li>
+          <li><span class="ok">✔</span> Repeated sequences moved into flows; repeated expectations moved into assertion helpers.</li>
+        </ul>
+      </section>
+
+      <section id="structure" class="card">
+        <h2>Recommended structure</h2>
+        <pre>pages/
+  HomePage.*
+  LoginPage.*
+  SettingsPage.*
+  EditorPage.*
+  ArticlePage.*
+  ProfilePage.*
+
+components/
+  Navbar.*
+  ArticlePreview.*
+  TagList.*
+
+flows/
+  AuthFlow.*
+  PublishArticleFlow.*
+  FollowUserFlow.*
+
+assertions/
+  expectLoggedIn.*
+  expectArticleVisible.*
+  expectToast.*
+
+helpers/
+  env.*
+  urls.*
+  dataFactories.*</pre>
+
+        <div class="callout">
+          <p style="margin:0;">
+            If your framework already has most of this, Sprint 8 is about standardizing the “shape”
+            and documenting how to extend it without drift.
+          </p>
+        </div>
+      </section>
+
+      <section id="locators" class="card">
+        <h2>Locator standards (guardrails)</h2>
+        <table class="table">
+          <tr>
+            <td>Prefer</td>
+            <td><code>getByRole</code>, <code>getByLabel</code>, <code>getByTestId</code></td>
+          </tr>
+          <tr>
+            <td>Avoid</td>
+            <td>brittle CSS chains, deep DOM traversal, index selectors, text-only selectors that drift</td>
+          </tr>
+          <tr>
+            <td>Policy</td>
+            <td>if you must use CSS/XPath, document why and capture a stable “anchor” element</td>
+          </tr>
+        </table>
+        <div class="callout">
+          <p style="margin:0;">
+            <strong>Anti-pattern:</strong> fixing flake by “waiting longer.” Sprint 8 is about stable access and stable workflows.
+          </p>
+        </div>
+      </section>
+
+      <section id="contract" class="card">
+        <h2>Page Object contract</h2>
+        <ul>
+          <li>Each page has <code>open()</code> and <code>assertAt()</code> (or <code>isAt()</code> + explicit expect).</li>
+          <li>Locators are grouped and named (no “mystery locators” inline in tests).</li>
+          <li>Actions do actions; assertion helpers do assertions (avoid mixing unless intentional).</li>
+          <li>Pages should not “know” test data strategy; tests/fixtures do.</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <h3>Flows (multi-page workflows)</h3>
+        <p>
+          Flows encapsulate multi-step business tasks (publish article, follow user, update settings).
+          This keeps tests short and makes changes localized when UI steps shift.
+        </p>
+      </section>
+
+      <section id="recipe" class="card">
+        <h2>New page recipe (the “30-minute new hire path”)</h2>
+        <ol style="margin:10px 0 0 18px; color: var(--muted);">
+          <li>Create <code>pages/NewFeaturePage.*</code> with <code>open()</code> and <code>assertAt()</code></li>
+          <li>If UI repeats elsewhere, factor a reusable <code>components/</code> object</li>
+          <li>If workflow crosses pages, create/extend a <code>flows/</code> helper</li>
+          <li>Add assertions to <code>assertions/</code> rather than repeating inline expects</li>
+          <li>Add a single smoke spec proving the recipe works end-to-end</li>
+        </ol>
+
+        <div class="callout">
+          <p style="margin:0;">
+            <strong>Definition of maintainable:</strong> a UI change updates 1–2 page/component/flow files,
+            not 30 tests.
+          </p>
+        </div>
+      </section>
+
+      <section id="commands" class="card">
+        <h2>Commands</h2>
+        <p>Example recipe spec run:</p>
+        <pre>export BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
+
+npx playwright test specs/sprint8/Sprint8.pom.scale.spec.* --project=chromium --workers=1 --reporter=line</pre>
+      </section>
+
+      <section id="expected" class="card">
+        <h2>Expected outputs</h2>
+        <ul>
+          <li><span class="ok">✔</span> Recipe spec passes and is readable (workflow-level, minimal glue)</li>
+          <li><span class="ok">✔</span> Minimal repeated locator usage in tests (locators live in pages/components)</li>
+          <li><span class="ok">✔</span> Any failure produces trace/video/screenshot sufficient to debug</li>
+        </ul>
+      </section>
+
+      <section id="failures" class="card">
+        <h2>Failure modes and diagnosis</h2>
+        <ul>
+          <li><strong>“God page” objects:</strong> one class grows endlessly → split into components + flows.</li>
+          <li><strong>Selector churn:</strong> locators depend on DOM structure → shift to role/label/testid.</li>
+          <li><strong>Assertions scattered:</strong> inconsistent semantics → centralize in <code>assertions/</code>.</li>
+          <li><strong>Flake reintroduced via waits:</strong> replace with stable state checks and trace-first debugging.</li>
+        </ul>
+      </section>
+
+      <section id="why" class="card">
+        <h2>Why this matters (production relevance)</h2>
+        <p>
+          At scale, UI tests fail not because Playwright is weak, but because structure collapses:
+          duplicated locators, inconsistent flows, and “smart waits” that hide real bugs.
+          Sprint 8 proves you can keep a UI suite coherent as it grows.
+        </p>
+      </section>
+
+      <footer>
+        <div>Runbook 08 • QA Test Lab</div>
+      </footer>
+    </div>
+  </body>
+</html>

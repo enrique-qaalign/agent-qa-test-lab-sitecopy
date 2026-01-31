@@ -3,11 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Runbook 01 — Runner → SUT connectivity and naming</title>
+    <title>Runbook 01.1 — CI Runner → SUT connectivity and naming (CI Variant)</title>
     <meta
       name="description"
-      content="Runbook 01 — Runner → SUT connectivity and naming (QA Test Lab)"
+      content="Runbook 01.1 — CI Runner → SUT connectivity and naming (CI Variant). Proves CI job reaches SUT across a real network boundary using stable naming; localhost HTTP is disallowed."
     />
+
     <style>
       :root {
         --bg: #0b0e14;
@@ -16,6 +17,9 @@
         --muted: #aab2c5;
         --link: #7aa2ff;
         --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
       }
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
@@ -37,15 +41,28 @@
         border-bottom: 1px solid var(--border);
       }
       .wrap { max-width: 1000px; margin: 0 auto; padding: 18px 18px 54px; }
+
       .nav-inner {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
+        gap: 12px;
         flex-wrap: wrap;
         padding: 12px 0;
       }
-      .brand { font-weight: 750; letter-spacing: 0.2px; }
+      .brand { font-weight: 750; letter-spacing: 0.2px; display:flex; gap:10px; align-items:center; }
+      .badge {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      button.badge {
+        cursor: pointer;
+        color: var(--text);
+      }
       .navlinks { display: flex; gap: 10px; flex-wrap: wrap; font-size: 14px; }
       .pill {
         display: inline-block;
@@ -57,7 +74,7 @@
 
       .hero { padding: 14px 0 0; }
       .h1 {
-        font-size: 34px;
+        font-size: 32px;
         line-height: 1.15;
         margin: 0 0 8px;
         letter-spacing: -0.5px;
@@ -66,7 +83,7 @@
         color: var(--muted);
         font-size: 15px;
         line-height: 1.7;
-        max-width: 900px;
+        max-width: 920px;
         margin: 0;
       }
 
@@ -100,6 +117,22 @@
         font-size: 13px;
       }
 
+      .callout {
+        margin-top: 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 12px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .callout strong { color: var(--text); }
+      .rule {
+        border-left: 4px solid var(--warn);
+        padding-left: 10px;
+        margin-top: 10px;
+      }
+      .rule.good { border-left-color: var(--good); }
+      .rule.bad { border-left-color: var(--bad); }
+
       pre {
         margin: 10px 0 0;
         white-space: pre;
@@ -125,7 +158,7 @@
         padding: 10px 6px;
         vertical-align: top;
       }
-      .table td:first-child { color: var(--muted); width: 240px; }
+      .table td:first-child { color: var(--muted); width: 280px; }
 
       footer {
         margin-top: 26px;
@@ -135,7 +168,7 @@
         font-size: 14px;
       }
 
-      section { scroll-margin-top: 84px; }
+      section { scroll-margin-top: 100px; }
 
       details {
         margin-top: 12px;
@@ -152,8 +185,25 @@
       }
       summary::-webkit-details-marker { display: none; }
 
+      /* Private/operator sections */
+      .private {
+        margin-top: 12px;
+        border: 1px dashed var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.02);
+      }
+      /* Default: public mode hides private blocks */
+      body:not(.mode-private) .private { display: none; }
+
+      .steps {
+        margin-top: 10px;
+        padding-left: 18px;
+      }
+      .steps li { margin: 8px 0; }
+
       @media (max-width: 920px) {
-        .h1 { font-size: 28px; }
+        .h1 { font-size: 26px; }
       }
     </style>
   </head>
@@ -162,12 +212,20 @@
     <div class="nav">
       <div class="wrap">
         <div class="nav-inner">
-          <div class="brand">QA Test Lab</div>
+          <div class="brand">
+            <div style="font-weight:750;">QA Test Lab</div>
+            <span class="badge" id="modeBadge">Mode: Public</span>
+            <button class="badge" id="modeToggle" type="button" aria-pressed="false">Toggle Operator Mode</button>
+          </div>
+
           <div class="navlinks">
             <a class="pill" href="../">Home</a>
             <a class="pill" href="#objective">Objective</a>
-            <a class="pill" href="#commands">Commands</a>
-            <a class="pill" href="#expected">Expected</a>
+            <a class="pill" href="#new-hire">New hire guide</a>
+            <a class="pill" href="#dependencies">Dependencies</a>
+            <a class="pill" href="#env-contract">Env contract</a>
+            <a class="pill" href="#proof-blocks">Proof blocks</a>
+            <a class="pill" href="#gitlab">GitLab snippet</a>
             <a class="pill" href="#failure-modes">Failure modes</a>
             <a class="pill" href="#why">Production relevance</a>
           </div>
@@ -177,17 +235,18 @@
 
     <div class="wrap">
       <section class="hero">
-        <div class="h1">Runbook 01 — Runner → SUT connectivity and naming</div>
+        <div class="h1">Runbook 01.1 — CI Runner → SUT connectivity and naming (CI Variant)</div>
         <p class="lead">
-          Prove a real runner-to-SUT network boundary and stable naming.
-          Localhost must not be an acceptable target.
+          Prove CI-executed automation reaches the SUT across a real network boundary using stable naming.
+          Localhost HTTP must not be an acceptable target. This runbook is CI-safe, fail-fast, and evidence-friendly.
         </p>
         <div class="kpi">
-          <span>localhost negative proof</span>
-          <span>DNS proof</span>
+          <span>name resolution proof</span>
+          <span>localhost HTTP negative proof</span>
           <span>TCP transport proof</span>
-          <span>remote HTTP positive proof</span>
+          <span>remote identity proof</span>
           <span>automation proof</span>
+          <span>sanitized CI evidence</span>
         </div>
       </section>
 
@@ -198,166 +257,352 @@
           <h2>Objective + success criteria</h2>
 
           <p>
-            <strong>Objective:</strong> Validate that automated tests execute from an isolated runner and reach
-            the System Under Test (SUT) exclusively over a real network boundary using stable naming.
-            “Localhost” must not be an acceptable target.
+            <strong>Objective:</strong> Validate that tests executed by a CI runner reach the System Under Test (SUT)
+            over a real network boundary using stable naming (e.g., <code>sut.testlab</code>). Localhost HTTP must not
+            be accepted because it can mask routing, name resolution, firewall, and port exposure failures.
+          </p>
+
+          <p class="rule good">
+            <strong>Rule:</strong> HTTP checks and Playwright UI navigation must target <code>${WEB_BASE_URL}</code>
+            resolved by name (not <code>localhost</code>).
+          </p>
+
+          <p class="rule">
+            <strong>Compatibility note:</strong> Runbook 00 uses localhost port-forwarding for SSH baseline access
+            (<code>127.0.0.1:2222 → VM:22</code>). That is acceptable for bootstrap access. This runbook prohibits
+            localhost for <em>SUT HTTP</em> (web/API) proof.
           </p>
 
           <p style="margin-top: 12px;"><strong>Success criteria:</strong></p>
           <ul>
-            <li><strong>Localhost negative proof:</strong> requests to <code>http://localhost:${SUT_PORT}</code> on the runner do not return the SUT application (connection refused/timeout is acceptable; <code>200 OK</code> is a failure).</li>
-            <li><strong>DNS proof:</strong> <code>${SUT_HOST}</code> resolves to the intended SUT host.</li>
-            <li><strong>TCP transport proof:</strong> TCP handshake to <code>${SUT_HOST}:${SUT_PORT}</code> (or <code>${SUT_IP}:${SUT_PORT}</code>) succeeds.</li>
-            <li><strong>Remote positive proof:</strong> requests to <code>${BASE_URL}</code> return an HTTP response from the SUT.</li>
-            <li><strong>Automation proof:</strong> a Playwright test passes while targeting <code>${BASE_URL}</code>.</li>
+            <li><strong>Name resolution proof:</strong> <code>${SUT_HOST}</code> resolves inside the CI job to the intended SUT address (DNS or injected hosts mapping).</li>
+            <li><strong>Localhost HTTP negative proof:</strong> requests to <code>http://localhost:${WEB_PORT}</code> do not return SUT HTTP (curl failure is acceptable; <code>200 OK</code> is a failure).</li>
+            <li><strong>TCP transport proof:</strong> TCP handshake to <code>${SUT_HOST}:${WEB_PORT}</code> and <code>${SUT_HOST}:${API_PORT}</code> succeeds.</li>
+            <li><strong>Remote identity proof:</strong> web and API responses match Conduit (HTML title for web; JSON shape for API).</li>
+            <li><strong>Automation proof:</strong> at least one Playwright UI test passes while targeting <code>${WEB_BASE_URL}</code>.</li>
           </ul>
 
-          <div class="divider"></div>
+          <details class="private">
+            <summary>Private (operator): lab topology truth statement</summary>
+            <pre><code># Declare which topology this CI runner is using (keep raw IPs private)
+# Preferred (production-like): CI runner is on a different host and must use sut.testlab over LAN/VPN.
+# Baseline-compatible: CI runner runs on same physical host as VirtualBox; SSH uses localhost:2222 for bootstrap only.
 
-          <h3>✅ Sprint 1 — Completed (sanitized)</h3>
-          <p>
-            Sprint 1 is complete. Runner-to-SUT reachability is proven by name across a real network boundary,
-            and localhost access is treated as a failure signal.
-          </p>
-          <ul>
-            <li>Runner resolves <code>sut.testlab</code> and reaches the SUT over TCP</li>
-            <li>Runner receives HTTP response from SUT via <code>BASE_URL</code></li>
-            <li>Localhost is not a valid target (negative proof is enforced)</li>
-          </ul>
+# Conduit services (canonical):
+# WEB: http://sut.testlab:3000
+# API: http://sut.testlab:3001/api
 
-          <details>
-            <summary>Private (operator): evidence blocks (actuals)</summary>
-            <pre><code># Runner DNS proof (macOS example)
-dscacheutil -q host -a name sut.testlab
-
-# Runner TCP + HTTP proof (hostname)
-nc -vz sut.testlab 3001
-curl -sS -D- http://sut.testlab:3001/ -o /dev/null | sed -n '1,12p'
-
-# Localhost negative proof (runner)
-curl -sv --max-time 2 http://localhost:3001/ | head -n 12</code></pre>
+# Forbidden for proof:
+# - SSH tunnels exposing web/api to localhost
+# - reverse proxies mapping SUT to localhost
+# - docker publish of SUT ports onto the runner host
+</code></pre>
           </details>
         </div>
       </section>
 
       <div class="divider"></div>
 
-      <section id="commands">
+      <section id="new-hire">
         <div class="card">
-          <h2>Commands</h2>
+          <h2>New hire guide — how environment selection works</h2>
 
-          <h3>Environment variables (runner)</h3>
-          <pre><code>export SUT_HOST="sut.testlab"
-export SUT_PORT="3001"
-export BASE_URL="http://${SUT_HOST}:${SUT_PORT}"</code></pre>
+          <p>
+            If you are new to the project: most “mystery failures” in automation are not code failures—they are
+            <strong>environment selection failures</strong>. This framework supports multiple environments via
+            environment files. Your job is to pick the right environment file for the run you are executing.
+          </p>
 
-          <details>
-            <summary>Private (operator): optional explicit IP variable</summary>
-            <pre><code># Keep raw IPs private on public pages.
-# export SUT_IP="&lt;LAN-IP&gt;"</code></pre>
+          <h3>What you are selecting</h3>
+          <table class="table">
+            <tr><td><code>TEST_ENV</code></td><td>Human-readable environment label (<code>dev</code>, <code>qa</code>, <code>prod</code>).</td></tr>
+            <tr><td><code>WEB_BASE_URL</code></td><td>Web UI entrypoint used by Playwright navigation. Example: <code>http://sut.testlab:3000</code>.</td></tr>
+            <tr><td><code>API_BASE_URL</code></td><td>API entrypoint used by API setup/login. Example: <code>http://sut.testlab:3001/api</code>.</td></tr>
+            <tr><td><code>RW_USER_EMAIL</code>, <code>RW_USER_PASSWORD</code></td><td>Optional credentials used by global setup (if enabled).</td></tr>
+            <tr><td>Legacy compatibility</td><td><code>BASE_URL</code> may exist for older scripts. Prefer <code>WEB_BASE_URL</code>.</td></tr>
+          </table>
+
+          <h3>How to choose an environment (recommended patterns)</h3>
+
+          <p class="rule good">
+            <strong>Recommended:</strong> use <code>dotenvx</code> to load an explicit env file per run. This mirrors CI behavior and avoids “my terminal had old variables.”
+          </p>
+
+          <pre><code># Dev
+dotenvx run -f .env.dev -- npx playwright test
+
+# QA
+dotenvx run -f .env.qa -- npx playwright test
+
+# Prod (example)
+dotenvx run -f .env.prod -- npx playwright test</code></pre>
+
+          <h3>How to confirm you loaded the right environment</h3>
+          <pre><code>dotenvx run -f .env.qa -- bash -lc 'echo "TEST_ENV=$TEST_ENV"; echo "WEB_BASE_URL=$WEB_BASE_URL"; echo "API_BASE_URL=$API_BASE_URL"'</code></pre>
+
+          <h3>Optional: load an environment into your current shell (use carefully)</h3>
+          <p class="mini">
+            This approach is convenient, but it can cause confusion if you forget what is currently loaded.
+            Prefer <code>dotenvx run -f ...</code> for repeatability.
+          </p>
+          <pre><code># zsh / bash
+set -a
+source .env.qa
+set +a
+
+echo "TEST_ENV=$TEST_ENV"
+echo "WEB_BASE_URL=$WEB_BASE_URL"
+echo "API_BASE_URL=$API_BASE_URL"</code></pre>
+
+          <details class="private">
+            <summary>Private (operator): common new hire mistakes and fixes</summary>
+            <pre><code># Mistake: "echo WEB_BASE_URL is blank"
+# Cause: .env file not loaded into current process environment.
+# Fix: use dotenvx run -f .env.qa -- ...
+
+# Mistake: "tests hit localhost and pass"
+# Cause: local service or port forward makes localhost look like SUT.
+# Fix: run localhost negative proof; remove port forwards.
+
+# Mistake: "API login fails"
+# Cause: API_BASE_URL wrong (missing /api) or credentials incorrect.
+# Fix: confirm API_BASE_URL, then curl API_BASE_URL/tags, then validate RW creds.
+</code></pre>
           </details>
+        </div>
+      </section>
 
-          <h3 style="margin-top: 14px;">Confirm values (runner)</h3>
-          <pre><code>echo "SUT_HOST=$SUT_HOST"
-echo "SUT_PORT=$SUT_PORT"
-echo "BASE_URL=$BASE_URL"</code></pre>
+      <div class="divider"></div>
 
-          <h3 style="margin-top: 14px;">DNS resolution proof (runner)</h3>
+      <section id="dependencies">
+        <div class="card">
+          <h2>Dependencies</h2>
+
+          <h3>Required prerequisites</h3>
+          <ul>
+            <li><strong>SUT is running</strong> and services are bound to a reachable interface (not loopback-only).</li>
+            <li><strong>CI runner network can reach the SUT</strong> (routed LAN/VPN, correct runner tags, firewall rules in place).</li>
+            <li><strong>Stable naming is configured</strong> for the SUT hostname (DNS or hosts injection).</li>
+            <li><strong>No port-forwards</strong> that make SUT web/api reachable via localhost in CI.</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Runbook 00 relationship:</strong>
+            Runbook 00 establishes deterministic SSH access to the VM via localhost port-forwarding for baseline setup.
+            Runbook 01 (and this CI variant) are where you prove <em>runner → SUT</em> reachability and stable naming for the app stack.
+          </div>
+
+          <details class="private">
+            <summary>Private (operator): how CI gets sut.testlab resolution</summary>
+            <pre><code># Option 1: Real DNS (preferred)
+# - sut.testlab is resolvable via lab DNS/VPN DNS for CI runners.
+
+# Option 2: Inject hosts mapping (common)
+# - GitLab Runner host: /etc/hosts entry for sut.testlab
+# - Docker executor: add-host/extra_hosts (runner-level config)
+# - Kubernetes: hostAliases or cluster DNS record (private)
+
+# Note: "Operator mode hidden HTML" is not secrecy. Keep private evidence in a private repo.
+</code></pre>
+          </details>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section id="env-contract">
+        <div class="card">
+          <h2>Environment contract (the “real” variables this framework uses)</h2>
+
           <p class="mini">
-            Use the runner-native resolver tool. macOS differs from Linux.
+            This project uses environment files (e.g., <code>.env.dev</code>, <code>.env.qa</code>, <code>.env.prod</code>)
+            that define <code>TEST_ENV</code>, <code>WEB_BASE_URL</code>, and <code>API_BASE_URL</code>.
+            Some legacy scripts may still read <code>BASE_URL</code>; treat it as optional compatibility only.
           </p>
-          <pre><code># macOS
-dscacheutil -q host -a name "${SUT_HOST}"
 
-# portable fallbacks (if installed)
-getent hosts "${SUT_HOST}" || nslookup "${SUT_HOST}" || dig +short "${SUT_HOST}"</code></pre>
+          <pre><code># Required (preferred)
+export TEST_ENV="qa"
+export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
 
-          <h3 style="margin-top: 14px;">Localhost negative proof (runner)</h3>
+# Optional (compatibility only)
+export BASE_URL="${WEB_BASE_URL}"</code></pre>
+
+          <h3 style="margin-top:14px;">Confirm values (CI)</h3>
+          <pre><code>echo "Runner host: $(hostname)"
+echo "TEST_ENV=${TEST_ENV}"
+echo "WEB_BASE_URL=${WEB_BASE_URL}"
+echo "API_BASE_URL=${API_BASE_URL}"</code></pre>
+
+          <details class="private">
+            <summary>Private (operator): derived host/ports for TCP/DNS checks</summary>
+            <pre><code># Derive SUT_HOST from WEB_BASE_URL when you need name resolution/TCP checks:
+SUT_HOST="$(echo "$WEB_BASE_URL" | sed -E 's#^https?://([^:/]+).*#\1#')"
+echo "SUT_HOST=$SUT_HOST"
+
+# Derive ports (default Conduit):
+WEB_PORT="3000"
+API_PORT="3001"</code></pre>
+          </details>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section id="proof-blocks">
+        <div class="card">
+          <h2>Proof blocks (CI, fail-fast)</h2>
+
           <p class="mini">
-            Deterministic: this block FAILS if localhost returns HTTP, PASS if it refuses/timeouts.
+            These blocks are written to match the actual environment contract (<code>WEB_BASE_URL</code>, <code>API_BASE_URL</code>).
+            Where we need <code>SUT_HOST</code> or ports, we derive them deterministically.
           </p>
-          <pre><code># PASS if curl fails (connection refused/timeout). FAIL if curl succeeds.
-curl -fsS --max-time 2 "http://localhost:${SUT_PORT}/" >/dev/null \
+
+          <h3>0) Derive SUT_HOST + ports (CI)</h3>
+          <pre><code># Derive host from WEB_BASE_URL
+SUT_HOST="$(echo "$WEB_BASE_URL" | sed -E 's#^https?://([^:/]+).*#\1#')"
+WEB_PORT="3000"
+API_PORT="3001"
+
+echo "SUT_HOST=${SUT_HOST}"
+echo "WEB_PORT=${WEB_PORT}"
+echo "API_PORT=${API_PORT}"</code></pre>
+
+          <div class="divider"></div>
+
+          <h3>1) Name resolution proof (CI)</h3>
+          <p class="mini">Proves the CI runner can resolve the SUT hostname.</p>
+          <pre><code>getent hosts "${SUT_HOST}" \
+  || nslookup "${SUT_HOST}" \
+  || dig +short "${SUT_HOST}"</code></pre>
+
+          <div class="divider"></div>
+
+          <h3>2) Localhost HTTP negative proof (CI)</h3>
+          <p class="mini">
+            Deterministic: FAIL if localhost returns HTTP for the web port. PASS if connection refused/timeout.
+          </p>
+          <pre><code>curl -fsS --max-time 2 "http://localhost:${WEB_PORT}/" >/dev/null \
   && { echo "FAIL: localhost returned HTTP (boundary bypass)"; exit 1; } \
   || echo "PASS: localhost did not respond (boundary enforced)"</code></pre>
 
-          <h3 style="margin-top: 14px;">Remote HTTP positive proof (runner)</h3>
-          <pre><code>curl -sS -I "${BASE_URL}/" | head -n 1
-curl -sS -o /dev/null -D - --max-time 3 "${BASE_URL}/" | head -n 12</code></pre>
+          <details class="private">
+            <summary>Private (operator): local listener diagnostics (if localhost succeeds)</summary>
+            <pre><code># If localhost unexpectedly succeeds, identify the listener.
+# Linux:
+ss -lntp | egrep ":(3000|3001)\b" || true
 
-          <h3 style="margin-top: 14px;">TCP transport validation (runner)</h3>
-          <pre><code># hostname-first
-nc -vz -w 2 "${SUT_HOST}" "${SUT_PORT}"</code></pre>
-
-          <details>
-            <summary>Private (operator): TCP by IP (if needed)</summary>
-            <pre><code># nc -vz -w 2 "${SUT_IP}" "${SUT_PORT}"</code></pre>
+# macOS runner host:
+lsof -nP -iTCP:3000 -sTCP:LISTEN || true
+lsof -nP -iTCP:3001 -sTCP:LISTEN || true</code></pre>
           </details>
 
-          <h3 style="margin-top: 14px;">Network routing validation (runner, macOS)</h3>
-          <pre><code># If you are using SUT_IP in private notes:
-# route -n get "${SUT_IP}" | egrep 'destination|gateway|interface'
+          <div class="divider"></div>
 
-# (optional) show active interfaces (sanitized in public pages)
-ifconfig | sed -n '1,60p'</code></pre>
+          <h3>3) TCP transport proof (CI)</h3>
+          <p class="mini">Success condition: exit code <code>0</code> for both handshakes.</p>
+          <pre><code>nc -vz -w 2 "${SUT_HOST}" "${WEB_PORT}"; echo "exit_code=$?"
+nc -vz -w 2 "${SUT_HOST}" "${API_PORT}"; echo "exit_code=$?"</code></pre>
 
           <div class="divider"></div>
 
-          <h3>Automation proof (runner)</h3>
-          <pre><code>BASE_URL="http://sut.testlab:3001" \
-npx playwright test tests/e2e/todo.core.todo.spec.js -g "TODO\.NEW\.001"</code></pre>
+          <h3>4) Remote identity proof (CI)</h3>
+
+          <h3 style="margin-top:10px;">Web UI identity (Conduit)</h3>
+          <pre><code>curl -sS -I "${WEB_BASE_URL}/" | head -n 1
+curl -sS "${WEB_BASE_URL}/" | grep -i "&lt;title" | head -n 1</code></pre>
+
+          <h3 style="margin-top:10px;">API identity (Conduit)</h3>
+          <pre><code>curl -sS -I "${API_BASE_URL}/tags" | head -n 1
+curl -sS "${API_BASE_URL}/tags" | head -c 200</code></pre>
 
           <div class="divider"></div>
 
-          <h3>CI proof block (job log)</h3>
-          <pre><code>echo "Runner host: $(hostname)"
-echo "BASE_URL=${BASE_URL}"
-curl -sS -I "${BASE_URL}/" | head -n 1</code></pre>
-
-          <p class="mini" style="margin-top: 12px;">
-            Public rule: sanitize hostnames and LAN IPs if publishing outputs publicly.
-            Private blocks may contain actuals.
+          <h3>5) Automation proof (CI)</h3>
+          <p class="mini">
+            Replace the spec path/tag with your actual Sprint 1 connectivity spec.
+            Contract: load <code>${WEB_BASE_URL}</code> and assert a Conduit UI signature (e.g., navbar contains “conduit”).
           </p>
+          <pre><code>dotenvx run -f .env.qa -- \
+npx playwright test specs/sprint1/Sprint1.runner-to-sut.connectivity.spec.js \
+  -g "RW.NET.001" \
+  --project=chromium \
+  --reporter=line</code></pre>
+
+          <details class="private">
+            <summary>Private (operator): strict guardrail (fail if WEB_BASE_URL is localhost)</summary>
+            <pre><code>echo "${WEB_BASE_URL}" | grep -qi "localhost" \
+  && { echo "FAIL: WEB_BASE_URL points to localhost"; exit 1; } \
+  || echo "PASS: WEB_BASE_URL is not localhost"</code></pre>
+          </details>
         </div>
       </section>
 
       <div class="divider"></div>
 
-      <section id="expected">
+      <section id="gitlab">
         <div class="card">
-          <h2>Expected outputs (logs, screenshots, artifacts)</h2>
+          <h2>GitLab CI job snippet (drop-in)</h2>
 
-          <table class="table">
-            <tr>
-              <td>DNS resolution proof</td>
-              <td><code>${SUT_HOST}</code> resolves to the intended SUT host.</td>
-            </tr>
-            <tr>
-              <td>Localhost negative proof</td>
-              <td>
-                <strong>Expected:</strong> localhost does not respond (curl fails / timeout / refused).
-                <br />
-                <strong>Red flag:</strong> localhost returns HTTP (boundary is being bypassed).
-              </td>
-            </tr>
-            <tr>
-              <td>Remote HTTP positive proof</td>
-              <td>An <code>HTTP/1.1</code> status line returned from the SUT (example: <code>200 OK</code>).</td>
-            </tr>
-            <tr>
-              <td>TCP transport validation</td>
-              <td>TCP handshake succeeds (example: <code>succeeded</code>).</td>
-            </tr>
-            <tr>
-              <td>Automation proof</td>
-              <td>A Playwright test passes while targeting <code>${BASE_URL}</code>.</td>
-            </tr>
-          </table>
-
-          <p class="mini" style="margin-top: 12px;">
-            Store evidence as sanitized snippets or screenshots. Avoid publishing internal tokens, credentials,
-            or network fingerprint details.
+          <p class="mini">
+            This job loads a specific env file and then runs the proof blocks and one Playwright proof test.
+            Adjust tags/image to match your runner. Keep secrets masked.
           </p>
+
+          <pre><code>ci_runner_to_sut_proof:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.47.2-jammy
+  script:
+    # Load QA env (choose dev/qa/prod as appropriate)
+    - dotenvx run -f .env.qa -- bash -lc '
+        echo "Runner host: $(hostname)";
+        echo "TEST_ENV=$TEST_ENV";
+        echo "WEB_BASE_URL=$WEB_BASE_URL";
+        echo "API_BASE_URL=$API_BASE_URL";
+
+        SUT_HOST="$(echo "$WEB_BASE_URL" | sed -E "s#^https?://([^:/]+).*#\\1#")";
+        WEB_PORT="3000";
+        API_PORT="3001";
+
+        echo "SUT_HOST=$SUT_HOST";
+
+        # Name resolution proof
+        getent hosts "$SUT_HOST" || nslookup "$SUT_HOST" || dig +short "$SUT_HOST";
+
+        # Localhost HTTP negative proof
+        curl -fsS --max-time 2 "http://localhost:$WEB_PORT/" >/dev/null \
+          && { echo "FAIL: localhost returned HTTP (boundary bypass)"; exit 1; } \
+          || echo "PASS: localhost did not respond (boundary enforced)";
+
+        # TCP transport proof
+        nc -vz -w 2 "$SUT_HOST" "$WEB_PORT";
+        nc -vz -w 2 "$SUT_HOST" "$API_PORT";
+
+        # Remote identity proof
+        curl -sS -I "$WEB_BASE_URL/" | head -n 1;
+        curl -sS "$WEB_BASE_URL/" | grep -i "<title" | head -n 1;
+
+        curl -sS -I "$API_BASE_URL/tags" | head -n 1;
+        curl -sS "$API_BASE_URL/tags" | head -c 200;
+
+        # Automation proof (single proof test)
+        npx playwright test specs/sprint1/Sprint1.runner-to-sut.connectivity.spec.js -g "RW.NET.001" --project=chromium --reporter=line
+      '
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - playwright-report/
+      - test-results/</code></pre>
+
+          <details class="private">
+            <summary>Private (operator): runner/network gating notes</summary>
+            <pre><code># If CI cannot reach the SUT:
+# - Tag job to a runner on the correct network segment.
+# - Ensure VPN is active on the runner host if required.
+# - Confirm firewall rules allow runner → SUT on 3000/3001.
+# - Ensure SUT services are exposed on 0.0.0.0 and mapped correctly in docker-compose.</code></pre>
+          </details>
         </div>
       </section>
 
@@ -365,34 +610,40 @@ curl -sS -I "${BASE_URL}/" | head -n 1</code></pre>
 
       <section id="failure-modes">
         <div class="card">
-          <h2>Failure modes + how to diagnose</h2>
+          <h2>Failure modes + diagnosis</h2>
 
-          <h3>Localhost succeeds unexpectedly</h3>
-          <p><strong>Symptom:</strong> localhost returns HTTP (negative proof fails).</p>
-          <p><strong>Diagnosis:</strong> a local service is listening on the runner, or a proxy/forward is masking the boundary.</p>
-
-          <div class="divider"></div>
-
-          <h3>Remote hostname does not resolve</h3>
-          <p><strong>Symptom:</strong> DNS resolution fails or resolves to an unintended host.</p>
-          <p><strong>Diagnosis (runner):</strong></p>
-          <pre><code>dscacheutil -q host -a name sut.testlab
-nslookup sut.testlab || true</code></pre>
-          <p><strong>Action:</strong> correct the mapping (e.g., <code>/etc/hosts</code> on the runner) to the intended SUT.</p>
+          <h3>Environment not loaded (variables are blank)</h3>
+          <p><strong>Symptom:</strong> <code>WEB_BASE_URL</code> or <code>API_BASE_URL</code> is empty in logs.</p>
+          <p><strong>Likely cause:</strong> you ran without <code>dotenvx run -f .env.&lt;env&gt;</code> or without sourcing an env file.</p>
+          <p><strong>Action:</strong> re-run using the explicit env file load pattern.</p>
 
           <div class="divider"></div>
 
-          <h3>TCP connection fails</h3>
-          <p><strong>Symptom:</strong> <code>nc</code> reports timeout or connection refused.</p>
-          <p><strong>Diagnosis:</strong> service is down, port is not exposed, or traffic is blocked.</p>
-          <p><strong>Action:</strong> verify service state on the SUT, confirm port exposure, and review firewall controls.</p>
+          <h3>Name resolution fails in CI</h3>
+          <p><strong>Symptom:</strong> <code>getent/nslookup/dig</code> returns nothing or errors.</p>
+          <p><strong>Likely cause:</strong> CI runner not using the same DNS/hosts mapping as local runner.</p>
+          <p><strong>Action:</strong> inject hosts mapping at runner level or move job to a runner with correct DNS/VPN.</p>
 
           <div class="divider"></div>
 
-          <h3>Service bound to loopback on SUT</h3>
-          <p><strong>Symptom:</strong> service responds locally on the SUT but is unreachable from the runner.</p>
-          <p><strong>Diagnosis:</strong> service is listening on <code>127.0.0.1:${SUT_PORT}</code> only.</p>
-          <p><strong>Action:</strong> bind to <code>0.0.0.0</code> or the LAN interface and restart the service.</p>
+          <h3>Localhost HTTP negative proof fails (localhost returns HTTP)</h3>
+          <p><strong>Symptom:</strong> localhost responds with <code>200</code>/<code>30x</code>.</p>
+          <p><strong>Likely cause:</strong> port-forward/proxy/local listener is bypassing the intended boundary.</p>
+          <p><strong>Action:</strong> identify the listener, disable port-forwards, and re-run.</p>
+
+          <div class="divider"></div>
+
+          <h3>TCP handshake fails</h3>
+          <p><strong>Symptom:</strong> <code>nc</code> times out or refuses.</p>
+          <p><strong>Likely cause:</strong> SUT service down, port not exposed, or firewall segmentation.</p>
+          <p><strong>Action:</strong> confirm SUT services are healthy and bound to a reachable interface; verify runner routing/firewall.</p>
+
+          <div class="divider"></div>
+
+          <h3>HTTP succeeds but identity is wrong</h3>
+          <p><strong>Symptom:</strong> status line is OK, but title/JSON does not match Conduit.</p>
+          <p><strong>Likely cause:</strong> wrong host mapping, proxy/captive portal, or wrong port routing.</p>
+          <p><strong>Action:</strong> re-check name resolution source and validate SUT port mappings.</p>
         </div>
       </section>
 
@@ -402,22 +653,70 @@ nslookup sut.testlab || true</code></pre>
         <div class="card">
           <h2>Why it matters (production relevance)</h2>
           <p>
-            This validation eliminates false confidence caused by localhost coupling and shared execution
-            environments. By enforcing a real network boundary early, subsequent automation results reflect
-            deployment conditions: name resolution, routing, port exposure, and service availability.
+            CI is the enforcement point for release confidence. If CI can only pass by targeting localhost, the pipeline is validating
+            a coupled execution environment rather than deployment reality. This runbook forces proof of name resolution, routing,
+            and port exposure—exactly the surfaces that fail in production.
           </p>
           <p>
-            Failures observed after this point represent genuine infrastructure or application issues rather
-            than test-environment artifacts, improving diagnosability, change safety, and release confidence.
+            When this runbook passes, subsequent failures are far more likely to represent genuine application or infrastructure issues
+            rather than “works on my machine” artifacts. That improves diagnosability, change safety, and gate credibility.
           </p>
+
+          <div class="callout">
+            <strong>Public vs operator:</strong> Hiding operator blocks in HTML is not secrecy. If an artifact contains LAN IPs,
+            key fingerprints, internal hostnames, or tokens, store it in a private repo and/or private CI artifacts.
+          </div>
         </div>
       </section>
 
       <footer>
         <div class="mini">
-          Runbooks are command/expected-output documents. Public sections are sanitized. Private sections contain operator notes and are not intended for public sharing.
+          Runbooks are command/expected-output documents. Public mode is sanitized. Operator mode contains private notes and is not a security boundary.
         </div>
       </footer>
     </div>
+
+    <script>
+      (function () {
+        const KEY = "qa_test_lab_mode";
+        const params = new URLSearchParams(window.location.search);
+
+        function setMode(mode) {
+          const isPrivate = mode === "private";
+          document.body.classList.toggle("mode-private", isPrivate);
+
+          const badge = document.getElementById("modeBadge");
+          if (badge) badge.textContent = isPrivate ? "Mode: Operator" : "Mode: Public";
+
+          const btn = document.getElementById("modeToggle");
+          if (btn) btn.setAttribute("aria-pressed", String(isPrivate));
+
+          try { localStorage.setItem(KEY, mode); } catch {}
+        }
+
+        const urlMode = params.get("mode");
+        const savedMode = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
+
+        const initial = (urlMode === "private" || urlMode === "public")
+          ? urlMode
+          : (savedMode === "private" || savedMode === "public")
+            ? savedMode
+            : "public";
+
+        setMode(initial);
+
+        const btn = document.getElementById("modeToggle");
+        if (btn) {
+          btn.addEventListener("click", function () {
+            const next = document.body.classList.contains("mode-private") ? "public" : "private";
+            setMode(next);
+
+            const p = new URLSearchParams(window.location.search);
+            p.set("mode", next);
+            history.replaceState(null, "", window.location.pathname + "?" + p.toString() + window.location.hash);
+          });
+        }
+      })();
+    </script>
   </body>
 </html>

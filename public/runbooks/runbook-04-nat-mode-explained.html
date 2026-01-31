@@ -1,0 +1,413 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sprint 4 Addendum — Privacy-Safe CI Mode</title>
+    <meta
+      name="description"
+      content="Sprint 4 addendum documenting the intentional use of NAT + port forwarding + SSH tunneling for privacy-safe CI recordings (QA Test Lab)."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(11, 14, 20, 0.78);
+    border-bottom: 1px solid var(--border);
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 18px 18px 54px; }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 12px 0;
+  }
+  .brand { font-weight: 750; letter-spacing: 0.2px; }
+  .navlinks { display: flex; gap: 10px; flex-wrap: wrap; font-size: 14px; }
+  .pill {
+    display: inline-block;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 7px 10px;
+    border-radius: 999px;
+  }
+
+  .hero { padding: 14px 0 0; }
+  .h1 {
+    font-size: 34px;
+    line-height: 1.15;
+    margin: 0 0 8px;
+    letter-spacing: -0.5px;
+  }
+  .lead {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 900px;
+    margin: 0;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 18px 0; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  h2 { margin: 0 0 10px; font-size: 18px; }
+  h3 { margin: 0 0 8px; font-size: 15px; }
+  p { margin: 8px 0 0; color: var(--muted); line-height: 1.7; }
+  ul { margin: 8px 0 0 18px; color: var(--muted); }
+  li { margin: 6px 0; }
+
+  .kpi {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .kpi span {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 10px;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 13px;
+  }
+  .mini { font-size: 13px; color: var(--muted); }
+
+  pre {
+    margin: 10px 0 0;
+    white-space: pre;
+    overflow-x: auto;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 12px;
+  }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
+    font-size: 13px;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .table td {
+    border-top: 1px solid var(--border);
+    padding: 10px 6px;
+    vertical-align: top;
+  }
+  .table td:first-child { color: var(--muted); width: 260px; }
+
+  footer {
+    margin-top: 26px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 14px;
+  }
+  section { scroll-margin-top: 84px; }
+  @media (max-width: 920px) {
+    .h1 { font-size: 28px; }
+  }
+</style>
+```
+
+  </head>
+
+  <body>
+    <div class="nav">
+      <div class="wrap">
+        <div class="nav-inner">
+          <div class="brand">QA Test Lab</div>
+          <div class="navlinks">
+            <a class="pill" href="../">Home</a>
+            <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#topology">Topology</a>
+            <a class="pill" href="#contract">Contract</a>
+            <a class="pill" href="#commands">Commands</a>
+            <a class="pill" href="#failure-modes">Failure modes</a>
+            <a class="pill" href="#why">Interview framing</a>
+            <a class="pill" href="#exit">Exit criteria</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+```
+<div class="wrap">
+  <section class="hero">
+    <div class="h1">Sprint 4 Addendum — Privacy-Safe CI Mode</div>
+    <p class="lead">
+      Documents the <strong>intentional, temporary</strong> operating mode used during Sprint 4 recordings:
+      keep the SUT isolated behind <strong>VirtualBox NAT + port forwarding</strong>, and reach it from a separate
+      CI runner via an <strong>explicit SSH tunnel</strong>. This protects private network details while preserving
+      real network boundaries.
+    </p>
+    <div class="kpi">
+      <span>NAT isolation</span>
+      <span>loopback-only ports</span>
+      <span>SSH tunnel bridge</span>
+      <span>no LAN identifiers on video</span>
+      <span>diagnosable failures</span>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="objective">
+    <div class="card">
+      <h2>Objective + success criteria</h2>
+      <p>
+        <strong>Objective:</strong> enable Sprint 4 video recordings and public artifacts without disclosing
+        LAN IP ranges, hostnames, or internal topology, while maintaining a real runner → SUT network boundary.
+      </p>
+      <p style="margin-top: 12px;"><strong>Success criteria:</strong></p>
+      <ul>
+        <li>All logs and recordings reference <code>127.0.0.1</code> only (no LAN IPs or private hostnames)</li>
+        <li>CI runner and SUT remain on separate machines (no localhost illusions)</li>
+        <li>Connectivity is explicit (tunnel is required; failures are fast and diagnosable)</li>
+        <li>SUT remains isolated behind NAT until Sprint 4 recording is complete</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="topology">
+    <div class="card">
+      <h2>Topology (Sprint 4)</h2>
+      <table class="table">
+        <tr>
+          <td>Old Mac mini</td>
+          <td>
+            Hosts the <strong>SUT</strong>: VirtualBox VM + Docker Compose (Conduit). Networking is <strong>NAT</strong>.
+            Access is via <strong>port forwarding bound to loopback</strong>.
+          </td>
+        </tr>
+        <tr>
+          <td>New Mac mini / MacBook Pro</td>
+          <td>
+            Hosts the <strong>CI runner</strong> only. No VirtualBox. Must reach the SUT via an <strong>SSH tunnel</strong>
+            (runner → old-mac → VM).
+          </td>
+        </tr>
+        <tr>
+          <td>Key principle</td>
+          <td>
+            CI does not “guess” networks. CI uses a <strong>declared contract</strong> and fails fast when the contract is broken.
+          </td>
+        </tr>
+      </table>
+      <p class="mini" style="margin-top: 10px;">
+        This mode is temporary: after Sprint 4 recording, the VM will switch to bridged networking.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="contract">
+    <div class="card">
+      <h2>Network contract</h2>
+      <p>
+        The recording-safe contract is loopback-only. Port forwarding is configured on the SUT host (old Mac mini),
+        and the runner consumes the same endpoints through the tunnel.
+      </p>
+      <table class="table">
+        <tr>
+          <td>API</td>
+          <td><code>http://127.0.0.1:3001/api</code></td>
+        </tr>
+        <tr>
+          <td>Web</td>
+          <td><code>http://127.0.0.1:3000</code></td>
+        </tr>
+        <tr>
+          <td>SSH (VM access)</td>
+          <td><code>ssh -p 2222 sut@127.0.0.1</code> (on the SUT host)</td>
+        </tr>
+      </table>
+      <p class="mini" style="margin-top: 10px;">
+        Note: <code>127.0.0.1</code> here is “local” to whichever machine is consuming the contract.
+        The tunnel makes the contract true on the runner without exposing LAN details.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="commands">
+    <div class="card">
+      <h2>Exact commands</h2>
+
+      <h3>Start SUT services (inside the VM)</h3>
+      <pre><code>cd ~/conduit
+```
+
+docker compose up -d
+docker compose ps</code></pre>
+
+```
+      <h3 style="margin-top: 14px;">Open the tunnel (run on the CI runner)</h3>
+      <p class="mini" style="margin-top: 10px;">
+        The runner must bridge to the old Mac mini (SUT host). Keep this tunnel open for the duration of the run.
+      </p>
+      <pre><code>ssh -N \
+```
+
+-L 3001:127.0.0.1:3001 
+-L 3000:127.0.0.1:3000 
+-p 2222 sut@<OLD_MAC_MINI_HOST></code></pre>
+
+```
+      <h3 style="margin-top: 14px;">Runner preflight (fast fail)</h3>
+      <pre><code>nc -z 127.0.0.1 3001 || (echo "API tunnel down" && exit 2)
+```
+
+nc -z 127.0.0.1 3000 || (echo "WEB tunnel down" && exit 2)
+
+curl -fsS --max-time 3 [http://127.0.0.1:3001/api/tags](http://127.0.0.1:3001/api/tags) >/dev/null
+curl -fsS --max-time 3 [http://127.0.0.1:3000/](http://127.0.0.1:3000/) >/dev/null</code></pre>
+
+```
+      <h3 style="margin-top: 14px;">CI environment variables</h3>
+      <pre><code>API_BASE_URL=http://127.0.0.1:3001/api
+```
+
+WEB_BASE_URL=[http://127.0.0.1:3000](http://127.0.0.1:3000)</code></pre>
+
+```
+      <p class="mini" style="margin-top: 12px;">
+        During Sprint 4 recording, prefer <code>127.0.0.1</code> endpoints to keep artifacts and logs sanitized.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="failure-modes">
+    <div class="card">
+      <h2>Failure modes + how to diagnose</h2>
+
+      <h3>Tunnel not established (most common)</h3>
+      <p><strong>Symptom:</strong> runner shows <code>connection refused</code> to <code>127.0.0.1:3000/3001</code>.</p>
+      <p><strong>Diagnosis:</strong> verify tunnel process is running and forwarding the correct ports.</p>
+      <pre><code>ps aux | grep "ssh -N" | grep -v grep || true
+```
+
+nc -vz 127.0.0.1 3001
+nc -vz 127.0.0.1 3000</code></pre> <p><strong>Action:</strong> re-run the tunnel command and keep it open for the duration of the job.</p>
+
+```
+      <div class="divider"></div>
+
+      <h3>SUT not running in the VM</h3>
+      <p><strong>Symptom:</strong> tunnel is up but HTTP checks fail (5xx/connection errors).</p>
+      <p><strong>Diagnosis:</strong> SSH to VM and confirm containers are healthy.</p>
+      <pre><code>ssh -p 2222 sut@127.0.0.1
+```
+
+cd ~/conduit
+docker compose ps
+curl -fsS [http://127.0.0.1:3001/api/tags](http://127.0.0.1:3001/api/tags) | head
+curl -fsS [http://127.0.0.1:3000/](http://127.0.0.1:3000/) | head</code></pre> <p><strong>Action:</strong> start services with <code>docker compose up -d</code> and re-check.</p>
+
+```
+      <div class="divider"></div>
+
+      <h3>Name resolves to LAN IP (leaks topology + breaks NAT model)</h3>
+      <p><strong>Symptom:</strong> CI tries <code>sut.testlab</code> and times out to a LAN address.</p>
+      <p><strong>Diagnosis:</strong> inspect name resolution on the runner.</p>
+      <pre><code>dscacheutil -q host -a name sut.testlab || true
+```
+
+# /etc/hosts entry may point to a private LAN IP — avoid during Sprint 4</code></pre>
+
+```
+      <p><strong>Action:</strong> use loopback contract (<code>127.0.0.1</code>) for Sprint 4 recordings.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="why">
+    <div class="card">
+      <h2>Why it matters (interview framing)</h2>
+      <p>
+        This mode demonstrates mature quality engineering under real constraints:
+      </p>
+      <ul>
+        <li><strong>Security posture:</strong> prevents accidental disclosure of internal network details during demos.</li>
+        <li><strong>Explicit contracts:</strong> CI uses declared endpoints and fails fast when connectivity is broken.</li>
+        <li><strong>Real boundary:</strong> runner and SUT remain separate systems; the tunnel is the controlled bridge.</li>
+        <li><strong>Diagnosability:</strong> timeouts vs refused connections map to specific layers and corrective actions.</li>
+      </ul>
+      <p class="mini" style="margin-top: 12px;">
+        This mirrors production access patterns (bastions, VPNs, SSH tunnels) where systems are reachable only through controlled entry points.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="exit">
+    <div class="card">
+      <h2>Exit criteria (post Sprint 4)</h2>
+      <p>
+        After Sprint 4 recording is complete, switch the VM from NAT to <strong>bridged</strong> networking to enable
+        LAN-routable CI without tunnels.
+      </p>
+      <ul>
+        <li>Change VM network adapter: NAT → Bridged</li>
+        <li>Expose SUT endpoints on the LAN (no loopback-only constraint)</li>
+        <li>Update name resolution (e.g., <code>sut.testlab</code>) to the SUT host LAN IP</li>
+        <li>Remove the SSH tunnel requirement from CI</li>
+      </ul>
+      <p class="mini" style="margin-top: 12px;">
+        This transition is deliberate and documented to keep recordings sanitized and the lab realistic when privacy constraints are lifted.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="mini">
+      Addenda document operating-mode constraints and rationale. Examples are sanitized for public sharing.
+    </div>
+  </footer>
+</div>
+```
+
+  </body>
+</html>

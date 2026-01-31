@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 05 — Test data + state reset (idempotent runs)</title>
+    <meta
+      name="description"
+      content="Runbook 05 — Test data + state reset. Proves runs are repeatable, idempotent, and parallel-friendly by seeding state via API and validating UI reads without hidden test dependencies."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 20px 18px 54px; }
+      .topbar {
+        position: sticky; top: 0; z-index: 10;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar-inner { display:flex; justify-content:space-between; gap:12px; padding: 12px 0; flex-wrap: wrap; }
+      .brand { font-weight: 750; }
+      .pill {
+        display:inline-block; border:1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        padding: 7px 10px; border-radius: 999px; font-size: 13px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 14px;
+      }
+      h1 { margin: 10px 0 0; font-size: 24px; }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      h3 { margin: 0 0 10px; font-size: 16px; }
+      p { margin: 10px 0; color: var(--muted); line-height: 1.6; }
+      ul { margin: 10px 0 0 18px; color: var(--muted); }
+      li { margin: 6px 0; }
+      code { color: var(--text); }
+      section { scroll-margin-top: 90px; }
+      .divider { height: 1px; background: var(--border); margin: 18px 0; }
+      .callout {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        border-radius: 12px;
+        padding: 12px 12px;
+        margin-top: 12px;
+      }
+      .tag {
+        display:inline-block; font-size: 12px; padding: 4px 8px;
+        border-radius: 999px; border: 1px solid var(--border);
+        background: rgba(255,255,255,.03); color: var(--muted);
+        margin-right: 6px;
+      }
+      pre {
+        margin: 10px 0 0;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        color: var(--muted);
+        overflow: auto;
+      }
+      .ok { color: var(--good); }
+      .warn { color: var(--warn); }
+      .bad { color: var(--bad); }
+      .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+      .table td {
+        border-top: 1px solid var(--border);
+        padding: 10px 6px;
+        vertical-align: top;
+      }
+      .table td:first-child { width: 220px; color: var(--muted); }
+      .toc { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+      footer { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 14px; color: var(--muted); font-size: 13px; }
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <div class="wrap">
+        <div class="topbar-inner">
+          <div class="brand">QA Test Lab • Runbook 05</div>
+          <div>
+            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <h1>Runbook 05 — Test data + state reset (idempotent runs)</h1>
+
+      <div class="card">
+        <h2>Quick links</h2>
+        <div class="callout" style="margin-top:10px;">
+          <span class="tag">Navigation</span>
+          <p style="margin:8px 0 0;">Skim like a checklist.</p>
+          <div class="toc">
+            <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#done">Done</a>
+            <a class="pill" href="#invariants">Invariants</a>
+            <a class="pill" href="#how">How it works</a>
+            <a class="pill" href="#commands">Commands</a>
+            <a class="pill" href="#expected">Expected outputs</a>
+            <a class="pill" href="#failures">Failure modes</a>
+            <a class="pill" href="#why">Why it matters</a>
+          </div>
+        </div>
+      </div>
+
+      <section id="objective" class="card">
+        <h2>Objective</h2>
+        <p>
+          Prove that test runs are <strong>repeatable</strong>, <strong>idempotent</strong>, and
+          <strong>parallel-friendly</strong> by controlling data and state explicitly.
+          Sprint 5 standardizes a pattern: <strong>seed state via API</strong>, then
+          <strong>validate UI reads</strong> without hidden dependencies on earlier UI steps.
+        </p>
+
+        <div class="callout">
+  <span class="tag">Verified Auth Contract</span>
+
+  <p style="margin:8px 0 0;">
+    All Sprint 5 tests rely on an explicit, verified authentication contract.
+  </p>
+
+    <ul style="margin:8px 0 0 18px;">
+        <li>
+        <strong>API state seeding</strong> uses a dedicated <code>api</code> fixture that
+        authenticates via <code>/users/login</code> and injects a JWT into every request.
+        </li>
+        <li>
+        <strong>UI navigation</strong> uses Playwright storage state generated during
+        <code>global-setup</code>, not ad-hoc login steps inside tests.
+        </li>
+        <li>
+        <strong>No test</strong> depends on another test’s execution, UI flow, or runtime state.
+        </li>
+    </ul>
+
+    <p class="mini" style="margin-top:10px;">
+        <strong>Invariant:</strong> If an API call returns <code>401</code> or <code>403</code>,
+        the failure indicates an environment or credential issue — not a flaky test.
+    </p>
+    </div>
+
+
+        <div class="callout">
+          <span class="tag">Idempotency</span>
+          <span class="tag">Parallel safety</span>
+          <span class="tag">API seeding</span>
+          <p style="margin:8px 0 0;">
+            <strong>Rule:</strong> every test must be safe to run <em>alone</em>, <em>twice</em>, or <em>in parallel</em>.
+          </p>
+        </div>
+      </section>
+
+      <section id="done" class="card">
+        <h2>What “done” means</h2>
+        <ul>
+          <li><span class="ok">✔</span> Tests create their own data (no reliance on “what’s already there”).</li>
+          <li><span class="ok">✔</span> Re-running Sprint 5 produces new independent records (no collisions).</li>
+          <li><span class="ok">✔</span> UI tests can validate API-seeded state (no UI setup flows required).</li>
+          <li><span class="ok">✔</span> Suite remains stable under CI constraints (workers=1 today; design supports >1 later).</li>
+        </ul>
+      </section>
+
+      <section id="invariants" class="card">
+        <h2>Invariants (non-negotiable)</h2>
+        <table class="table">
+          <tr>
+            <td>Unique test data</td>
+            <td>Use unique names/IDs per run to prevent collisions (e.g., timestamp + random suffix).</td>
+          </tr>
+          <tr>
+            <td>No ordering dependency</td>
+            <td>Any test can run first; no “test A must run before test B”.</td>
+          </tr>
+          <tr>
+            <td>State created via API</td>
+            <td>Prefer API seeding for speed and determinism; UI validates behavior, not setup mechanics.</td>
+          </tr>
+          <tr>
+            <td>Auth is standardized</td>
+            <td>Auth state is established once via <code>globalSetup</code> and reused via <code>storageState</code>.</td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <p style="margin:0;">
+            In this framework, uniqueness is provided by <code>helpers/testData.js</code> via
+            <code>Date.now()</code> + a random suffix. That is intentional: collisions are the enemy of repeatability.
+          </p>
+        </div>
+      </section>
+
+      <section id="how" class="card">
+        <h2>How this framework achieves repeatability</h2>
+
+        <h3 style="margin-top:10px;">1) Environment is mandatory (no hidden defaults)</h3>
+        <p>
+          <code>playwright.config.js</code> hard-fails if <code>API_BASE_URL</code> and
+          <code>WEB_BASE_URL</code>/<code>BASE_URL</code> are missing. This prevents “works on my machine” drift.
+        </p>
+
+        <h3 style="margin-top:10px;">2) Auth is created once (globalSetup) and reused</h3>
+        <p>
+          <code>fixtures/global-setup.js</code> verifies credentials via API, then performs UI login and writes
+          <code>.auth/storageState.json</code>. Unauthenticated flows use <code>.auth/emptyState.json</code>.
+        </p>
+
+        <h3 style="margin-top:10px;">3) Test data is unique by default</h3>
+        <p>
+          <code>helpers/testData.js</code> generates unique article data on demand. This prevents
+          collisions when tests re-run or multiple tests create articles in the same suite run.
+        </p>
+
+        <h3 style="margin-top:10px;">4) API seeds state; UI proves it renders correctly</h3>
+        <p>
+          Sprint 5 uses the API client (<code>helpers/apiClient.js</code>) to create an article,
+          then navigates via UI to confirm the article appears and can be opened.
+        </p>
+
+        <div class="callout">
+          <span class="tag">Key idea</span>
+          <p style="margin:8px 0 0;">
+            UI tests should validate the product, not waste time performing setup steps that the API can do deterministically.
+          </p>
+        </div>
+      </section>
+
+      <section id="commands" class="card">
+        <h2>Commands</h2>
+        <p>Set the canonical environment variables:</p>
+        <pre>export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
+export RW_USER_EMAIL="YOUR_USER_EMAIL"
+export RW_USER_PASSWORD="YOUR_USER_PASSWORD"</pre>
+
+        <div class="divider"></div>
+
+        <p>Run Sprint 5 only:</p>
+        <pre>npx playwright test specs/sprint5 --project=auth-chromium --workers=1 --reporter=line</pre>
+
+        <p>Run a single Sprint 5 test by grep:</p>
+        <pre>npx playwright test specs/sprint5 --project=auth-chromium -g "S5.003" --workers=1 --reporter=line</pre>
+
+        <div class="callout">
+          <p style="margin:0;">
+            Tip: Sprint 5 should be safe to run multiple times back-to-back. That is the point.
+          </p>
+        </div>
+      </section>
+
+      <section id="expected" class="card">
+        <h2>Expected outputs</h2>
+        <ul>
+          <li><span class="ok">✔</span> <strong>S5.001</strong> creates an article via API and navigates to it successfully.</li>
+          <li><span class="ok">✔</span> <strong>S5.002</strong> creates two independent articles (distinct slugs).</li>
+          <li><span class="ok">✔</span> <strong>S5.003</strong> shows the UI can render an API-created article in Global Feed and open it.</li>
+          <li><span class="ok">✔</span> Failures generate <strong>trace/video/screenshot</strong> because <code>use.trace/video/screenshot</code> are configured retain-on-failure.</li>
+        </ul>
+
+        <div class="callout">
+          <p style="margin:0;">
+            Evidence lives in <code>test-results/</code> and the HTML report in <code>playwright-report/</code>.
+            The suite is designed so failures are diagnosable without rerunning.
+          </p>
+        </div>
+      </section>
+
+      <section id="failures" class="card">
+        <h2>Failure modes and diagnosis</h2>
+        <ul>
+          <li>
+            <strong>API_BASE_URL wrong / missing:</strong> suite fails fast in config →
+            confirm <code>API_BASE_URL</code> points to <code>.../api</code> and is reachable.
+          </li>
+          <li>
+            <strong>Auth fails:</strong> globalSetup fails early →
+            check <code>RW_USER_EMAIL</code>/<code>RW_USER_PASSWORD</code> and API login endpoint <code>/users/login</code>.
+          </li>
+          <li>
+            <strong>Global Feed doesn’t show seeded article:</strong> UI test fails at link visibility →
+            verify you are on “Global Feed”, and confirm the backend indexes/publishes immediately.
+            (If the app is eventually consistent, add a principled wait via a UI state change or API confirmation—not timeouts.)
+          </li>
+          <li>
+            <strong>Hidden dependency detected:</strong> a UI test needs prior UI steps →
+            move setup into API seeding or fixtures; keep tests workflow-focused.
+          </li>
+          <li>
+            <strong>Data collisions:</strong> duplicates overwrite/confuse expectations →
+            ensure all created data uses unique suffixes (Sprint 5 requires it).
+          </li>
+        </ul>
+
+        <div class="callout">
+          <p style="margin:0;">
+            <strong>Anti-pattern:</strong> “fixing” state issues by adding sleeps.
+            Sprint 5 is about determinism: seed with API, assert with UI, debug with artifacts.
+          </p>
+        </div>
+      </section>
+
+      <section id="why" class="card">
+        <h2>Why this matters (production relevance)</h2>
+        <p>
+          In real CI/CD, the biggest cause of flaky or untrusted automation is uncontrolled state:
+          tests that assume previous tests ran, environments that retain data, or suites that can’t
+          be re-run reliably. Sprint 5 proves the suite behaves like production-grade automation:
+          independent tests, deterministic setup, and repeatable results.
+        </p>
+      </section>
+
+      <footer>
+        <div>Runbook 05 • QA Test Lab</div>
+      </footer>
+    </div>
+  </body>
+</html>

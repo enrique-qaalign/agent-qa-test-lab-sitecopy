@@ -259,7 +259,7 @@ ip route
         <h3>4) Ensure SSH is running (inside VM)</h3>
         <pre><code>sudo systemctl enable --now ssh
 systemctl status ssh
-ss -tlnp | grep :22</code></pre>
+sudo ss -tlnp | grep ':22'</code></pre>
         <p class="small">Expected: <code>ssh.service</code> active/running and port <code>22</code> listening.</p>
 
         <h3>5) Add port forwarding in VirtualBox (host UI)</h3>
@@ -274,7 +274,8 @@ Guest Port: 22</code></pre>
         <details class="private">
           <summary>Private (operator): proof that 2222 is bound</summary>
           <pre><code># Host-side proof (macOS)
-lsof -nP -iTCP:2222 -sTCP:LISTEN
+  ssh -p 2222 sut@127.0.0.1
+
 
 # If nothing is listening:
 # - confirm the VM is running
