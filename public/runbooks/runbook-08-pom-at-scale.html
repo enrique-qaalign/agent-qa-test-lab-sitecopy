@@ -6,7 +6,7 @@
     <title>Runbook 08 — Page Objects at scale (pages/components/flows)</title>
     <meta
       name="description"
-      content="Runbook 08 — Page Objects at scale. Establishes scalable POM structure, locator standards, and a new-page recipe so the suite stays maintainable at 50–200+ tests."
+      content="Runbook 08 — Page Objects at scale. Defines POM structure, locator policy, and a repeatable new-page procedure for maintainable suites at 50–200+ tests."
     />
     <style>
       :root {
@@ -55,7 +55,7 @@
       h2 { margin: 0 0 10px; font-size: 18px; }
       h3 { margin: 0 0 10px; font-size: 16px; }
       p { margin: 10px 0; color: var(--muted); line-height: 1.6; }
-      ul { margin: 10px 0 0 18px; color: var(--muted); }
+      ul, ol { margin: 10px 0 0 18px; color: var(--muted); }
       li { margin: 6px 0; }
       code { color: var(--text); }
       section { scroll-margin-top: 90px; }
@@ -122,54 +122,54 @@
         <h2>Quick links</h2>
         <div class="callout" style="margin-top:10px;">
           <span class="tag">Navigation</span>
-          <p style="margin:8px 0 0;">
-            Use these anchors to skim like a checklist.
-          </p>
+          <p style="margin:8px 0 0;">Use anchors as checklist items.</p>
           <div class="toc">
-            <a class="pill" href="#objective">Objective</a>
-            <a class="pill" href="#done">Done</a>
+            <a class="pill" href="#scope">Scope</a>
+            <a class="pill" href="#exit">Exit criteria</a>
             <a class="pill" href="#structure">Structure</a>
-            <a class="pill" href="#locators">Locator standards</a>
+            <a class="pill" href="#locators">Locator policy</a>
             <a class="pill" href="#contract">POM contract</a>
-            <a class="pill" href="#recipe">New page recipe</a>
+            <a class="pill" href="#recipe">New page procedure</a>
+            <a class="pill" href="#review">PR review checks</a>
             <a class="pill" href="#commands">Commands</a>
             <a class="pill" href="#expected">Expected outputs</a>
             <a class="pill" href="#failures">Failure modes</a>
-            <a class="pill" href="#why">Why it matters</a>
           </div>
         </div>
       </div>
 
-      <section id="objective" class="card">
-        <h2>Objective</h2>
-        <p>
-          Establish a scalable Page Object Model (POM) architecture so UI automation stays maintainable
-          as the test suite grows. This runbook defines folder structure, locator standards,
-          and a “new page recipe” that a new hire can follow without tribal knowledge.
-        </p>
+      <section id="scope" class="card">
+        <h2>Scope</h2>
+        <ul>
+          <li>Standardize Page Object Model layout: <code>pages/</code>, <code>components/</code>, <code>flows/</code>, <code>assertions/</code>.</li>
+          <li>Standardize locator policy (role/label/testid first).</li>
+          <li>Define required methods and naming for page objects.</li>
+          <li>Define a repeatable procedure for adding new pages and flows.</li>
+          <li>Define PR review checks to prevent drift.</li>
+        </ul>
+
         <div class="callout">
-          <span class="tag">Maintainability</span>
-          <span class="tag">Locator policy</span>
-          <span class="tag">Flows</span>
+          <span class="tag">Rule</span>
           <p style="margin:8px 0 0;">
-            <strong>Rule:</strong> tests should describe workflows; pages/components/flows own mechanics.
+            Specs describe workflows. Pages/components/flows implement mechanics. Assertions are centralized.
           </p>
         </div>
       </section>
 
-      <section id="done" class="card">
-        <h2>What “done” means</h2>
+      <section id="exit" class="card">
+        <h2>Exit criteria</h2>
         <ul>
-          <li><span class="ok">✔</span> Standard structure exists: <code>pages/</code>, <code>components/</code>, <code>flows/</code>, <code>assertions/</code>.</li>
-          <li><span class="ok">✔</span> Locator policy is documented and used (role/label/testid first).</li>
-          <li><span class="ok">✔</span> A “new page recipe” spec proves how to add a page cleanly.</li>
-          <li><span class="ok">✔</span> Repeated sequences moved into flows; repeated expectations moved into assertion helpers.</li>
+          <li><span class="ok">✔</span> Directory structure exists and is used consistently.</li>
+          <li><span class="ok">✔</span> Tests contain minimal inline locators.</li>
+          <li><span class="ok">✔</span> Repeated multi-step sequences moved to <code>flows/</code>.</li>
+          <li><span class="ok">✔</span> Repeated expectations moved to <code>assertions/</code>.</li>
+          <li><span class="ok">✔</span> New page procedure produces one new page + one recipe spec that passes.</li>
         </ul>
       </section>
 
       <section id="structure" class="card">
-        <h2>Recommended structure</h2>
-        <pre>pages/
+        <h2>Structure</h2>
+        <pre><code>pages/
   HomePage.*
   LoginPage.*
   SettingsPage.*
@@ -195,110 +195,150 @@ assertions/
 helpers/
   env.*
   urls.*
-  dataFactories.*</pre>
+  dataFactories.*</code></pre>
 
         <div class="callout">
-          <p style="margin:0;">
-            If your framework already has most of this, Sprint 8 is about standardizing the “shape”
-            and documenting how to extend it without drift.
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            One responsibility per layer:
+            <code>page</code> = screen, <code>component</code> = reusable UI chunk, <code>flow</code> = cross-page task,
+            <code>assertion</code> = reusable expectation set.
           </p>
         </div>
       </section>
 
       <section id="locators" class="card">
-        <h2>Locator standards (guardrails)</h2>
+        <h2>Locator policy</h2>
         <table class="table">
           <tr>
-            <td>Prefer</td>
-            <td><code>getByRole</code>, <code>getByLabel</code>, <code>getByTestId</code></td>
+            <td>Default</td>
+            <td><code>getByRole</code> + accessible name</td>
           </tr>
           <tr>
-            <td>Avoid</td>
-            <td>brittle CSS chains, deep DOM traversal, index selectors, text-only selectors that drift</td>
+            <td>Next</td>
+            <td><code>getByLabel</code> (forms) / <code>getByPlaceholder</code> (only if stable)</td>
           </tr>
           <tr>
-            <td>Policy</td>
-            <td>if you must use CSS/XPath, document why and capture a stable “anchor” element</td>
+            <td>Next</td>
+            <td><code>getByTestId</code> (when accessibility name not stable or not available)</td>
+          </tr>
+          <tr>
+            <td>Escalation</td>
+            <td>CSS selector anchored to stable attribute (document why)</td>
+          </tr>
+          <tr>
+            <td>Disallowed</td>
+            <td>index selectors, deep DOM traversal, brittle chains, “works today” XPath</td>
           </tr>
         </table>
+
         <div class="callout">
-          <p style="margin:0;">
-            <strong>Anti-pattern:</strong> fixing flake by “waiting longer.” Sprint 8 is about stable access and stable workflows.
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            If CSS is required, include the justification in the page object as a comment adjacent to the locator.
           </p>
         </div>
       </section>
 
       <section id="contract" class="card">
-        <h2>Page Object contract</h2>
+        <h2>POM contract</h2>
         <ul>
-          <li>Each page has <code>open()</code> and <code>assertAt()</code> (or <code>isAt()</code> + explicit expect).</li>
-          <li>Locators are grouped and named (no “mystery locators” inline in tests).</li>
-          <li>Actions do actions; assertion helpers do assertions (avoid mixing unless intentional).</li>
-          <li>Pages should not “know” test data strategy; tests/fixtures do.</li>
+          <li>Each page object must expose <code>open()</code> and <code>assertAt()</code> (or <code>isAt()</code> + explicit expect).</li>
+          <li>Locators are properties grouped by intent (no inline locators in specs).</li>
+          <li>Actions do actions. Assertions live in <code>assertions/</code> (avoid mixed responsibilities).</li>
+          <li>Pages do not generate test data. Specs/fixtures provide data inputs.</li>
+          <li>Pages do not read environment variables directly (use helpers/fixtures).</li>
         </ul>
 
         <div class="divider"></div>
 
-        <h3>Flows (multi-page workflows)</h3>
-        <p>
-          Flows encapsulate multi-step business tasks (publish article, follow user, update settings).
-          This keeps tests short and makes changes localized when UI steps shift.
-        </p>
+        <h3>Flows</h3>
+        <ul>
+          <li>Flows own multi-step tasks that cross pages (publish, follow, update settings).</li>
+          <li>Flows accept page objects as inputs (no raw <code>page</code> usage in specs).</li>
+          <li>Flows return identifiers when relevant (slug, username) for downstream assertions.</li>
+        </ul>
       </section>
 
       <section id="recipe" class="card">
-        <h2>New page recipe (the “30-minute new hire path”)</h2>
-        <ol style="margin:10px 0 0 18px; color: var(--muted);">
-          <li>Create <code>pages/NewFeaturePage.*</code> with <code>open()</code> and <code>assertAt()</code></li>
-          <li>If UI repeats elsewhere, factor a reusable <code>components/</code> object</li>
-          <li>If workflow crosses pages, create/extend a <code>flows/</code> helper</li>
-          <li>Add assertions to <code>assertions/</code> rather than repeating inline expects</li>
-          <li>Add a single smoke spec proving the recipe works end-to-end</li>
+        <h2>New page procedure</h2>
+        <ol>
+          <li>Create <code>pages/NewFeaturePage.*</code> with <code>open()</code> and <code>assertAt()</code>.</li>
+          <li>Add locators using locator policy (role/label/testid first).</li>
+          <li>If UI chunk repeats, create a <code>components/</code> object and reference it from the page.</li>
+          <li>If the task crosses pages, create/extend a <code>flows/</code> helper.</li>
+          <li>Add/extend assertion helpers in <code>assertions/</code> for repeated checks.</li>
+          <li>Add one recipe spec proving page + component + flow integration.</li>
         </ol>
 
         <div class="callout">
-          <p style="margin:0;">
-            <strong>Definition of maintainable:</strong> a UI change updates 1–2 page/component/flow files,
-            not 30 tests.
+          <span class="tag">Definition</span>
+          <p style="margin:8px 0 0;">
+            UI change should update 1–2 files (page/component/flow). Specs should not require bulk edits.
           </p>
+        </div>
+      </section>
+
+      <section id="review" class="card">
+        <h2>PR review checks</h2>
+        <ul>
+          <li><span class="ok">✔</span> No new inline locators added to specs.</li>
+          <li><span class="ok">✔</span> New locators follow policy (role/label/testid before CSS).</li>
+          <li><span class="ok">✔</span> Multi-step sequence implemented in <code>flows/</code> (not duplicated across specs).</li>
+          <li><span class="ok">✔</span> Repeated expects moved to <code>assertions/</code>.</li>
+          <li><span class="ok">✔</span> Page objects implement <code>open()</code> + <code>assertAt()</code>.</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Optional enforcement</span>
+          <pre><code># detect hardcoded URLs and raw selectors in specs
+grep -R "http://" -n specs pages components flows assertions || true
+grep -R "https://" -n specs pages components flows assertions || true
+
+# discourage inline locator patterns in specs
+grep -R "getByRole\\(|getByLabel\\(|getByTestId\\(|locator\\(" -n specs || true</code></pre>
         </div>
       </section>
 
       <section id="commands" class="card">
         <h2>Commands</h2>
-        <p>Example recipe spec run:</p>
-        <pre>export BASE_URL="http://sut.testlab:3000"
-export API_BASE_URL="http://sut.testlab:3001/api"
+        <p>Set env contract:</p>
+        <pre><code>export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"</code></pre>
 
-npx playwright test specs/sprint8/Sprint8.pom.scale.spec.* --project=chromium --workers=1 --reporter=line</pre>
+        <div class="divider"></div>
+
+        <p>Run Sprint 8 recipe spec:</p>
+        <pre><code>npx playwright test specs/sprint8 \
+  --project=auth-chromium --workers=1 --reporter=line</code></pre>
+
+        <div class="callout warn">
+          <span class="tag">Project names</span>
+          <p style="margin:8px 0 0;">
+            Use <code>auth-chromium</code> / <code>unauth-chromium</code> per your config.
+            Do not use <code>--project=chromium</code> unless it exists.
+          </p>
+        </div>
       </section>
 
       <section id="expected" class="card">
         <h2>Expected outputs</h2>
         <ul>
-          <li><span class="ok">✔</span> Recipe spec passes and is readable (workflow-level, minimal glue)</li>
-          <li><span class="ok">✔</span> Minimal repeated locator usage in tests (locators live in pages/components)</li>
-          <li><span class="ok">✔</span> Any failure produces trace/video/screenshot sufficient to debug</li>
+          <li><span class="ok">✔</span> Recipe spec passes and reads as workflow-level steps.</li>
+          <li><span class="ok">✔</span> Specs contain minimal locator usage (mechanics in pages/components).</li>
+          <li><span class="ok">✔</span> Failures (when induced) produce sufficient artifacts when enabled (trace/screenshot/video + HTML report).</li>
         </ul>
       </section>
 
       <section id="failures" class="card">
-        <h2>Failure modes and diagnosis</h2>
+        <h2>Failure modes</h2>
         <ul>
-          <li><strong>“God page” objects:</strong> one class grows endlessly → split into components + flows.</li>
-          <li><strong>Selector churn:</strong> locators depend on DOM structure → shift to role/label/testid.</li>
-          <li><strong>Assertions scattered:</strong> inconsistent semantics → centralize in <code>assertions/</code>.</li>
-          <li><strong>Flake reintroduced via waits:</strong> replace with stable state checks and trace-first debugging.</li>
+          <li><strong>God page object:</strong> one page grows without bound → split into components + flows.</li>
+          <li><strong>Selector churn:</strong> DOM-dependent selectors → replace with role/label/testid.</li>
+          <li><strong>Assertion drift:</strong> same concept asserted multiple ways → centralize in <code>assertions/</code>.</li>
+          <li><strong>Spec bloat:</strong> repeated multi-step setup → move into <code>flows/</code> and reuse.</li>
+          <li><strong>Wait-based stabilization:</strong> added sleeps/timeouts → replace with state assertions and trace-first debugging.</li>
         </ul>
-      </section>
-
-      <section id="why" class="card">
-        <h2>Why this matters (production relevance)</h2>
-        <p>
-          At scale, UI tests fail not because Playwright is weak, but because structure collapses:
-          duplicated locators, inconsistent flows, and “smart waits” that hide real bugs.
-          Sprint 8 proves you can keep a UI suite coherent as it grows.
-        </p>
       </section>
 
       <footer>

@@ -6,7 +6,7 @@
     <title>Runbook 02 — Explicit Targeting + Reachability (Sprint 2)</title>
     <meta
       name="description"
-      content="Runbook 02 — Explicit Targeting + Reachability (Sprint 2) (QA Test Lab)"
+      content="Runbook 02 — Explicit Targeting + Reachability (Sprint 2). Enforces explicit targets (WEB_BASE_URL/API_BASE_URL) and proves reachability by stable hostname in bridged/LAN mode. Supports temporary NAT recording mode (CI_NAT_MODE=1) with an explicit localhost exception."
     />
     <style>
       :root {
@@ -16,6 +16,9 @@
         --muted: #aab2c5;
         --link: #7aa2ff;
         --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
       }
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
@@ -100,6 +103,14 @@
       }
       .mini { font-size: 13px; color: var(--muted); }
 
+      .rule {
+        border-left: 4px solid var(--warn);
+        padding-left: 10px;
+        margin-top: 10px;
+      }
+      .rule.good { border-left-color: var(--good); }
+      .rule.bad { border-left-color: var(--bad); }
+
       pre {
         margin: 10px 0 0;
         white-space: pre;
@@ -126,7 +137,7 @@
         padding: 10px 6px;
         vertical-align: top;
       }
-      .table td:first-child { color: var(--muted); width: 240px; }
+      .table td:first-child { color: var(--muted); width: 260px; }
 
       footer {
         margin-top: 26px;
@@ -166,6 +177,7 @@
           <div class="navlinks">
             <a class="pill" href="../">Home</a>
             <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#env-contract">Env contract</a>
             <a class="pill" href="#commands">Commands</a>
             <a class="pill" href="#expected">Expected</a>
             <a class="pill" href="#failure-modes">Failure modes</a>
@@ -179,14 +191,17 @@
       <section class="hero">
         <div class="h1">Runbook 02 — Explicit Targeting + Reachability (Sprint 2)</div>
         <p class="lead">
-          Enforce an explicit target (<code>BASE_URL</code>) and prove the system is reachable over the network by hostname.
-          No defaults. No localhost illusions.
+          Enforce explicit targets (<code>WEB_BASE_URL</code>/<code>API_BASE_URL</code>) and prove the system is reachable
+          over the network by hostname in default (bridged/LAN) mode. Supports a temporary NAT recording mode
+          (<code>CI_NAT_MODE=1</code>) where localhost is an explicit exception.
         </p>
         <div class="kpi">
           <span>target discipline</span>
           <span>compose availability</span>
           <span>port exposure</span>
           <span>runner reachability</span>
+          <span>dependency boundary</span>
+          <span>mode-aware proof</span>
         </div>
       </section>
 
@@ -201,13 +216,30 @@
             Validate service availability locally on the SUT host and remotely from the runner via hostname.
           </p>
 
+          <p class="rule good">
+            <strong>Rule:</strong> No implicit defaults. If an env var is missing, fail fast.
+            Targets are explicit and logged: <code>WEB_BASE_URL</code> and <code>API_BASE_URL</code>.
+          </p>
+
+          <p class="rule">
+            <strong>Boundary rule (default):</strong> In BRIDGED/LAN mode (<code>CI_NAT_MODE!=1</code>),
+            the runner must reach the SUT by stable name (e.g., <code>sut.testlab</code>).
+            <strong>No port forwarding</strong>, no SSH tunnels, no “localhost as environment”.
+          </p>
+
+          <p class="rule">
+            <strong>Recording exception:</strong> In NAT recording mode (<code>CI_NAT_MODE=1</code>),
+            localhost is allowed because the SUT is exposed via local port-forwards (e.g., <code>127.0.0.1:3000</code>, <code>127.0.0.1:3001</code>).
+            This is temporary and must be explicit.
+          </p>
+
           <p style="margin-top: 12px;"><strong>Success criteria:</strong></p>
           <ul>
-            <li>Target is explicit (no implicit defaults)</li>
-            <li>Target rejects localhost/loopback</li>
-            <li>Service ports are exposed on the SUT host (LAN-reachable, not loopback-only)</li>
+            <li>Targets are explicit (no implicit defaults)</li>
+            <li>Default mode rejects localhost/loopback for SUT HTTP</li>
+            <li>Service ports are exposed on the SUT host (LAN-reachable in default mode, not loopback-only)</li>
             <li>HTTP response is returned locally on the SUT host</li>
-            <li>HTTP response is returned remotely from the runner using SUT hostname</li>
+            <li>HTTP response is returned remotely from the runner using SUT hostname (default mode)</li>
             <li>Dependencies are validated behind boundaries (DB verified from SUT, not exposed to runner)</li>
           </ul>
 
@@ -219,10 +251,10 @@
             SUT host, and internal dependencies are validated strictly within the SUT boundary.
           </p>
           <ul>
-            <li>Runner DNS → TCP → HTTP reachability proven via <code>sut.testlab</code></li>
-            <li>Ports <code>3000</code> (web) and <code>3001</code> (api) are LAN-reachable (not loopback-only)</li>
+            <li>Runner DNS → TCP → HTTP reachability proven via <code>sut.testlab</code> (default mode)</li>
+            <li>Ports <code>3000</code> (web) and <code>3001</code> (api) are LAN-reachable (not loopback-only) in default mode</li>
             <li>DB dependency verified from inside the SUT only (<code>mongosh</code> ping returns <code>{ ok: 1 }</code>)</li>
-            <li>No implicit targets; no “localhost as environment” pattern</li>
+            <li>No implicit targets; no “localhost as environment” pattern (except explicit NAT recording mode)</li>
           </ul>
 
           <details>
@@ -236,9 +268,6 @@ sudo ss -lntp | grep -E '(:3000\s|:3001\s)'
 # SUT host (local HTTP)
 curl -I http://127.0.0.1:3000/ | sed -n '1,8p'
 curl -I http://127.0.0.1:3001/ | sed -n '1,12p'
-
-# SUT host (hostname resolution)
-getent hosts sut.testlab
 
 # Runner (DNS + TCP + HTTP via hostname)
 dscacheutil -q host -a name sut.testlab
@@ -255,12 +284,58 @@ docker exec -it conduit-mongo mongosh --quiet --eval 'db.adminCommand({ ping: 1 
 
       <div class="divider"></div>
 
+      <section id="env-contract">
+        <div class="card">
+          <h2>Environment contract</h2>
+
+          <p class="mini">
+            Sprint 2 hardens “explicit targeting” by using separate web + API targets. <code>BASE_URL</code> may exist in older scripts,
+            but Sprint 2’s contract is <code>WEB_BASE_URL</code> and <code>API_BASE_URL</code>.
+          </p>
+
+          <pre><code># Default (BRIDGED/LAN)
+export CI_NAT_MODE="0"
+export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
+
+# Temporary (NAT recording mode)
+export CI_NAT_MODE="1"
+export WEB_BASE_URL="http://127.0.0.1:3000"
+export API_BASE_URL="http://127.0.0.1:3001/api"
+
+# Optional (compatibility only)
+export BASE_URL="${WEB_BASE_URL}"</code></pre>
+
+          <p class="mini" style="margin-top: 12px;">
+            Guardrail: if <code>CI_NAT_MODE!=1</code>, targets must not contain <code>localhost</code> or <code>127.0.0.1</code>.
+          </p>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
       <section id="commands">
         <div class="card">
           <h2>Commands</h2>
 
-          <h3>Service availability (SUT host)</h3>
-          <p>Prove the stack is up and ports are published on a network-reachable interface.</p>
+          <h3>0) Fail-fast: verify explicit targeting</h3>
+          <p>Fail immediately if targets are missing or invalid for the selected mode.</p>
+
+          <pre><code>: "${WEB_BASE_URL:?missing WEB_BASE_URL}"
+: "${API_BASE_URL:?missing API_BASE_URL}"
+echo "CI_NAT_MODE=${CI_NAT_MODE:-0}"
+echo "WEB_BASE_URL=${WEB_BASE_URL}"
+echo "API_BASE_URL=${API_BASE_URL}"
+
+if [ "${CI_NAT_MODE:-0}" != "1" ]; then
+  echo "${WEB_BASE_URL}" | grep -Eqi 'localhost|127\.0\.0\.1|0\.0\.0\.0' && { echo "FAIL: WEB_BASE_URL is localhost in default mode"; exit 1; }
+  echo "${API_BASE_URL}" | grep -Eqi 'localhost|127\.0\.0\.1|0\.0\.0\.0' && { echo "FAIL: API_BASE_URL is localhost in default mode"; exit 1; }
+fi</code></pre>
+
+          <div class="divider"></div>
+
+          <h3>1) Service availability (SUT host)</h3>
+          <p>Prove the stack is up and ports are published.</p>
 
           <pre><code>cd ~/conduit
 docker compose up -d
@@ -274,47 +349,66 @@ sudo ss -lntp | grep -E '(:3000\s|:3001\s)' || echo "NO LISTENER 3000/3001"</cod
             <pre><code>cd ~/conduit
 docker compose pull
 docker compose up -d --build --remove-orphans
-
-# optional shutdown
 docker compose down</code></pre>
           </details>
 
-          <h3 style="margin-top: 14px;">Local HTTP checks (SUT host)</h3>
-          <p>Validate service response from the SUT host using published ports.</p>
+          <div class="divider"></div>
+
+          <h3>2) Local HTTP checks (SUT host)</h3>
+          <p>Validate service response from the SUT host using the published ports.</p>
 
           <pre><code>curl -I http://127.0.0.1:3000/ | sed -n '1,8p'
 curl -I http://127.0.0.1:3001/ | sed -n '1,12p'</code></pre>
 
-          <details>
-            <summary>Private (operator): localhost variants (diagnostic convenience)</summary>
-            <pre><code># diagnostic only; not used as a targeting pattern
-curl -I http://localhost:3001/ | sed -n '1,12p'</code></pre>
-          </details>
+          <div class="divider"></div>
 
-          <h3 style="margin-top: 14px;">Remote checks (Runner → SUT)</h3>
-          <p>Validate runner reachability using hostname-based targeting.</p>
+          <h3>3) Remote checks (Runner → SUT) — default mode</h3>
+          <p class="mini">
+            Default mode requires hostname-based reachability. This is where “no port forwarding” is enforced.
+          </p>
 
-          <pre><code># keep this consistent with the proofs below (no implied TLS)
-export BASE_URL="http://sut.testlab:3000"
+          <pre><code># Derive host from WEB_BASE_URL
+SUT_HOST="$(echo "$WEB_BASE_URL" | sed -E 's#^https?://([^:/]+).*#\1#')"
+echo "SUT_HOST=${SUT_HOST}"
 
 # DNS proof (runner)
-dscacheutil -q host -a name sut.testlab
+dscacheutil -q host -a name "${SUT_HOST}"
 
 # TCP proof (runner)
-nc -vz sut.testlab 3000
-nc -vz sut.testlab 3001
+nc -vz "${SUT_HOST}" 3000
+nc -vz "${SUT_HOST}" 3001
 
-# HTTP proof (runner)
-curl -sS -D- http://sut.testlab:3000/ -o /dev/null | sed -n '1,8p'
-curl -sS -D- http://sut.testlab:3001/ -o /dev/null | sed -n '1,12p'</code></pre>
+# HTTP proof (runner) — must be by hostname in default mode
+curl -sS -D- "http://${SUT_HOST}:3000/" -o /dev/null | sed -n '1,8p'
+curl -sS -D- "http://${SUT_HOST}:3001/" -o /dev/null | sed -n '1,12p'</code></pre>
 
-          <details>
-            <summary>Private (operator): LAN IP evidence blocks</summary>
-            <pre><code># keep raw IPs and resolver specifics private
-# /etc/hosts entry, DHCP lease evidence, route/arp checks, etc.</code></pre>
-          </details>
+          <div class="divider"></div>
 
-          <h3 style="margin-top: 14px;">Dependency boundary proof (SUT host)</h3>
+          <h3>4) Recording mode example (CI_NAT_MODE=1)</h3>
+          <p class="mini">
+            Use this only when the SUT is operating in NAT mode and exposed via localhost port-forwards for recording safety.
+            In this mode, runner reachability by hostname is not the goal; the explicit goal is “localhost is intentionally used and works.”
+          </p>
+
+          <pre><code>export CI_NAT_MODE="1"
+export WEB_BASE_URL="http://127.0.0.1:3000"
+export API_BASE_URL="http://127.0.0.1:3001/api"
+
+# Boundary proof flips: localhost must respond
+curl -fsS --max-time 5 "http://127.0.0.1:3000/" >/dev/null \
+  && echo "PASS: localhost returned HTTP (NAT recording mode)" \
+  || { echo "FAIL: localhost did not respond in NAT mode"; exit 1; }
+
+# TCP proof (localhost)
+nc -vz 127.0.0.1 3000
+nc -vz 127.0.0.1 3001
+
+# API identity proof
+curl -sS -D- "http://127.0.0.1:3001/api/tags" -o /dev/null | sed -n '1,12p'</code></pre>
+
+          <div class="divider"></div>
+
+          <h3>5) Dependency boundary proof (SUT host)</h3>
           <p>Validate internal dependencies from the SUT without exposing them to the runner.</p>
 
           <pre><code>docker exec -it conduit-mongo mongosh --quiet --eval 'db.adminCommand({ ping: 1 })'</code></pre>
@@ -340,20 +434,24 @@ db.getCollectionNames();
           <h2>Expected outputs (logs, screenshots, artifacts)</h2>
           <table class="table">
             <tr>
+              <td>Explicit targeting</td>
+              <td><code>WEB_BASE_URL</code> and <code>API_BASE_URL</code> printed in logs; missing vars fail fast.</td>
+            </tr>
+            <tr>
               <td>docker compose ps</td>
               <td>Containers show <code>Up</code> state.</td>
             </tr>
             <tr>
-              <td>Port listening</td>
-              <td>SUT host shows listeners on <code>0.0.0.0:3000</code> and <code>0.0.0.0:3001</code> (or LAN interface), not loopback-only.</td>
+              <td>Port listening (default)</td>
+              <td>SUT host shows listeners on LAN interface / <code>0.0.0.0:3000</code> and <code>0.0.0.0:3001</code> (not loopback-only).</td>
             </tr>
             <tr>
-              <td>Local HTTP</td>
-              <td>Returns an <code>HTTP/1.1</code> status line and headers.</td>
+              <td>Remote HTTP (default)</td>
+              <td>Runner receives <code>HTTP/1.1</code> status lines from <code>sut.testlab</code> endpoints.</td>
             </tr>
             <tr>
-              <td>Remote HTTP</td>
-              <td>Runner receives an <code>HTTP/1.1</code> status line and headers from the SUT via hostname.</td>
+              <td>Localhost HTTP (NAT mode)</td>
+              <td>When <code>CI_NAT_MODE=1</code>, localhost checks succeed for <code>127.0.0.1:3000</code>/<code>3001</code>.</td>
             </tr>
             <tr>
               <td>DB ping (SUT)</td>
@@ -369,44 +467,30 @@ db.getCollectionNames();
         <div class="card">
           <h2>Failure modes + how to diagnose</h2>
 
-          <h3>Containers not running / crash looping</h3>
-          <p><strong>Symptom:</strong> <code>docker compose ps</code> shows exited containers.</p>
-          <p><strong>Diagnosis:</strong></p>
-          <pre><code>cd ~/conduit
-docker compose logs --tail=200</code></pre>
+          <h3>Targets missing / wrong mode</h3>
+          <p><strong>Symptom:</strong> vars are blank, or default mode is accidentally pointing to localhost.</p>
+          <p><strong>Action:</strong> verify the fail-fast block and the mode value.</p>
 
           <div class="divider"></div>
 
-          <h3>Port not listening</h3>
-          <p><strong>Symptom:</strong> no listener on expected port.</p>
-          <p><strong>Diagnosis:</strong> verify published ports and container health.</p>
-          <pre><code>cd ~/conduit
-docker compose ps
-docker compose port web 80 || true
-docker compose port api 3000 || true</code></pre>
-
-          <div class="divider"></div>
-
-          <h3>Local HTTP fails but port is listening</h3>
-          <p><strong>Symptom:</strong> connection succeeds but HTTP returns errors/timeouts.</p>
-          <p><strong>Diagnosis:</strong></p>
-          <pre><code>cd ~/conduit
-docker compose logs --tail=200</code></pre>
-
-          <div class="divider"></div>
-
-          <h3>Remote HTTP fails but local HTTP succeeds</h3>
+          <h3>Remote HTTP fails but local HTTP succeeds (default mode)</h3>
           <p><strong>Symptom:</strong> SUT is healthy locally; runner cannot reach it.</p>
           <p><strong>Diagnosis (Runner):</strong></p>
           <pre><code>nc -vz sut.testlab 3000
 nc -vz sut.testlab 3001</code></pre>
-          <p><strong>Action:</strong> check firewall controls, port publishing, and network segmentation.</p>
+          <p><strong>Action:</strong> check firewall controls, port publishing (not loopback-only), and network segmentation.</p>
+
+          <div class="divider"></div>
+
+          <h3>CI_NAT_MODE=1 but localhost does not respond</h3>
+          <p><strong>Symptom:</strong> curl to <code>127.0.0.1:3000</code> times out/refuses.</p>
+          <p><strong>Likely cause:</strong> port-forward missing, VM stopped, or services down.</p>
+          <p><strong>Action:</strong> verify VirtualBox forwards and SUT service health.</p>
 
           <details>
             <summary>Private (operator): route and IP-level checks</summary>
             <pre><code># keep raw IPs private
-# route -n get &lt;SUT_IP&gt;
-# arp -a | grep &lt;SUT_IP&gt;</code></pre>
+# route/arp, firewall rules, and host NIC checks</code></pre>
           </details>
         </div>
       </section>
@@ -422,7 +506,8 @@ nc -vz sut.testlab 3001</code></pre>
             rather than incomplete startup or local substitution.
           </p>
           <p>
-            If a system is not reachable by name across the network, it is not production-real.
+            Default mode proves production-real reachability by stable name across the network boundary.
+            NAT recording mode is a temporary, explicit exception used to avoid exposing LAN details during recordings.
           </p>
         </div>
       </section>

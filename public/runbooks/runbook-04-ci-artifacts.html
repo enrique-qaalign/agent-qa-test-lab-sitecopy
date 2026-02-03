@@ -6,7 +6,7 @@
     <title>Runbook 04 — CI artifacts and “debug without rerun”</title>
     <meta
       name="description"
-      content="Runbook 04 — CI artifacts and debug without rerun (QA Test Lab)"
+      content="Runbook 04 — CI artifacts and debug without rerun (QA Test Lab). Validates artifact publishing (blob reports, merged HTML report, traces/videos/screenshots) and shows how to diagnose failures from artifacts alone."
     />
     <style>
       :root {
@@ -16,6 +16,9 @@
         --muted: #aab2c5;
         --link: #7aa2ff;
         --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
       }
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
@@ -100,6 +103,14 @@
       }
       .mini { font-size: 13px; color: var(--muted); }
 
+      .rule {
+        border-left: 4px solid var(--warn);
+        padding-left: 10px;
+        margin-top: 10px;
+      }
+      .rule.good { border-left-color: var(--good); }
+      .rule.bad { border-left-color: var(--bad); }
+
       pre {
         margin: 10px 0 0;
         white-space: pre;
@@ -121,11 +132,13 @@
         border-collapse: collapse;
         margin-top: 10px;
       }
-      .table td {
+      .table th, .table td {
         border-top: 1px solid var(--border);
         padding: 10px 6px;
         vertical-align: top;
+        text-align: left;
       }
+      .table th { color: var(--text); font-weight: 700; }
       .table td:first-child { color: var(--muted); width: 260px; }
 
       footer {
@@ -136,9 +149,7 @@
         font-size: 14px;
       }
       section { scroll-margin-top: 84px; }
-      @media (max-width: 920px) {
-        .h1 { font-size: 28px; }
-      }
+      @media (max-width: 920px) { .h1 { font-size: 28px; } }
     </style>
   </head>
 
@@ -150,6 +161,8 @@
           <div class="navlinks">
             <a class="pill" href="../">Home</a>
             <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#contract">Artifact contract</a>
+            <a class="pill" href="#debug">Debug without rerun</a>
             <a class="pill" href="#commands">Commands</a>
             <a class="pill" href="#expected">Expected</a>
             <a class="pill" href="#failure-modes">Failure modes</a>
@@ -164,15 +177,19 @@
         <div class="h1">Runbook 04 — CI artifacts and “debug without rerun”</div>
         <p class="lead">
           Validate that CI publishes sufficient artifacts to diagnose failures without re-executing tests.
-          Artifacts must be consistently available show the failure mode.
+          Artifact paths must be deterministic, discoverable, and usable by another engineer.
         </p>
         <div class="kpi">
-          <span>HTML report</span>
+          <span>blob report (per shard)</span>
+          <span>merged HTML report</span>
           <span>screenshots</span>
           <span>video</span>
           <span>trace</span>
-          <span>deterministic storage</span>
+          <span>junit (optional)</span>
         </div>
+        <p class="mini" style="margin-top: 10px;">
+          <strong>Definition:</strong> “Debug without rerun” means you can determine why it failed using CI logs + artifacts only.
+        </p>
       </section>
 
       <div class="divider"></div>
@@ -181,16 +198,90 @@
         <div class="card">
           <h2>Objective + success criteria</h2>
           <p>
-            <strong>Objective:</strong> Verify that CI pipelines publish artifacts required to diagnose test failures
+            <strong>Objective:</strong> Verify that CI pipelines upload artifacts required to diagnose failures
             without rerunning the pipeline, and that artifact links remain available for review.
           </p>
+
+          <p class="rule good">
+            <strong>Rule:</strong> Every failing test must produce at least one of: screenshot, trace, video,
+            and a human-readable error context file (if implemented).
+          </p>
+
           <p style="margin-top: 12px;"><strong>Success criteria:</strong></p>
           <ul>
-            <li>CI job uploads an HTML report (or equivalent) for each run</li>
-            <li>Failed tests include screenshots and (where configured) video and trace</li>
-            <li>Artifact paths are deterministic and discoverable</li>
-            <li>Failure diagnosis is possible using artifacts + CI logs only</li>
+            <li>Shard jobs upload deterministic per-shard output (<code>blob-report-*/</code>)</li>
+            <li>Merge job publishes a merged HTML report (<code>playwright-report/</code>)</li>
+            <li>Failure diagnosis is possible using artifacts + CI logs only (no re-execution required)</li>
+            <li>Artifacts are attached to jobs and accessible via GitLab UI</li>
           </ul>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section id="contract">
+        <div class="card">
+          <h2>Artifact contract (what must exist)</h2>
+
+          <table class="table">
+            <tr>
+              <th>Job type</th>
+              <th>Must upload</th>
+              <th>Why it exists</th>
+            </tr>
+            <tr>
+              <td><strong>proof_sharded (each shard)</strong></td>
+              <td>
+                <code>blob-report-*/</code><br />
+                <code>test-results/</code> (optional but recommended)
+              </td>
+              <td>Preserves per-test evidence (trace/video/screenshot) and blob report inputs for merging.</td>
+            </tr>
+            <tr>
+              <td><strong>proof_merge_and_publish</strong></td>
+              <td>
+                <code>playwright-report/</code><br />
+                <code>junit.xml</code> (optional)
+              </td>
+              <td>Creates one merged report for reviewers; supports MR widgets / trend tooling via JUnit.</td>
+            </tr>
+          </table>
+
+          <p class="mini" style="margin-top: 10px;">
+            If you are using <code>error-context.md</code> (like your Sprint 6 logs show), treat it as part of the evidence contract.
+          </p>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section id="debug">
+        <div class="card">
+          <h2>Debug without rerun (how to use CI artifacts)</h2>
+
+          <h3>1) Open merged report (fastest path)</h3>
+          <ul>
+            <li>In GitLab job page → Artifacts → browse <code>playwright-report/</code></li>
+            <li>Open <code>index.html</code> (or GitLab’s artifact viewer if configured)</li>
+            <li>Identify the failing test, then open its attachments (trace/video/screenshot)</li>
+          </ul>
+
+          <h3 style="margin-top: 14px;">2) Download artifacts and replay trace locally</h3>
+          <p class="mini">This is the “no rerun” power move: replay CI’s exact browser timeline.</p>
+          <pre><code># After downloading artifacts zip(s) from GitLab:
+# Example trace path (from your logs):
+npx playwright show-trace blob-report-2/**/trace.zip</code></pre>
+
+          <h3 style="margin-top: 14px;">3) Review the error context file (if present)</h3>
+          <pre><code># Many suites write an additional error context markdown file.
+# Example path (from your logs):
+cat blob-report-2/**/error-context.md | sed -n '1,200p'</code></pre>
+
+          <h3 style="margin-top: 14px;">4) Confirm it is not an environment illusion</h3>
+          <p class="mini">
+            If the failure smells like routing/env mismatch, validate the job’s runtime contract echoed in logs
+            (WEB_BASE_URL / API_BASE_URL) before touching test code.
+          </p>
         </div>
       </section>
 
@@ -200,28 +291,43 @@
         <div class="card">
           <h2>Exact commands</h2>
 
-          <h3>Local reproduction of artifact generation (Runner)</h3>
-          <pre><code>npx playwright test --project=Chromium --trace=on --screenshot=on</code></pre>
+          <h3>Local reproduction of artifact generation (developer machine or runner)</h3>
+          <p class="mini">
+            Prefer configuring artifacts in <code>playwright.config.*</code> so CI and local behavior match.
+            CLI flags can vary by Playwright version.
+          </p>
 
-          <h3 style="margin-top: 14px;">Open local report (Runner)</h3>
+          <pre><code># Run the same project CI uses (examples: chromium, auth-chromium)
+npx playwright test --project=auth-chromium --reporter=line</code></pre>
+
+          <h3 style="margin-top: 14px;">Recommended Playwright config snippet (artifact-friendly)</h3>
+          <pre><code>// playwright.config.js (example)
+use: {
+  screenshot: 'only-on-failure',
+  video: 'on-first-retry',
+  trace: 'on-first-retry'
+},
+retries: 2</code></pre>
+
+          <h3 style="margin-top: 14px;">Open local report</h3>
           <pre><code>npx playwright show-report</code></pre>
 
-          <h3 style="margin-top: 14px;">Locate local artifacts (Runner)</h3>
-          <pre><code>ls -la test-results || true
-ls -la playwright-report || true</code></pre>
+          <h3 style="margin-top: 14px;">Locate local artifacts</h3>
+          <pre><code>ls -la playwright-report || true
+ls -la test-results || true</code></pre>
 
-          <h3 style="margin-top: 14px;">CI validation (GitLab UI)</h3>
-          <p class="mini" style="margin-top: 10px;">
-            In the GitLab job page: open job artifacts and confirm presence of report + per-test artifacts.
+          <h3 style="margin-top: 14px;">CI-side enforcement (recommended)</h3>
+          <p class="mini">
+            These checks fail the job if evidence directories are missing.
+            Put shard checks in shard jobs; merge checks in merge job.
           </p>
 
-          <h3 style="margin-top: 14px;">Optional: enforce artifact existence in CI logs</h3>
-          <pre><code>test -d playwright-report || (echo "missing playwright-report" && exit 1)
-test -d test-results || (echo "missing test-results" && exit 1)</code></pre>
+          <pre><code># Shard job: must produce blob-report-*
+test -d "blob-report-${CI_NODE_INDEX}" || (echo "missing blob-report-${CI_NODE_INDEX}" && exit 1)
 
-          <p class="mini" style="margin-top: 12px;">
-            Artifact generation flags may be configured in <code>playwright.config.*</code>. Use project defaults where applicable.
-          </p>
+# Merge job: must produce merged HTML report
+test -d playwright-report || (echo "missing playwright-report" && exit 1)
+test -f playwright-report/index.html || (echo "missing playwright-report/index.html" && exit 1)</code></pre>
         </div>
       </section>
 
@@ -233,20 +339,20 @@ test -d test-results || (echo "missing test-results" && exit 1)</code></pre>
 
           <table class="table">
             <tr>
-              <td>playwright-report</td>
-              <td>HTML report directory exists and contains <code>index.html</code> or equivalent entry point.</td>
+              <td><strong>Merged HTML report</strong></td>
+              <td><code>playwright-report/index.html</code> exists and can be opened/downloaded from GitLab artifacts.</td>
             </tr>
             <tr>
-              <td>test-results</td>
-              <td>Per-test artifact directories exist with failure evidence (screenshot/video/trace where enabled).</td>
+              <td><strong>Blob inputs</strong></td>
+              <td>At least one <code>blob-report-*</code> directory exists in shard job artifacts (more when sharded).</td>
             </tr>
             <tr>
-              <td>CI job artifacts</td>
-              <td>Artifacts are attached to the job and downloadable via GitLab UI.</td>
+              <td><strong>Failure attachments</strong></td>
+              <td>Failed tests include screenshot and trace/video based on your config (<code>trace.zip</code>, <code>video.webm</code>, <code>test-failed-*.png</code>).</td>
             </tr>
             <tr>
-              <td>Diagnosis evidence</td>
-              <td>Failure can be understood from report + artifacts + CI logs without re-execution.</td>
+              <td><strong>Diagnosis proof</strong></td>
+              <td>A reviewer can identify root cause using report + attachments + logs (no rerun required).</td>
             </tr>
           </table>
         </div>
@@ -259,37 +365,34 @@ test -d test-results || (echo "missing test-results" && exit 1)</code></pre>
           <h2>Failure modes + how to diagnose</h2>
 
           <h3>Artifacts missing from CI job</h3>
-          <p><strong>Symptom:</strong> CI job completes but no artifacts are attached.</p>
-          <p><strong>Diagnosis:</strong> confirm artifact paths and job configuration.</p>
-          <pre><code># In repo
+          <p><strong>Symptom:</strong> job fails or completes but no artifacts are attached.</p>
+          <p><strong>Diagnosis:</strong> check <code>artifacts:paths</code> and working directory paths.</p>
+          <pre><code># In CI logs (add this near end of the job)
+pwd
 ls -la
-ls -la playwright-report test-results || true</code></pre>
-          <p><strong>Action:</strong> update CI <code>artifacts:paths</code> to include the correct directories.</p>
+find . -maxdepth 2 -type d -name "blob-report-*" -o -name "playwright-report" -o -name "test-results" | sed -n '1,200p'</code></pre>
+          <p><strong>Action:</strong> correct artifact paths and ensure they are relative to the job working directory.</p>
 
           <div class="divider"></div>
 
-          <h3>Artifacts generated locally but not uploaded in CI</h3>
-          <p><strong>Symptom:</strong> local run produces artifacts; CI run does not.</p>
-          <p><strong>Diagnosis:</strong> compare Playwright config and CI environment variables.</p>
-          <pre><code>cat playwright.config.* 2>/dev/null || true</code></pre>
+          <h3>Artifacts generated locally but not in CI</h3>
+          <p><strong>Symptom:</strong> local run produces trace/video; CI run does not.</p>
+          <p><strong>Diagnosis:</strong> ensure CI is using the same Playwright config and project.</p>
+          <pre><code>cat playwright.config.* 2>/dev/null || true
+node -e 'console.log("CI=", !!process.env.CI, "PW_VERSION=", require("@playwright/test/package.json").version)'</code></pre>
 
           <div class="divider"></div>
 
-          <h3>Artifacts exist but are not useful</h3>
-          <p><strong>Symptom:</strong> report does not show actionable failure context.</p>
-          <p><strong>Diagnosis:</strong> ensure traces/videos are enabled for failures and retention is configured.</p>
-          <pre><code># Example config keys (inspect actual config)
-# use: { trace: 'on-first-retry' }  or trace: 'on'
-# use: { video: 'on-first-retry' } or video: 'on'
-# use: { screenshot: 'only-on-failure' }</code></pre>
-          <p><strong>Action:</strong> enable artifacts for failure diagnosis and keep retention consistent.</p>
+          <h3>Artifacts exist but aren’t useful</h3>
+          <p><strong>Symptom:</strong> report shows failure but no trace/video/screenshot and no context.</p>
+          <p><strong>Diagnosis:</strong> artifact settings too strict (e.g., trace off, video off) or retries disabled.</p>
+          <p><strong>Action:</strong> enable <code>trace: "on-first-retry"</code> and <code>video: "on-first-retry"</code>, and keep retries consistent.</p>
 
           <div class="divider"></div>
 
           <h3>Artifacts expire before review</h3>
-          <p><strong>Symptom:</strong> artifacts are missing due to expiration.</p>
-          <p><strong>Diagnosis:</strong> inspect CI artifact retention settings.</p>
-          <p><strong>Action:</strong> increase artifact retention window for review workflows.</p>
+          <p><strong>Symptom:</strong> artifacts missing due to expiration.</p>
+          <p><strong>Action:</strong> increase artifact retention window for your review workflow (especially MR review + triage).</p>
         </div>
       </section>
 
@@ -299,8 +402,8 @@ ls -la playwright-report test-results || true</code></pre>
         <div class="card">
           <h2>Why it matters (production relevance)</h2>
           <p>
-            Artifact-first pipelines reduce cycle time and eliminate re-run dependence. When failures are diagnosable
-            from artifacts alone, teams can triage accurately, reduce flaky reruns, and maintain trust in CI as a
+            Artifact-first pipelines reduce cycle time and eliminate rerun dependence. When failures are diagnosable
+            from artifacts alone, teams triage accurately, reduce flaky reruns, and maintain trust in CI as a
             release signal.
           </p>
         </div>

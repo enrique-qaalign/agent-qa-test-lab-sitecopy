@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Runbook 07 — Custom fixtures (UI + API) + composition rules</title>
+    <title>Runbook 06 — Release gates (time-to-signal) + decision rubric</title>
     <meta
       name="description"
-      content="Runbook 07 — Custom fixtures (UI + API) + composition rules. Establishes a single fixture contract, auth strategy, and scope guidance so tests read like business workflows and failures are diagnosable."
+      content="Runbook 06 — Release gates (time-to-signal) + decision rubric. Defines smoke vs regression gates, gate contract output, and explicit go/no-go criteria (BLOCK vs WARN)."
     />
     <style>
       :root {
@@ -69,6 +69,8 @@
         margin-top: 12px;
       }
       .callout.good { border-color: rgba(68,209,159,.45); }
+      .callout.warn { border-color: rgba(255,206,107,.45); }
+      .callout.bad { border-color: rgba(255,107,107,.45); }
       .tag {
         display:inline-block; font-size: 12px; padding: 4px 8px;
         border-radius: 999px; border: 1px solid var(--border);
@@ -88,12 +90,14 @@
       .warn { color: var(--warn); }
       .bad { color: var(--bad); }
       .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-      .table td {
+      .table td, .table th {
         border-top: 1px solid var(--border);
         padding: 10px 6px;
         vertical-align: top;
+        text-align: left;
       }
-      .table td:first-child { width: 210px; color: var(--muted); }
+      .table th { color: var(--text); font-weight: 650; }
+      .table td:first-child { width: 230px; color: var(--muted); }
       footer { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 14px; color: var(--muted); font-size: 13px; }
     </style>
   </head>
@@ -102,7 +106,7 @@
     <div class="topbar">
       <div class="wrap">
         <div class="topbar-inner">
-          <div class="brand">QA Test Lab • Runbook 07</div>
+          <div class="brand">QA Test Lab • Runbook 06</div>
           <div>
             <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
             <a class="pill" href="../index.html#sprints">Sprint Plan</a>
@@ -112,217 +116,211 @@
     </div>
 
     <div class="wrap">
-      <h1>Runbook 07 — Custom fixtures (UI + API) + composition rules</h1>
+      <h1>Runbook 06 — Release gates (time-to-signal) + decision rubric</h1>
 
       <div class="card">
-        <h2>Objective</h2>
-        <p>
-          Establish a single, documented fixture contract so tests read like business workflows.
-          Sprint 7 standardizes: (1) UI auth via storageState, (2) API auth via an API client fixture,
-          (3) Page Objects as domain primitives, and (4) composition rules (what is worker vs test scope).
-        </p>
+        <h2>Scope</h2>
+        <ul>
+          <li>Define release gates as named tests with explicit decision metadata.</li>
+          <li>Split gates into SMOKE and REGRESSION suites.</li>
+          <li>Print a gate contract block on failure (CI log).</li>
+          <li>Retain failure evidence (artifacts) when enabled in config/CI.</li>
+        </ul>
 
         <div class="callout good">
-          <span class="tag">Verified auth contract</span>
-          <span class="tag">One fixture entrypoint</span>
+          <span class="tag">Gate contract</span>
+          <span class="tag">Time-to-signal</span>
           <p style="margin:8px 0 0;">
-            <strong>Contract:</strong> UI auth is created once in <code>globalSetup</code> and stored in
-            <code>.auth/storageState.json</code>. Logged-out state is always available via
-            <code>.auth/emptyState.json</code>. Tests select auth state by choosing the Playwright project:
-            <code>auth-chromium</code> or <code>unauth-chromium</code>.
+            Requirement: each gate declares <code>id</code>, <code>capability</code>, <code>persona</code>,
+            <code>failureMeans</code>, <code>releaseDecision</code> (BLOCK/WARN), <code>mitigation</code>, <code>owner</code>.
+            Missing fields = hard fail at gate definition time.
           </p>
         </div>
       </div>
 
       <div class="card">
-        <h2>What “done” means</h2>
+        <h2>Exit criteria</h2>
         <ul>
-          <li><span class="ok">✔</span> Tests import from a single entrypoint: <code>const { test, expect } = require('../fixtures/rw')</code>.</li>
-          <li><span class="ok">✔</span> UI auth is deterministic via <code>globalSetup</code> + <code>storageState</code> (no token injection “side path”).</li>
-          <li><span class="ok">✔</span> API auth is deterministic via <code>api</code> fixture that logs in and stores JWT in the client.</li>
-          <li><span class="ok">✔</span> Page Objects are provided by fixtures (<code>home</code>, <code>editor</code>, <code>profile</code>, etc.).</li>
-          <li><span class="ok">✔</span> Scope rules are documented (what runs once vs per-test, what is safe to share).</li>
+          <li><span class="ok">✔</span> SMOKE suite runs independently and completes with fast signal.</li>
+          <li><span class="ok">✔</span> REGRESSION suite runs independently and covers deeper workflows.</li>
+          <li><span class="ok">✔</span> Each gate has decision metadata (<strong>BLOCK</strong> or <strong>WARN</strong>).</li>
+          <li><span class="ok">✔</span> On failure, CI log includes a single readable contract block (no extra runs required to classify).</li>
+          <li><span class="ok">✔</span> Failure evidence exists when enabled: HTML report + per-test artifacts.</li>
         </ul>
       </div>
 
       <div class="card">
-        <h2>Canonical auth strategy (choose one)</h2>
+        <h2>Decision rubric</h2>
         <table class="table">
-          <tr>
-            <td>Selected for this lab</td>
-            <td><strong>StorageState + globalSetup</strong> (matches your <code>playwright.config.js</code>)</td>
-          </tr>
-          <tr>
-            <td>Why</td>
-            <td>It is CI-friendly, fast (login once), and keeps tests clean (no per-test UI login).</td>
-          </tr>
-          <tr>
-            <td>What to avoid</td>
-            <td>Competing auth strategies (e.g., localStorage token injection) living alongside storageState.</td>
-          </tr>
+          <thead>
+            <tr>
+              <th>Decision</th>
+              <th>Definition</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong class="bad">BLOCK</strong></td>
+              <td>Capability required for release is not verified.</td>
+              <td>Stop release. Apply fix/rollback. Re-run gate once after change.</td>
+            </tr>
+            <tr>
+              <td><strong class="warn">WARN</strong></td>
+              <td>Capability is degraded and mitigation exists.</td>
+              <td>Release may proceed with recorded mitigation + follow-up work item.</td>
+            </tr>
+          </tbody>
         </table>
 
         <div class="callout">
-          <p style="margin:0;">
-            <strong>Rule:</strong> one blessed UI auth path. If another auth approach exists in the repo,
-            it must be clearly marked <em>legacy</em> or removed, so new hires don’t “pick a random way.”
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            If mitigation is undefined or not actionable, set decision to <strong>BLOCK</strong>.
           </p>
         </div>
       </div>
 
       <div class="card">
-        <h2>Fixture contract (what tests are allowed to assume)</h2>
-        <p>From <code>fixtures/rw.js</code> (canonical):</p>
-        <ul>
-          <li><code>api</code> — authenticated API client with JWT set (via <code>/users/login</code>).</li>
-          <li><code>home</code>, <code>auth</code>, <code>editor</code>, <code>article</code>, <code>profile</code>, <code>settings</code> — Page Objects bound to the current <code>page</code>.</li>
-        </ul>
+        <h2>Gate structure</h2>
+        <p>Implementation uses <code>helpers/releaseGate.js</code> to enforce required fields and print failure contracts.</p>
 
-        <div class="divider"></div>
+        <pre><code>test(
+  "RW.SMOKE.001 — Login establishes authenticated session",
+  releaseGate(
+    {
+      id: "RW.SMOKE.001",
+      capability: "Authentication: establish session",
+      persona: "Registered user",
+      failureMeans: "Users cannot authenticate; authenticated journeys unavailable",
+      releaseDecision: "BLOCK",
+      mitigation: "Rollback auth change; validate /api/users/login and storageState generation",
+      owner: "Web + API",
+    },
+    ["home"],
+    async ({ home }) =&gt; {
+      await home.open();
+      await home.expectLoggedInNav();
+    }
+  )
+);</code></pre>
 
-        <h3>Composition rules</h3>
-        <ul>
-          <li><strong>Tests do not fetch env vars.</strong> Fixtures own env parsing (<code>getEnv()</code>).</li>
-          <li><strong>Tests do not login.</strong> Logged-in UI is a project selection; API auth is the <code>api</code> fixture.</li>
-          <li><strong>Tests do not “newContext” ad-hoc.</strong> If a test needs a different state, create a new project or a new fixture.</li>
-          <li><strong>Pages do mechanics; tests describe intent.</strong> (Page Objects are the API.)</li>
-        </ul>
+        <div class="callout good">
+          <span class="tag">Validation</span>
+          <p style="margin:8px 0 0;">
+            Required field missing = gate definition hard fails (no silent partial gates).
+          </p>
+        </div>
       </div>
 
       <div class="card">
-        <h2>Scope guidance (worker vs test)</h2>
+        <h2>Suite policy</h2>
         <table class="table">
-          <tr>
-            <td>Worker-scoped (runs once per worker)</td>
-            <td>
-              <strong>globalSetup</strong> (UI login + write storageState),
-              anything expensive & shareable, environment contract verification.
-            </td>
-          </tr>
-          <tr>
-            <td>Test-scoped (runs per test)</td>
-            <td>
-              Page Object instances bound to <code>page</code>, API clients bound to <code>request</code>,
-              test-specific data creation, assertions, and evidence capture.
-            </td>
-          </tr>
-          <tr>
-            <td>Anti-pattern</td>
-            <td>Hidden “once per suite” state inside tests (order dependency).</td>
-          </tr>
+          <tbody>
+            <tr>
+              <td>SMOKE</td>
+              <td>Fast signal on core flows. Default decision = <strong>BLOCK</strong> unless mitigation is explicit.</td>
+            </tr>
+            <tr>
+              <td>REGRESSION</td>
+              <td>Deeper flows and consistency checks. May include <strong>WARN</strong> gates when mitigation exists.</td>
+            </tr>
+            <tr>
+              <td>Ownership</td>
+              <td>Each gate has an <code>owner</code>. CI log output must route ownership from the contract block.</td>
+            </tr>
+          </tbody>
         </table>
-
-        <div class="callout">
-          <p style="margin:0;">
-            <strong>Interpretation for your lab:</strong> <code>globalSetup</code> proves auth once.
-            Each test should remain independently runnable, with state seeded via API when needed (Sprint 5),
-            and UI workflows tested via Page Objects (Sprint 8).
-          </p>
-        </div>
       </div>
 
       <div class="card">
-        <h2>Folder/ownership map</h2>
-        <pre>fixtures/
-  rw.js                 # canonical test entrypoint (UI pages + API client fixture)
-  global-setup.js        # UI login once, writes .auth/storageState.json
+        <h2>Run commands</h2>
 
-helpers/
-  env.js                 # env contract: WEB_BASE_URL/API_BASE_URL/RW_USER_*
-  apiClient.js            # loginAndGetToken + create/get article, etc.
-  releaseGate.js          # gate wrapper w/ annotations (Sprint 6)
-
-pages/
-  BasePage.js
-  HomePage.js
-  EditorPage.js
-  ProfilePage.js
-  SettingsPage.js
-  ArticlePage.js
-  AuthPage.js
-
-.auth/
-  emptyState.json         # always exists; unauth project uses this
-  storageState.json       # produced by globalSetup; auth project uses this</pre>
-      </div>
-
-      <div class="card">
-        <h2>Commands</h2>
-        <p>Required env vars (your suite enforces these):</p>
-        <pre>export WEB_BASE_URL="http://sut.testlab:3000"
+        <h3>Environment contract</h3>
+        <pre><code>export WEB_BASE_URL="http://sut.testlab:3000"
 export API_BASE_URL="http://sut.testlab:3001/api"
 export RW_USER_EMAIL="rwuser_pw@yourdomain.test"
-export RW_USER_PASSWORD="yourpassword"</pre>
+export RW_USER_PASSWORD="yourpassword"</code></pre>
 
         <div class="divider"></div>
 
-        <p>Run a logged-in test (uses storageState):</p>
-        <pre>npx playwright test specs/sprint7 --project=auth-chromium --workers=1 --reporter=line</pre>
+        <h3>Run SMOKE</h3>
+        <pre><code>npx playwright test specs/sprint6/Sprint6.release-gates.smoke.spec.js \
+  --project=auth-chromium --workers=1 --reporter=line</code></pre>
 
-        <p>Run a logged-out test (forces unauth state):</p>
-        <pre>npx playwright test specs/sprint7 --project=unauth-chromium --workers=1 --reporter=line</pre>
+        <h3 style="margin-top:14px;">Run REGRESSION</h3>
+        <pre><code>npx playwright test specs/sprint6/Sprint6.release-gates.regression.spec.js \
+  --project=auth-chromium --workers=1 --reporter=line</code></pre>
 
-        <div class="divider"></div>
+        <h3 style="margin-top:14px;">Run all Sprint 6</h3>
+        <pre><code>npx playwright test specs/sprint6 \
+  --project=auth-chromium --workers=1 --reporter=line</code></pre>
 
-        <p>Skip globalSetup (useful for debugging auth failures fast):</p>
-        <pre>SKIP_GLOBAL_SETUP=1 npx playwright test specs/sprint7 --project=unauth-chromium --workers=1 --reporter=line</pre>
+        <div class="callout warn">
+          <span class="tag">Project names</span>
+          <p style="margin:8px 0 0;">
+            Valid projects: <code>auth-chromium</code>, <code>unauth-chromium</code>.
+            Do not run <code>--project=chromium</code> unless it exists in config.
+          </p>
+        </div>
       </div>
 
       <div class="card">
         <h2>Expected outputs</h2>
         <ul>
-          <li><span class="ok">✔</span> <code>.auth/emptyState.json</code> exists before tests start (no races).</li>
-          <li><span class="ok">✔</span> In auth project, navbar shows authenticated items without UI login steps in the test.</li>
-          <li><span class="ok">✔</span> API fixture can seed state (create article, fetch article) without UI.</li>
-          <li><span class="ok">✔</span> Failures have trace/video/screenshot in <code>test-results/</code> and HTML report in <code>playwright-report/</code>.</li>
+          <li><span class="ok">✔</span> Gate failure prints a single contract block with all fields populated.</li>
+          <li><span class="ok">✔</span> Gate annotations include capability/persona/decision/owner (reporting).</li>
+          <li><span class="ok">✔</span> Failure evidence exists when enabled: trace/screenshot/video + HTML report.</li>
+          <li><span class="ok">✔</span> Go/no-go decision can be made from CI log + artifacts.</li>
         </ul>
       </div>
 
       <div class="card">
-        <h2>Failure modes and diagnosis</h2>
+        <h2>Failure modes</h2>
         <ul>
           <li>
-            <strong>Auth state missing:</strong> <code>.auth/storageState.json</code> not present →
-            run a single test with globalSetup enabled; check <code>[globalSetup]</code> logs and the saved screenshot
-            (<code>global-setup-failure.png</code>).
+            <strong>Gate fails without contract block:</strong> wrapper not used.
+            Action: route test through <code>releaseGate(...)</code>.
           </li>
           <li>
-            <strong>Wrong project selected:</strong> tests behave logged-out in an auth flow →
-            ensure you ran <code>--project=auth-chromium</code>.
+            <strong>Contract fields missing:</strong> wrapper validation fails.
+            Action: populate required fields.
           </li>
           <li>
-            <strong>Conflicting auth strategy:</strong> token injection code changes behavior →
-            remove/rename legacy fixtures so only storageState is “the way.”
+            <strong>Auth gate fails:</strong> storageState missing/invalid or creds invalid.
+            Action: validate <code>fixtures/global-setup.js</code> and <code>RW_USER_*</code>.
           </li>
           <li>
-            <strong>Env contract broken:</strong> hard fail at startup →
-            confirm <code>WEB_BASE_URL</code>, <code>API_BASE_URL</code>, <code>RW_USER_EMAIL</code>, <code>RW_USER_PASSWORD</code>.
+            <strong>API-seeded gate fails:</strong> API base URL invalid or missing <code>/api</code>.
+            Action: confirm <code>API_BASE_URL</code> ends with <code>/api</code> and is reachable.
           </li>
           <li>
-            <strong>API auth fails:</strong> <code>/users/login</code> non-200 →
-            capture status/body in the API client error; confirm API base URL includes <code>/api</code>.
+            <strong>Unauth gate not unauth:</strong> test executed with auth state.
+            Action: run under <code>unauth-chromium</code> or override <code>storageState</code> explicitly.
+          </li>
+          <li>
+            <strong>Artifacts missing:</strong> artifact collection not enabled or paths not uploaded.
+            Action: verify Playwright config + CI <code>artifacts:paths</code>.
           </li>
         </ul>
 
         <div class="callout">
-          <p style="margin:0;">
-            <strong>Rule:</strong> do not “fix” these by waiting longer.
-            Fix the contract (env/auth/project selection) so the suite stays deterministic.
-          </p>
+          <span class="tag">Do</span>
+          <ul style="margin:8px 0 0 18px;">
+            <li>Fix contract inputs (env/auth/data/routing) when gate fails.</li>
+            <li>Re-run once after change.</li>
+          </ul>
+          <div class="divider"></div>
+          <span class="tag">Don’t</span>
+          <ul style="margin:8px 0 0 18px;">
+            <li>Do not add waits to “stabilize” a gate.</li>
+            <li>Do not rerun without a change.</li>
+          </ul>
         </div>
       </div>
 
-      <div class="card">
-        <h2>Why this matters (production relevance)</h2>
-        <p>
-          Without a single fixture contract, teams drift: multiple login strategies, inconsistent environment reads,
-          and tests that are impossible to reason about. Sprint 7 makes the suite scalable by ensuring
-          every test begins from a known state, uses shared domain primitives, and produces reliable evidence.
-        </p>
-      </div>
-
       <footer>
-        <div>Runbook 07 • QA Test Lab</div>
+        <div>Runbook 06 • QA Test Lab</div>
       </footer>
     </div>
   </body>

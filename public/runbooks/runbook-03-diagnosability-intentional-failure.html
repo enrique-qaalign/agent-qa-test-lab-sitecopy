@@ -4,7 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Runbook 03 — Diagnosability via Intentional Failure</title>
-    <meta name="description" content="Runbook 03 — Diagnosability via Intentional Failure (QA Test Lab)" />
+    <meta
+      name="description"
+      content="Runbook 03 — Diagnosability via Intentional Failure (QA Test Lab). Intentional red builds prove failures classify cleanly, route ownership, and do not require reruns. Mode-aware: default forbids localhost/port-forwarding; recording mode (CI_NAT_MODE=1) allows explicit localhost exception."
+    />
     <style>
       :root {
         --bg: #0b0e14;
@@ -13,6 +16,9 @@
         --muted: #aab2c5;
         --link: #7aa2ff;
         --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
       }
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
@@ -97,6 +103,14 @@
       }
       .mini { font-size: 13px; color: var(--muted); }
 
+      .rule {
+        border-left: 4px solid var(--warn);
+        padding-left: 10px;
+        margin-top: 10px;
+      }
+      .rule.good { border-left-color: var(--good); }
+      .rule.bad { border-left-color: var(--bad); }
+
       pre {
         margin: 10px 0 0;
         white-space: pre;
@@ -118,12 +132,14 @@
         border-collapse: collapse;
         margin-top: 10px;
       }
-      .table td {
+      .table th, .table td {
         border-top: 1px solid var(--border);
         padding: 10px 6px;
         vertical-align: top;
+        text-align: left;
       }
-      .table td:first-child { color: var(--muted); width: 260px; }
+      .table th { color: var(--text); font-weight: 700; }
+      .table td:first-child { color: var(--muted); width: 120px; }
 
       footer {
         margin-top: 26px;
@@ -147,6 +163,7 @@
           <div class="navlinks">
             <a class="pill" href="../">Home</a>
             <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#contract">Env contract</a>
             <a class="pill" href="#scenarios">Scenarios</a>
             <a class="pill" href="#commands">Commands</a>
             <a class="pill" href="#expected">Expected</a>
@@ -169,6 +186,7 @@
           <span>failure classification</span>
           <span>owned outcomes</span>
           <span>fix without rerun</span>
+          <span>mode-aware boundary</span>
         </div>
         <p class="mini" style="margin-top: 10px;">
           <strong>Status:</strong> This sprint is intentionally red by design.
@@ -184,6 +202,21 @@
             <strong>Objective:</strong> Prove that when failures occur, the automation framework produces
             immediate, unambiguous diagnostic signals that route ownership without reruns.
           </p>
+
+          <p class="rule good">
+            <strong>Rule:</strong> CI output must be sufficient to classify the failure without “try again” reruns.
+          </p>
+
+          <p class="rule">
+            <strong>Default boundary (CI_NAT_MODE!=1):</strong> no port-forwarding, no tunnels, no localhost HTTP targets.
+            CI must reach the SUT by hostname (e.g., <code>sut.testlab</code>).
+          </p>
+
+          <p class="rule">
+            <strong>Recording exception (CI_NAT_MODE=1):</strong> localhost targets (e.g., <code>127.0.0.1:3000</code>)
+            are allowed only for sanitized recording runs. This must be explicit and logged.
+          </p>
+
           <p style="margin-top: 12px;"><strong>Success criteria:</strong></p>
           <ul>
             <li>Failures are intentionally triggered and deterministic</li>
@@ -196,29 +229,81 @@
 
       <div class="divider"></div>
 
+      <section id="contract">
+        <div class="card">
+          <h2>Environment contract used by this runbook</h2>
+          <p class="mini">
+            Prefer <code>WEB_BASE_URL</code> and <code>API_BASE_URL</code>. <code>BASE_URL</code> may exist as compatibility
+            (treat it as an alias for <code>WEB_BASE_URL</code> unless your framework says otherwise).
+          </p>
+
+          <pre><code># Default (production-like)
+export CI_NAT_MODE="0"
+export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
+export BASE_URL="${WEB_BASE_URL}"   # compatibility only</code></pre>
+
+          <h3 style="margin-top: 14px;">Recording mode example (CI_NAT_MODE=1)</h3>
+          <pre><code># Temporary during sanitized recordings
+export CI_NAT_MODE="1"
+export WEB_BASE_URL="http://127.0.0.1:3000"
+export API_BASE_URL="http://127.0.0.1:3001/api"
+export BASE_URL="${WEB_BASE_URL}"</code></pre>
+
+          <h3 style="margin-top: 14px;">Minimal preflight classifier (recommended)</h3>
+          <pre><code>node -e '
+const nat = process.env.CI_NAT_MODE === "1";
+const web = process.env.WEB_BASE_URL || process.env.BASE_URL || "";
+const api = process.env.API_BASE_URL || "";
+if (!web) { console.error("S3.CONFIG: missing WEB_BASE_URL/BASE_URL (Owner: Test)"); process.exit(2); }
+if (!api) { console.error("S3.CONFIG: missing API_BASE_URL (Owner: Test)"); process.exit(2); }
+if (!nat) {
+  const bad = /(localhost|127\.0\.0\.1|0\.0\.0\.0)/i;
+  if (bad.test(web) || bad.test(api)) {
+    console.error("S3.BOUNDARY: localhost targets forbidden in default mode (Owner: Test/Infra)");
+    process.exit(2);
+  }
+}
+console.log("S3.CONFIG OK:", { CI_NAT_MODE: nat ? "1" : "0", WEB_BASE_URL: web, API_BASE_URL: api });
+'</code></pre>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
       <section id="scenarios">
         <div class="card">
           <h2>Scenario matrix</h2>
           <table class="table">
             <tr>
+              <th>Scenario</th>
+              <th>Trigger</th>
+              <th>Expected classification</th>
+              <th>Owner</th>
+            </tr>
+            <tr>
               <td><strong>S3.1</strong></td>
               <td>Wrong environment (cross-contamination)</td>
-              <td>Owner: Test owner</td>
+              <td>Config mismatch (env label vs target)</td>
+              <td>Test owner</td>
             </tr>
             <tr>
               <td><strong>S3.2</strong></td>
               <td>SUT unreachable / upstream unavailable</td>
-              <td>Owner: Infra</td>
+              <td>DNS/TCP/HTTP transport failure</td>
+              <td>Infra</td>
             </tr>
             <tr>
               <td><strong>S3.3</strong></td>
               <td>Auth rejection (invalid credentials)</td>
-              <td>Owner: Security</td>
+              <td>Explicit 401/403/422 from auth endpoint</td>
+              <td>Security</td>
             </tr>
           </table>
+
           <p class="mini" style="margin-top: 10px;">
-            Note: If an auth check returns 5xx (e.g., Cloudflare 530/1016), the correct classification is S3.2 (Infra),
-            because auth cannot be evaluated while the upstream is unhealthy.
+            Classification rule: if an auth check returns 5xx (or a gateway/proxy error), classify as <strong>S3.2 (Infra)</strong>.
+            You cannot evaluate auth while the upstream is unhealthy.
           </p>
         </div>
       </section>
@@ -230,25 +315,62 @@
           <h2>Exact commands</h2>
 
           <h3>Run full Sprint 3 suite</h3>
-          <pre><code>npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts</code></pre>
+          <pre><code># Tip: run the preflight classifier first (shown above)
+npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts</code></pre>
 
           <h3 style="margin-top: 14px;">Run a single scenario</h3>
-          <pre><code>npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3.1"</code></pre>
+          <pre><code>npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3\.1"</code></pre>
 
           <h3 style="margin-top: 14px;">Trigger S3.1 (wrong environment)</h3>
-          <pre><code>export TEST_ENV="qa"
-export BASE_URL="http://dev.testlab:3001"
-npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3.1"</code></pre>
+          <p class="mini">
+            Example: claim “qa” but point at a “dev” hostname. The suite should fail fast with a message that explains the mismatch.
+          </p>
+          <pre><code>export CI_NAT_MODE="0"
+export TEST_ENV="qa"
+export WEB_BASE_URL="http://dev.testlab:3000"
+export API_BASE_URL="http://dev.testlab:3001/api"
+export BASE_URL="${WEB_BASE_URL}"
+
+npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3\.1"</code></pre>
 
           <h3 style="margin-top: 14px;">Trigger S3.2 (SUT unreachable)</h3>
-          <pre><code>export BASE_URL="http://sut.testlab:5999"
-npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3.2"</code></pre>
+          <p class="mini">
+            Example: point at a closed port to force transport failure (DNS/TCP/timeout). This must classify as Infra.
+          </p>
+          <pre><code>export CI_NAT_MODE="0"
+export WEB_BASE_URL="http://sut.testlab:5999"
+export API_BASE_URL="http://sut.testlab:5999/api"
+export BASE_URL="${WEB_BASE_URL}"
+
+npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3\.2"</code></pre>
 
           <h3 style="margin-top: 14px;">Trigger S3.3 (auth rejection)</h3>
-          <pre><code>export BASE_URL="http://qa.testlab:3001"
+          <p class="mini">
+            Example: keep connectivity valid but force credentials to be rejected with expected auth codes.
+          </p>
+          <pre><code>export CI_NAT_MODE="0"
+export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
+export BASE_URL="${WEB_BASE_URL}"
+
 export AUTH_PATH="/api/users/login"
 export AUTH_REJECT_CODES="401,403,422"
-npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3.3"</code></pre>
+# If your suite reads user/pass from env, set a known-bad password:
+export RW_USER_EMAIL="rwuser@example.com"
+export RW_USER_PASSWORD="definitely-wrong"
+
+npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3\.3"</code></pre>
+
+          <h3 style="margin-top: 14px;">Recording mode example (CI_NAT_MODE=1)</h3>
+          <p class="mini">
+            Only use this during sanitized recordings. Localhost/port-forwards are allowed only because CI_NAT_MODE=1 is explicit.
+          </p>
+          <pre><code>export CI_NAT_MODE="1"
+export WEB_BASE_URL="http://127.0.0.1:3000"
+export API_BASE_URL="http://127.0.0.1:3001/api"
+export BASE_URL="${WEB_BASE_URL}"
+
+npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3\.2"</code></pre>
 
           <p class="mini" style="margin-top: 12px;">
             If your SUT uses a different auth route or payload shape, set <code>AUTH_PATH</code> and (optionally)
@@ -264,12 +386,16 @@ npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_R
           <h2>Expected outputs</h2>
           <table class="table">
             <tr>
+              <th>Scenario</th>
+              <th>Expected output signal</th>
+            </tr>
+            <tr>
               <td>S3.1</td>
-              <td>Immediate failure identifying environment mismatch and aborting execution</td>
+              <td>Immediate failure identifying environment mismatch (TEST_ENV vs target host) and aborting execution</td>
             </tr>
             <tr>
               <td>S3.2</td>
-              <td>Failure indicating connectivity, DNS, or upstream availability issue (Infra-class)</td>
+              <td>Failure indicating connectivity / DNS / transport / upstream availability issue (Infra-class)</td>
             </tr>
             <tr>
               <td>S3.3</td>

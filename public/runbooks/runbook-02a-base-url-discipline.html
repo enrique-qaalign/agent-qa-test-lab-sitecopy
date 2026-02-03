@@ -6,7 +6,7 @@
     <title>Runbook 02a — BASE_URL discipline and proof</title>
     <meta
       name="description"
-      content="Runbook 03 — BASE_URL discipline and proof (QA Test Lab)"
+      content="Runbook 02a — BASE_URL discipline and proof. Enforces env-driven targeting (WEB_BASE_URL/API_BASE_URL with BASE_URL compatibility), fail-fast validation, and mode-aware boundary rules (CI_NAT_MODE=0 no localhost; CI_NAT_MODE=1 recording exception)."
     />
     <style>
       :root {
@@ -16,6 +16,9 @@
         --muted: #aab2c5;
         --link: #7aa2ff;
         --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
       }
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
@@ -100,6 +103,14 @@
       }
       .mini { font-size: 13px; color: var(--muted); }
 
+      .rule {
+        border-left: 4px solid var(--warn);
+        padding-left: 10px;
+        margin-top: 10px;
+      }
+      .rule.good { border-left-color: var(--good); }
+      .rule.bad { border-left-color: var(--bad); }
+
       pre {
         margin: 10px 0 0;
         white-space: pre;
@@ -126,7 +137,7 @@
         padding: 10px 6px;
         vertical-align: top;
       }
-      .table td:first-child { color: var(--muted); width: 240px; }
+      .table td:first-child { color: var(--muted); width: 270px; }
 
       footer {
         margin-top: 26px;
@@ -136,6 +147,7 @@
         font-size: 14px;
       }
       section { scroll-margin-top: 84px; }
+
       @media (max-width: 920px) {
         .h1 { font-size: 28px; }
       }
@@ -150,6 +162,7 @@
           <div class="navlinks">
             <a class="pill" href="../">Home</a>
             <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#contract">Env contract</a>
             <a class="pill" href="#commands">Commands</a>
             <a class="pill" href="#expected">Expected</a>
             <a class="pill" href="#failure-modes">Failure modes</a>
@@ -161,16 +174,18 @@
 
     <div class="wrap">
       <section class="hero">
-        <div class="h1">Runbook 03 — BASE_URL discipline and proof</div>
+        <div class="h1">Runbook 02a — BASE_URL discipline and proof</div>
         <p class="lead">
           Validate that environment configuration controls navigation targets and that test code does not hardcode
-          domains or rely on implicit defaults.
+          domains or rely on implicit defaults. This runbook is mode-aware: default mode forbids localhost; recording
+          mode (<code>CI_NAT_MODE=1</code>) allows an explicit localhost exception.
         </p>
         <div class="kpi">
           <span>env-driven config</span>
           <span>fail-fast validation</span>
           <span>no hardcoded hosts</span>
           <span>deterministic targeting</span>
+          <span>mode-aware boundary</span>
         </div>
       </section>
 
@@ -180,16 +195,61 @@
         <div class="card">
           <h2>Objective + success criteria</h2>
           <p>
-            <strong>Objective:</strong> Verify that the target environment is provided by <code>BASE_URL</code>
-            (or the project’s configured equivalent) and that missing or incorrect values produce fast, diagnosable failures.
+            <strong>Objective:</strong> Verify that the target environment is provided by the runtime environment
+            (<code>WEB_BASE_URL</code>/<code>API_BASE_URL</code>, with optional <code>BASE_URL</code> compatibility)
+            and that missing or incorrect values produce fast, diagnosable failures.
           </p>
+
+          <p class="rule good">
+            <strong>Rule:</strong> Targets are explicit and logged at runtime.
+            Missing values fail fast with a clear message before any UI navigation.
+          </p>
+
+          <p class="rule">
+            <strong>Default boundary (CI_NAT_MODE!=1):</strong> localhost/loopback is forbidden for SUT HTTP.
+            No port forwarding, no SSH tunnels, no “localhost as environment.”
+          </p>
+
+          <p class="rule">
+            <strong>Recording exception (CI_NAT_MODE=1):</strong> localhost is allowed only when explicitly set
+            (e.g., <code>http://127.0.0.1:3000</code>) for sanitized recordings.
+          </p>
+
           <p style="margin-top: 12px;"><strong>Success criteria:</strong></p>
           <ul>
-            <li>When <code>BASE_URL</code> is unset, validation fails immediately with a clear error</li>
-            <li>When <code>BASE_URL</code> is incorrect, navigation fails with an external symptom (DNS/timeout/connection error)</li>
-            <li>When <code>BASE_URL</code> is correct, tests target the intended SUT host</li>
-            <li>Test code contains no hardcoded hostnames for environment selection</li>
+            <li>When <code>WEB_BASE_URL</code>/<code>API_BASE_URL</code> (or compatibility <code>BASE_URL</code>) are unset, validation fails immediately with a clear error</li>
+            <li>When targets are incorrect, failure occurs at DNS/connection/timeout layer and points to the unreachable target</li>
+            <li>When targets are correct, tests target the intended SUT host and proceed to application assertions</li>
+            <li>Project contains no hardcoded hostnames used for environment selection</li>
           </ul>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section id="contract">
+        <div class="card">
+          <h2>Environment contract</h2>
+
+          <p class="mini">
+            Prefer <code>WEB_BASE_URL</code> and <code>API_BASE_URL</code>. Use <code>BASE_URL</code> only as a compatibility
+            alias (set it from <code>WEB_BASE_URL</code> if needed).
+          </p>
+
+          <pre><code># Default (bridged/LAN)
+export CI_NAT_MODE="0"
+export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
+
+# Optional compatibility
+export BASE_URL="${WEB_BASE_URL}"</code></pre>
+
+          <h3 style="margin-top:14px;">Recording mode example (CI_NAT_MODE=1)</h3>
+          <pre><code># Temporary for sanitized recordings
+export CI_NAT_MODE="1"
+export WEB_BASE_URL="http://127.0.0.1:3000"
+export API_BASE_URL="http://127.0.0.1:3001/api"
+export BASE_URL="${WEB_BASE_URL}"</code></pre>
         </div>
       </section>
 
@@ -199,29 +259,81 @@
         <div class="card">
           <h2>Exact commands</h2>
 
-          <h3>Inspect configured target (Runner)</h3>
-          <pre><code>node -e 'console.log("BASE_URL=", process.env.BASE_URL || process.env.BASE_URL_TODO || "")'</code></pre>
+          <h3>1) Inspect configured target (Runner)</h3>
+          <pre><code>node -e '
+console.log("CI_NAT_MODE=", process.env.CI_NAT_MODE || "0");
+console.log("WEB_BASE_URL=", process.env.WEB_BASE_URL || "");
+console.log("API_BASE_URL=", process.env.API_BASE_URL || "");
+console.log("BASE_URL=", process.env.BASE_URL || "");
+'</code></pre>
 
-          <h3 style="margin-top: 14px;">Unset BASE_URL and validate fail-fast behavior (Runner)</h3>
-          <pre><code>unset BASE_URL
-node -e 'console.log("BASE_URL=", process.env.BASE_URL || "")'</code></pre>
+          <h3 style="margin-top: 14px;">2) Fail-fast validation block (Runner/CI)</h3>
+          <pre><code>node -e '
+const nat = process.env.CI_NAT_MODE === "1";
+const web = process.env.WEB_BASE_URL || process.env.BASE_URL || "";
+const api = process.env.API_BASE_URL || "";
 
-          <h3 style="margin-top: 14px;">Run a single test with BASE_URL unset (Runner)</h3>
-          <pre><code>npx playwright test -g "TODO\.NEW\.001" --project=Chromium --headed</code></pre>
+if (!web) { console.error("CONFIG ERROR: WEB_BASE_URL (or BASE_URL) must be set"); process.exit(2); }
+if (!api) { console.error("CONFIG ERROR: API_BASE_URL must be set"); process.exit(2); }
 
-          <h3 style="margin-top: 14px;">Set an incorrect BASE_URL and run (Runner)</h3>
-          <pre><code>export BASE_URL="http://sut.testlab:3999"
-npx playwright test -g "TODO\.NEW\.001" --project=Chromium --headed</code></pre>
+if (!nat) {
+  const bad = /(localhost|127\.0\.0\.1|0\.0\.0\.0)/i;
+  if (bad.test(web)) { console.error("CONFIG ERROR: WEB_BASE_URL cannot be localhost in default mode"); process.exit(2); }
+  if (bad.test(api)) { console.error("CONFIG ERROR: API_BASE_URL cannot be localhost in default mode"); process.exit(2); }
+}
 
-          <h3 style="margin-top: 14px;">Set correct BASE_URL and run (Runner)</h3>
-          <pre><code>export BASE_URL="http://sut.testlab:3001"
-npx playwright test -g "TODO\.NEW\.001" --project=Chromium --headed</code></pre>
+console.log("CONFIG OK:", { CI_NAT_MODE: nat ? "1" : "0", WEB_BASE_URL: web, API_BASE_URL: api });
+'</code></pre>
 
-          <h3 style="margin-top: 14px;">Optional: verify HTTP reachability matches BASE_URL (Runner)</h3>
-          <pre><code>curl -sS -o /dev/null -D - --max-time 3 "${BASE_URL}/" | head -n 12</code></pre>
+          <h3 style="margin-top: 14px;">3) Unset targets and prove fail-fast (Runner)</h3>
+          <pre><code>unset WEB_BASE_URL API_BASE_URL BASE_URL
+node -e 'console.log("WEB_BASE_URL=", process.env.WEB_BASE_URL || ""); console.log("API_BASE_URL=", process.env.API_BASE_URL || ""); console.log("BASE_URL=", process.env.BASE_URL || "")'
+
+# run the validation block above; it must exit non-zero with clear messaging</code></pre>
+
+          <h3 style="margin-top: 14px;">4) Set an incorrect target and run (Runner)</h3>
+          <pre><code>export CI_NAT_MODE="0"
+export WEB_BASE_URL="http://sut.testlab:3999"
+export API_BASE_URL="http://sut.testlab:3001/api"
+export BASE_URL="${WEB_BASE_URL}"
+
+# Optional: prove reachability fails outside Playwright
+curl -sv --max-time 3 "${WEB_BASE_URL}/" || true
+
+# Then run a single proof test (update grep/project to your suite)
+npx playwright test -g "RW\.NET\.001" --project=chromium --reporter=line</code></pre>
+
+          <h3 style="margin-top: 14px;">5) Set correct targets and run (Runner)</h3>
+          <pre><code>export CI_NAT_MODE="0"
+export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
+export BASE_URL="${WEB_BASE_URL}"
+
+curl -sS -o /dev/null -D - --max-time 3 "${WEB_BASE_URL}/" | head -n 12
+curl -sS -o /dev/null -D - --max-time 3 "${API_BASE_URL}/tags" | head -n 12
+
+npx playwright test -g "RW\.NET\.001" --project=chromium --reporter=line</code></pre>
+
+          <h3 style="margin-top: 14px;">6) Recording mode example (CI_NAT_MODE=1)</h3>
+          <pre><code>export CI_NAT_MODE="1"
+export WEB_BASE_URL="http://127.0.0.1:3000"
+export API_BASE_URL="http://127.0.0.1:3001/api"
+export BASE_URL="${WEB_BASE_URL}"
+
+curl -sS -o /dev/null -D - --max-time 3 "${WEB_BASE_URL}/" | head -n 12
+curl -sS -o /dev/null -D - --max-time 3 "${API_BASE_URL}/tags" | head -n 12
+
+npx playwright test -g "RW\.NET\.001" --project=chromium --reporter=line</code></pre>
+
+          <h3 style="margin-top: 14px;">7) Prove “no hardcoded hosts” (Repo)</h3>
+          <pre><code># These should return nothing (or only documentation references)
+grep -R "http://sut\.testlab" -n pages tests fixtures playwright.config.* || true
+grep -R "http://127\.0\.0\.1" -n pages tests fixtures playwright.config.* || true
+grep -R "localhost:" -n pages tests fixtures playwright.config.* || true</code></pre>
 
           <p class="mini" style="margin-top: 12px;">
-            If the project uses a different variable (e.g., <code>BASE_URL_TODO</code>), substitute accordingly.
+            If your project still uses a legacy variable (e.g., <code>BASE_URL_TODO</code>), document it here and map it to
+            <code>WEB_BASE_URL</code> explicitly rather than adding more implicit fallback behavior.
           </p>
         </div>
       </section>
@@ -234,20 +346,28 @@ npx playwright test -g "TODO\.NEW\.001" --project=Chromium --headed</code></pre>
 
           <table class="table">
             <tr>
-              <td>BASE_URL unset</td>
-              <td>Test run fails early with a clear configuration error (no navigation attempts required).</td>
+              <td>Targets unset</td>
+              <td>Fail immediately with a configuration error. No UI navigation required.</td>
             </tr>
             <tr>
-              <td>BASE_URL incorrect</td>
-              <td>Failure occurs at DNS, connection, or timeout layer and points to an unreachable target.</td>
+              <td>Targets incorrect</td>
+              <td>Failure occurs at DNS/connection/timeout layer; logs clearly show the target used.</td>
             </tr>
             <tr>
-              <td>BASE_URL correct</td>
-              <td>Navigation targets the intended SUT host and proceeds to application-level assertions.</td>
+              <td>Targets correct</td>
+              <td>Navigation hits the intended SUT host and proceeds into app-level assertions.</td>
+            </tr>
+            <tr>
+              <td>Default boundary</td>
+              <td>When <code>CI_NAT_MODE!=1</code>, localhost targets are rejected.</td>
+            </tr>
+            <tr>
+              <td>Recording exception</td>
+              <td>When <code>CI_NAT_MODE=1</code>, localhost targets are allowed and succeed.</td>
             </tr>
             <tr>
               <td>Evidence to capture</td>
-              <td>Console echo of <code>BASE_URL</code>, relevant error output, and Playwright artifacts if enabled.</td>
+              <td>Console echo of vars + fail-fast output + Playwright artifacts if enabled.</td>
             </tr>
           </table>
 
@@ -263,28 +383,27 @@ npx playwright test -g "TODO\.NEW\.001" --project=Chromium --headed</code></pre>
         <div class="card">
           <h2>Failure modes + how to diagnose</h2>
 
-          <h3>BASE_URL not enforced (silent fallback)</h3>
-          <p><strong>Symptom:</strong> tests run using an implicit default target when BASE_URL is missing.</p>
-          <p><strong>Diagnosis:</strong> inspect config and test logs for implicit navigation targets.</p>
-          <pre><code>node -e 'console.log("BASE_URL=", process.env.BASE_URL || process.env.BASE_URL_TODO || "")'
-grep -R "http://" -n pages tests playwright.config.* || true
-grep -R "https://" -n pages tests playwright.config.* || true</code></pre>
+          <h3>Silent fallback (BASE_URL not enforced)</h3>
+          <p><strong>Symptom:</strong> tests run using an implicit default target when vars are missing.</p>
+          <p><strong>Diagnosis:</strong> inspect config and logs for any default navigation target.</p>
+          <pre><code>grep -R "baseURL" -n playwright.config.* fixtures pages tests || true
+grep -R "process\.env\." -n fixtures pages tests playwright.config.*</code></pre>
 
           <div class="divider"></div>
 
           <h3>Incorrect variable name used</h3>
-          <p><strong>Symptom:</strong> BASE_URL is set but framework reads a different variable.</p>
-          <p><strong>Diagnosis:</strong> search for environment reads.</p>
-          <pre><code>grep -R "process\.env\." -n pages tests playwright.config.*</code></pre>
+          <p><strong>Symptom:</strong> you set vars but framework reads something else.</p>
+          <p><strong>Diagnosis:</strong> search for environment reads and standardize on WEB_BASE_URL/API_BASE_URL.</p>
+          <pre><code>grep -R "process\.env\." -n fixtures pages tests playwright.config.*</code></pre>
 
           <div class="divider"></div>
 
-          <h3>BASE_URL correct but connectivity fails</h3>
-          <p><strong>Symptom:</strong> correct target value; network errors occur.</p>
-          <p><strong>Diagnosis:</strong> validate reachability outside of Playwright.</p>
-          <pre><code>curl -sv --max-time 3 "${BASE_URL}/" || true
-nslookup sut.testlab || true
-nc -vz -G 2 192.168.0.31 3001 || true</code></pre>
+          <h3>Targets correct but connectivity fails</h3>
+          <p><strong>Symptom:</strong> config looks right; network errors occur.</p>
+          <p><strong>Diagnosis:</strong> validate reachability outside Playwright.</p>
+          <pre><code>curl -sv --max-time 3 "${WEB_BASE_URL}/" || true
+curl -sv --max-time 3 "${API_BASE_URL}/tags" || true
+nslookup sut.testlab || true</code></pre>
         </div>
       </section>
 
@@ -294,9 +413,9 @@ nc -vz -G 2 192.168.0.31 3001 || true</code></pre>
         <div class="card">
           <h2>Why it matters (production relevance)</h2>
           <p>
-            Environment-driven targeting prevents test code from becoming configuration drift. It supports deterministic
-            execution across developer machines, CI runners, and staged environments without code changes, reducing
-            misconfiguration risk and improving diagnosability.
+            Environment-driven targeting prevents configuration drift. It enables deterministic execution across developer machines,
+            CI runners, and staged environments without code changes, improving diagnosability and reducing “works on my machine”
+            artifacts. Mode-aware rules prevent accidental boundary bypass while still supporting sanitized recordings.
           </p>
         </div>
       </section>

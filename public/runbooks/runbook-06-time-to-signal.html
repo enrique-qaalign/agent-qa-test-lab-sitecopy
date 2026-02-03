@@ -6,7 +6,7 @@
     <title>Runbook 06 — Release gates (time-to-signal) + decision rubric</title>
     <meta
       name="description"
-      content="Runbook 06 — Release gates (time-to-signal) + decision rubric. Defines smoke vs regression gates, contract-driven failure output, and explicit go/no-go criteria (BLOCK vs WARN)."
+      content="Runbook 06 — Release gates (time-to-signal) + decision rubric. Defines smoke vs regression gates, gate contract output, and explicit go/no-go criteria (BLOCK vs WARN)."
     />
     <style>
       :root {
@@ -119,81 +119,82 @@
       <h1>Runbook 06 — Release gates (time-to-signal) + decision rubric</h1>
 
       <div class="card">
-        <h2>Objective</h2>
-        <p>
-          Sprint 6 proves a decision-grade gating model: tests map to <strong>risk</strong>, not coverage vanity.
-          The suite is split into <strong>SMOKE</strong> (fast time-to-signal) and <strong>REGRESSION</strong>
-          (deeper confidence) with explicit go/no-go criteria.
-        </p>
+        <h2>Scope</h2>
+        <ul>
+          <li>Define release gates as named tests with explicit decision metadata.</li>
+          <li>Split gates into SMOKE and REGRESSION suites.</li>
+          <li>Print a gate contract block on failure (CI log).</li>
+          <li>Retain failure evidence (artifacts) when enabled in config/CI.</li>
+        </ul>
 
         <div class="callout good">
+          <span class="tag">Gate contract</span>
           <span class="tag">Time-to-signal</span>
-          <span class="tag">Release gate contract</span>
           <p style="margin:8px 0 0;">
-            <strong>Contract:</strong> Every gate declares
-            <code>capability</code>, <code>persona</code>, <code>failureMeans</code>,
-            <code>releaseDecision</code> (BLOCK/WARN), <code>mitigation</code>, and <code>owner</code>.
-            If a gate fails, CI output must be sufficient to route ownership without reruns.
+            Requirement: each gate declares <code>id</code>, <code>capability</code>, <code>persona</code>,
+            <code>failureMeans</code>, <code>releaseDecision</code> (BLOCK/WARN), <code>mitigation</code>, <code>owner</code>.
+            Missing fields = hard fail at gate definition time.
           </p>
         </div>
       </div>
 
       <div class="card">
-        <h2>Acceptance criteria (Sprint 6)</h2>
+        <h2>Exit criteria</h2>
         <ul>
-          <li><span class="ok">✔</span> SMOKE provides fast signal (auth + core flows) and is runnable alone.</li>
-          <li><span class="ok">✔</span> REGRESSION covers deeper workflows and cross-channel consistency (API ⇄ UI).</li>
-          <li><span class="ok">✔</span> Each test is a <em>release gate</em> with an explicit decision: <strong>BLOCK</strong> or <strong>WARN</strong>.</li>
-          <li><span class="ok">✔</span> Gate failures print a human-readable contract in CI logs (no archaeology).</li>
-          <li><span class="ok">✔</span> Evidence exists: traces/video/screenshot/HTML report are retained for failures.</li>
+          <li><span class="ok">✔</span> SMOKE suite runs independently and completes with fast signal.</li>
+          <li><span class="ok">✔</span> REGRESSION suite runs independently and covers deeper workflows.</li>
+          <li><span class="ok">✔</span> Each gate has decision metadata (<strong>BLOCK</strong> or <strong>WARN</strong>).</li>
+          <li><span class="ok">✔</span> On failure, CI log includes a single readable contract block (no extra runs required to classify).</li>
+          <li><span class="ok">✔</span> Failure evidence exists when enabled: HTML report + per-test artifacts.</li>
         </ul>
       </div>
 
       <div class="card">
-        <h2>Decision rubric (go / no-go)</h2>
+        <h2>Decision rubric</h2>
         <table class="table">
           <thead>
             <tr>
               <th>Decision</th>
-              <th>Meaning</th>
-              <th>Release action</th>
+              <th>Definition</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><strong class="bad">BLOCK</strong></td>
-              <td>Core capability is broken or risk is unacceptable (auth, publish, read, security boundary).</td>
-              <td>Do not release. Fix or rollback. Re-run gate once after change.</td>
+              <td>Capability required for release is not verified.</td>
+              <td>Stop release. Apply fix/rollback. Re-run gate once after change.</td>
             </tr>
             <tr>
               <td><strong class="warn">WARN</strong></td>
-              <td>Non-critical capability is degraded (engagement/social/optional UX) with mitigations available.</td>
-              <td>Release allowed with explicit note + follow-up ticket (and/or feature flag mitigation).</td>
+              <td>Capability is degraded and mitigation exists.</td>
+              <td>Release may proceed with recorded mitigation + follow-up work item.</td>
             </tr>
           </tbody>
         </table>
 
         <div class="callout">
-          <p style="margin:0;">
-            <strong>Rule:</strong> BLOCK and WARN are not “severity vibes.” They are a release policy.
-            If the mitigation is “we can’t mitigate,” the decision is probably BLOCK.
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            If mitigation is undefined or not actionable, set decision to <strong>BLOCK</strong>.
           </p>
         </div>
       </div>
 
       <div class="card">
-        <h2>Gate anatomy (what every gate must include)</h2>
-        <p>Each gate uses the wrapper in <code>helpers/releaseGate.js</code> to enforce the contract and annotate results.</p>
-        <pre>test(
+        <h2>Gate structure</h2>
+        <p>Implementation uses <code>helpers/releaseGate.js</code> to enforce required fields and print failure contracts.</p>
+
+        <pre><code>test(
   "RW.SMOKE.001 — Login establishes authenticated session",
   releaseGate(
     {
       id: "RW.SMOKE.001",
       capability: "Authentication: establish session",
       persona: "Registered user",
-      failureMeans: "Users cannot authenticate; authenticated journeys are blocked",
+      failureMeans: "Users cannot authenticate; authenticated journeys unavailable",
       releaseDecision: "BLOCK",
-      mitigation: "Rollback auth change; validate /api/users/login + storageState generation",
+      mitigation: "Rollback auth change; validate /api/users/login and storageState generation",
       owner: "Web + API",
     },
     ["home"],
@@ -202,73 +203,64 @@
       await home.expectLoggedInNav();
     }
   )
-);</pre>
+);</code></pre>
 
         <div class="callout good">
-          <p style="margin:0;">
-            <strong>Verified release gate contract:</strong> if any required field is missing, the wrapper hard-fails early
-            so no “half-documented” gates make it into the suite.
+          <span class="tag">Validation</span>
+          <p style="margin:8px 0 0;">
+            Required field missing = gate definition hard fails (no silent partial gates).
           </p>
         </div>
       </div>
 
       <div class="card">
-        <h2>Suite structure: SMOKE vs REGRESSION</h2>
+        <h2>Suite policy</h2>
         <table class="table">
           <tbody>
             <tr>
               <td>SMOKE</td>
-              <td>
-                Fast, business-critical workflows. Goal is <strong>time-to-signal</strong>.
-                Examples: auth session, feed renders, publish, read by slug, comment, logout.
-              </td>
+              <td>Fast signal on core flows. Default decision = <strong>BLOCK</strong> unless mitigation is explicit.</td>
             </tr>
             <tr>
               <td>REGRESSION</td>
-              <td>
-                Deeper workflows and consistency checks. Examples: edit persists after refresh,
-                settings persist, API→UI visibility, UI→API visibility, unauth write blocked.
-              </td>
+              <td>Deeper flows and consistency checks. May include <strong>WARN</strong> gates when mitigation exists.</td>
             </tr>
             <tr>
-              <td>Policy</td>
-              <td>
-                SMOKE failures typically <strong>BLOCK</strong>. REGRESSION can include <strong>WARN</strong>
-                gates where mitigation exists.
-              </td>
+              <td>Ownership</td>
+              <td>Each gate has an <code>owner</code>. CI log output must route ownership from the contract block.</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <div class="card">
-        <h2>How to run (local and CI)</h2>
-        <p>Env contract (preferred canonical variables):</p>
-        <pre>export WEB_BASE_URL="http://sut.testlab:3000"
+        <h2>Run commands</h2>
+
+        <h3>Environment contract</h3>
+        <pre><code>export WEB_BASE_URL="http://sut.testlab:3000"
 export API_BASE_URL="http://sut.testlab:3001/api"
 export RW_USER_EMAIL="rwuser_pw@yourdomain.test"
-export RW_USER_PASSWORD="yourpassword"</pre>
+export RW_USER_PASSWORD="yourpassword"</code></pre>
 
         <div class="divider"></div>
 
-        <p>Run SMOKE gate suite:</p>
-        <pre>npx playwright test specs/sprint6/Sprint6.release-gates.smoke.spec.js \
-  --project=auth-chromium --workers=1 --reporter=line</pre>
+        <h3>Run SMOKE</h3>
+        <pre><code>npx playwright test specs/sprint6/Sprint6.release-gates.smoke.spec.js \
+  --project=auth-chromium --workers=1 --reporter=line</code></pre>
 
-        <p>Run REGRESSION gate suite:</p>
-        <pre>npx playwright test specs/sprint6/Sprint6.release-gates.regression.spec.js \
-  --project=auth-chromium --workers=1 --reporter=line</pre>
+        <h3 style="margin-top:14px;">Run REGRESSION</h3>
+        <pre><code>npx playwright test specs/sprint6/Sprint6.release-gates.regression.spec.js \
+  --project=auth-chromium --workers=1 --reporter=line</code></pre>
 
-        <div class="divider"></div>
-
-        <p>Run everything in Sprint 6 folder:</p>
-        <pre>npx playwright test specs/sprint6 \
-  --project=auth-chromium --workers=1 --reporter=line</pre>
+        <h3 style="margin-top:14px;">Run all Sprint 6</h3>
+        <pre><code>npx playwright test specs/sprint6 \
+  --project=auth-chromium --workers=1 --reporter=line</code></pre>
 
         <div class="callout warn">
-          <p style="margin:0;">
-            <strong>Note:</strong> Your Playwright projects are <code>auth-chromium</code> and <code>unauth-chromium</code>.
-            Do not run <code>--project=chromium</code> (it does not exist in your config).
+          <span class="tag">Project names</span>
+          <p style="margin:8px 0 0;">
+            Valid projects: <code>auth-chromium</code>, <code>unauth-chromium</code>.
+            Do not run <code>--project=chromium</code> unless it exists in config.
           </p>
         </div>
       </div>
@@ -276,49 +268,55 @@ export RW_USER_PASSWORD="yourpassword"</pre>
       <div class="card">
         <h2>Expected outputs</h2>
         <ul>
-          <li><span class="ok">✔</span> Each failing gate prints a “RELEASE GATE FAILURE CONTRACT” block with fields populated.</li>
-          <li><span class="ok">✔</span> Test annotations contain capability/persona/decision/owner for reporting.</li>
-          <li><span class="ok">✔</span> Artifacts exist for failures (<code>trace.zip</code>, screenshot, optional video).</li>
-          <li><span class="ok">✔</span> You can decide go/no-go from logs + artifacts without rerun.</li>
+          <li><span class="ok">✔</span> Gate failure prints a single contract block with all fields populated.</li>
+          <li><span class="ok">✔</span> Gate annotations include capability/persona/decision/owner (reporting).</li>
+          <li><span class="ok">✔</span> Failure evidence exists when enabled: trace/screenshot/video + HTML report.</li>
+          <li><span class="ok">✔</span> Go/no-go decision can be made from CI log + artifacts.</li>
         </ul>
       </div>
 
       <div class="card">
-        <h2>Failure modes and diagnosis</h2>
+        <h2>Failure modes</h2>
         <ul>
           <li>
-            <strong>Gate fails but contract missing:</strong> wrapper not used or required fields absent →
-            fix the test to go through <code>releaseGate(...)</code>.
+            <strong>Gate fails without contract block:</strong> wrapper not used.
+            Action: route test through <code>releaseGate(...)</code>.
           </li>
           <li>
-            <strong>Auth-related gate fails:</strong> storageState not generated or credentials invalid →
-            validate <code>fixtures/global-setup.js</code> and <code>RW_USER_*</code>.
+            <strong>Contract fields missing:</strong> wrapper validation fails.
+            Action: populate required fields.
           </li>
           <li>
-            <strong>API seeded gate fails:</strong> <code>/users/login</code> or API base URL wrong →
-            confirm <code>API_BASE_URL</code> ends with <code>/api</code>.
+            <strong>Auth gate fails:</strong> storageState missing/invalid or creds invalid.
+            Action: validate <code>fixtures/global-setup.js</code> and <code>RW_USER_*</code>.
           </li>
           <li>
-            <strong>Unauth gate flaky:</strong> test accidentally runs under auth state →
-            ensure it uses <code>unauth-chromium</code> project or overrides <code>storageState</code> explicitly.
+            <strong>API-seeded gate fails:</strong> API base URL invalid or missing <code>/api</code>.
+            Action: confirm <code>API_BASE_URL</code> ends with <code>/api</code> and is reachable.
+          </li>
+          <li>
+            <strong>Unauth gate not unauth:</strong> test executed with auth state.
+            Action: run under <code>unauth-chromium</code> or override <code>storageState</code> explicitly.
+          </li>
+          <li>
+            <strong>Artifacts missing:</strong> artifact collection not enabled or paths not uploaded.
+            Action: verify Playwright config + CI <code>artifacts:paths</code>.
           </li>
         </ul>
 
         <div class="callout">
-          <p style="margin:0;">
-            <strong>Rule:</strong> Don’t “fix” gate failures by adding waits.
-            Fix the contract (auth, environment, data setup, or routing) so time-to-signal stays fast.
-          </p>
+          <span class="tag">Do</span>
+          <ul style="margin:8px 0 0 18px;">
+            <li>Fix contract inputs (env/auth/data/routing) when gate fails.</li>
+            <li>Re-run once after change.</li>
+          </ul>
+          <div class="divider"></div>
+          <span class="tag">Don’t</span>
+          <ul style="margin:8px 0 0 18px;">
+            <li>Do not add waits to “stabilize” a gate.</li>
+            <li>Do not rerun without a change.</li>
+          </ul>
         </div>
-      </div>
-
-      <div class="card">
-        <h2>Why it matters (production relevance)</h2>
-        <p>
-          Release gates are only valuable if they are fast, trusted, and decision-grade.
-          Sprint 6 makes CI a release signal by encoding business risk into each test’s contract,
-          routing ownership cleanly, and producing evidence without rerun dependency.
-        </p>
       </div>
 
       <footer>

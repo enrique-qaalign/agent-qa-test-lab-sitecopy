@@ -6,7 +6,7 @@
     <title>Runbook 01.1 — CI Runner → SUT connectivity and naming (CI Variant)</title>
     <meta
       name="description"
-      content="Runbook 01.1 — CI Runner → SUT connectivity and naming (CI Variant). Proves CI job reaches SUT across a real network boundary using stable naming; localhost HTTP is disallowed."
+      content="Runbook 01.1 — CI Runner → SUT connectivity and naming (CI Variant). Proves CI job reaches SUT using stable naming in bridged/LAN mode; supports temporary NAT recording mode (CI_NAT_MODE=1) with explicit localhost exception and evidence-ready checks."
     />
 
     <style>
@@ -237,12 +237,13 @@
       <section class="hero">
         <div class="h1">Runbook 01.1 — CI Runner → SUT connectivity and naming (CI Variant)</div>
         <p class="lead">
-          Prove CI-executed automation reaches the SUT across a real network boundary using stable naming.
-          Localhost HTTP must not be an acceptable target. This runbook is CI-safe, fail-fast, and evidence-friendly.
+          Prove CI-executed automation reaches the SUT using stable naming in bridged/LAN mode.
+          This runbook also supports a temporary NAT recording mode (<code>CI_NAT_MODE=1</code>) where localhost HTTP is explicitly allowed
+          because the SUT is reached via local port-forwards. The checks are CI-safe, fail-fast, and evidence-friendly.
         </p>
         <div class="kpi">
           <span>name resolution proof</span>
-          <span>localhost HTTP negative proof</span>
+          <span>boundary proof (mode-aware)</span>
           <span>TCP transport proof</span>
           <span>remote identity proof</span>
           <span>automation proof</span>
@@ -258,26 +259,37 @@
 
           <p>
             <strong>Objective:</strong> Validate that tests executed by a CI runner reach the System Under Test (SUT)
-            over a real network boundary using stable naming (e.g., <code>sut.testlab</code>). Localhost HTTP must not
-            be accepted because it can mask routing, name resolution, firewall, and port exposure failures.
+            over a real network boundary using stable naming (e.g., <code>sut.testlab</code>).
+            In default mode, localhost HTTP must not be an acceptable target because it can mask routing, name resolution, firewall,
+            and port exposure failures.
           </p>
 
           <p class="rule good">
-            <strong>Rule:</strong> HTTP checks and Playwright UI navigation must target <code>${WEB_BASE_URL}</code>
+            <strong>Rule (default):</strong> HTTP checks and Playwright UI navigation must target <code>${WEB_BASE_URL}</code>
             resolved by name (not <code>localhost</code>).
           </p>
 
           <p class="rule">
+            <strong>Mode contract:</strong>
+            This runbook has two valid execution modes.
+            <br />
+            <strong>BRIDGED/LAN (default):</strong> reach the SUT by stable name (e.g., <code>sut.testlab</code>). Localhost HTTP is <em>forbidden</em>.
+            <br />
+            <strong>NAT RECORDING (temporary):</strong> reach the SUT via local VirtualBox port-forwards
+            (<code>127.0.0.1:3000</code>, <code>127.0.0.1:3001</code>). Localhost HTTP is <em>allowed</em>, but must be explicitly enabled via <code>CI_NAT_MODE=1</code>.
+          </p>
+
+          <p class="rule">
             <strong>Compatibility note:</strong> Runbook 00 uses localhost port-forwarding for SSH baseline access
-            (<code>127.0.0.1:2222 → VM:22</code>). That is acceptable for bootstrap access. This runbook prohibits
-            localhost for <em>SUT HTTP</em> (web/API) proof.
+            (<code>127.0.0.1:2222 → VM:22</code>). That remains acceptable for bootstrap access.
+            This runbook governs <em>SUT HTTP</em> (web/API) proof with a mode-aware boundary rule.
           </p>
 
           <p style="margin-top: 12px;"><strong>Success criteria:</strong></p>
           <ul>
-            <li><strong>Name resolution proof:</strong> <code>${SUT_HOST}</code> resolves inside the CI job to the intended SUT address (DNS or injected hosts mapping).</li>
-            <li><strong>Localhost HTTP negative proof:</strong> requests to <code>http://localhost:${WEB_PORT}</code> do not return SUT HTTP (curl failure is acceptable; <code>200 OK</code> is a failure).</li>
-            <li><strong>TCP transport proof:</strong> TCP handshake to <code>${SUT_HOST}:${WEB_PORT}</code> and <code>${SUT_HOST}:${API_PORT}</code> succeeds.</li>
+            <li><strong>Name resolution proof (default mode):</strong> <code>${SUT_HOST}</code> resolves inside the CI job to the intended SUT address (DNS or injected hosts mapping).</li>
+            <li><strong>Boundary proof (mode-aware):</strong> when <code>CI_NAT_MODE!=1</code>, localhost must not return SUT HTTP; when <code>CI_NAT_MODE=1</code>, localhost must return SUT HTTP via port-forwards.</li>
+            <li><strong>TCP transport proof:</strong> TCP handshake succeeds to <code>${SUT_HOST}:${WEB_PORT}</code> and <code>${SUT_HOST}:${API_PORT}</code> (or to localhost ports in NAT mode).</li>
             <li><strong>Remote identity proof:</strong> web and API responses match Conduit (HTML title for web; JSON shape for API).</li>
             <li><strong>Automation proof:</strong> at least one Playwright UI test passes while targeting <code>${WEB_BASE_URL}</code>.</li>
           </ul>
@@ -286,16 +298,17 @@
             <summary>Private (operator): lab topology truth statement</summary>
             <pre><code># Declare which topology this CI runner is using (keep raw IPs private)
 # Preferred (production-like): CI runner is on a different host and must use sut.testlab over LAN/VPN.
-# Baseline-compatible: CI runner runs on same physical host as VirtualBox; SSH uses localhost:2222 for bootstrap only.
+# Temporary (recording-safe): NAT mode uses localhost web/api via VirtualBox port-forwards and is enabled via CI_NAT_MODE=1.
 
 # Conduit services (canonical):
-# WEB: http://sut.testlab:3000
-# API: http://sut.testlab:3001/api
+# BRIDGED/LAN: WEB http://sut.testlab:3000 | API http://sut.testlab:3001/api
+# NAT (recording): WEB http://127.0.0.1:3000 | API http://127.0.0.1:3001/api
 
-# Forbidden for proof:
-# - SSH tunnels exposing web/api to localhost
-# - reverse proxies mapping SUT to localhost
-# - docker publish of SUT ports onto the runner host
+# Forbidden for BRIDGED/LAN proof:
+# - port-forwards/proxies/tunnels exposing SUT web/api to localhost
+
+# Allowed only for NAT RECORDING mode:
+# - VirtualBox NAT port forwarding that exposes 3000/3001 on 127.0.0.1 (CI_NAT_MODE=1)
 </code></pre>
           </details>
         </div>
@@ -316,8 +329,9 @@
           <h3>What you are selecting</h3>
           <table class="table">
             <tr><td><code>TEST_ENV</code></td><td>Human-readable environment label (<code>dev</code>, <code>qa</code>, <code>prod</code>).</td></tr>
-            <tr><td><code>WEB_BASE_URL</code></td><td>Web UI entrypoint used by Playwright navigation. Example: <code>http://sut.testlab:3000</code>.</td></tr>
-            <tr><td><code>API_BASE_URL</code></td><td>API entrypoint used by API setup/login. Example: <code>http://sut.testlab:3001/api</code>.</td></tr>
+            <tr><td><code>WEB_BASE_URL</code></td><td>Web UI entrypoint used by Playwright navigation. Example: <code>http://sut.testlab:3000</code> (or <code>http://127.0.0.1:3000</code> in NAT mode).</td></tr>
+            <tr><td><code>API_BASE_URL</code></td><td>API entrypoint used by API setup/login. Example: <code>http://sut.testlab:3001/api</code> (or <code>http://127.0.0.1:3001/api</code> in NAT mode).</td></tr>
+            <tr><td><code>CI_NAT_MODE</code></td><td>Boundary mode switch. <code>0</code>=default (bridged/LAN), <code>1</code>=temporary NAT recording mode (localhost allowed).</td></tr>
             <tr><td><code>RW_USER_EMAIL</code>, <code>RW_USER_PASSWORD</code></td><td>Optional credentials used by global setup (if enabled).</td></tr>
             <tr><td>Legacy compatibility</td><td><code>BASE_URL</code> may exist for older scripts. Prefer <code>WEB_BASE_URL</code>.</td></tr>
           </table>
@@ -332,13 +346,21 @@
 dotenvx run -f .env.dev -- npx playwright test
 
 # QA
-dotenvx run -f .env.qa -- npx playwright test
+dotenvx run -f .env.qa -- npx playwright test</code></pre>
 
-# Prod (example)
-dotenvx run -f .env.prod -- npx playwright test</code></pre>
+          <h3>Recording-safe NAT example (temporary)</h3>
+          <p class="mini">
+            Use this only during Sprint 00–04 recordings when the SUT is in NAT mode and exposed via localhost port-forwards.
+          </p>
+          <pre><code>CI_NAT_MODE=1 dotenvx run -f .env.sprint4 -- bash -lc '
+  echo "CI_NAT_MODE=$CI_NAT_MODE"
+  echo "WEB_BASE_URL=$WEB_BASE_URL"
+  echo "API_BASE_URL=$API_BASE_URL"
+  npx playwright test --project=auth-chromium -g "@smoke"
+'</code></pre>
 
           <h3>How to confirm you loaded the right environment</h3>
-          <pre><code>dotenvx run -f .env.qa -- bash -lc 'echo "TEST_ENV=$TEST_ENV"; echo "WEB_BASE_URL=$WEB_BASE_URL"; echo "API_BASE_URL=$API_BASE_URL"'</code></pre>
+          <pre><code>dotenvx run -f .env.qa -- bash -lc 'echo "TEST_ENV=$TEST_ENV"; echo "WEB_BASE_URL=$WEB_BASE_URL"; echo "API_BASE_URL=$API_BASE_URL"; echo "CI_NAT_MODE=${CI_NAT_MODE:-0}"'</code></pre>
 
           <h3>Optional: load an environment into your current shell (use carefully)</h3>
           <p class="mini">
@@ -352,21 +374,22 @@ set +a
 
 echo "TEST_ENV=$TEST_ENV"
 echo "WEB_BASE_URL=$WEB_BASE_URL"
-echo "API_BASE_URL=$API_BASE_URL"</code></pre>
+echo "API_BASE_URL=$API_BASE_URL"
+echo "CI_NAT_MODE=${CI_NAT_MODE:-0}"</code></pre>
 
           <details class="private">
             <summary>Private (operator): common new hire mistakes and fixes</summary>
-            <pre><code># Mistake: "echo WEB_BASE_URL is blank"
-# Cause: .env file not loaded into current process environment.
-# Fix: use dotenvx run -f .env.qa -- ...
+            <pre><code># Mistake: "tests hit localhost and pass"
+# Cause: NAT mode or local port-forward makes localhost look like SUT.
+# Fix: assert the intended mode. If BRIDGED: localhost must fail. If NAT: localhost must succeed.
 
-# Mistake: "tests hit localhost and pass"
-# Cause: local service or port forward makes localhost look like SUT.
-# Fix: run localhost negative proof; remove port forwards.
+# Mistake: "CI_NAT_MODE is 0 even though I set it"
+# Cause: protected variables do not apply to non-protected branches.
+# Fix: unprotect CI_NAT_MODE or run on a protected ref.
 
 # Mistake: "API login fails"
 # Cause: API_BASE_URL wrong (missing /api) or credentials incorrect.
-# Fix: confirm API_BASE_URL, then curl API_BASE_URL/tags, then validate RW creds.
+# Fix: confirm API_BASE_URL, curl API_BASE_URL/tags, validate RW creds.
 </code></pre>
           </details>
         </div>
@@ -380,16 +403,22 @@ echo "API_BASE_URL=$API_BASE_URL"</code></pre>
 
           <h3>Required prerequisites</h3>
           <ul>
-            <li><strong>SUT is running</strong> and services are bound to a reachable interface (not loopback-only).</li>
+            <li><strong>SUT is running</strong> and services are bound to a reachable interface (not loopback-only in BRIDGED/LAN mode).</li>
             <li><strong>CI runner network can reach the SUT</strong> (routed LAN/VPN, correct runner tags, firewall rules in place).</li>
-            <li><strong>Stable naming is configured</strong> for the SUT hostname (DNS or hosts injection).</li>
-            <li><strong>No port-forwards</strong> that make SUT web/api reachable via localhost in CI.</li>
+            <li><strong>Stable naming is configured</strong> for the SUT hostname (DNS or hosts injection) in BRIDGED/LAN mode.</li>
+            <li>
+              <strong>Boundary enforcement is mode-aware:</strong>
+              <br />
+              <strong>BRIDGED/LAN:</strong> no port-forwards/proxies/tunnels may expose SUT web/api via localhost in CI.
+              <br />
+              <strong>NAT RECORDING:</strong> localhost port-forwards are expected and must be explicitly enabled via <code>CI_NAT_MODE=1</code>.
+            </li>
           </ul>
 
           <div class="callout">
             <strong>Runbook 00 relationship:</strong>
             Runbook 00 establishes deterministic SSH access to the VM via localhost port-forwarding for baseline setup.
-            Runbook 01 (and this CI variant) are where you prove <em>runner → SUT</em> reachability and stable naming for the app stack.
+            Runbook 01 (and this CI variant) are where you prove <em>runner → SUT</em> reachability and stable naming for the app stack—unless temporarily operating in NAT recording mode.
           </div>
 
           <details class="private">
@@ -402,7 +431,7 @@ echo "API_BASE_URL=$API_BASE_URL"</code></pre>
 # - Docker executor: add-host/extra_hosts (runner-level config)
 # - Kubernetes: hostAliases or cluster DNS record (private)
 
-# Note: "Operator mode hidden HTML" is not secrecy. Keep private evidence in a private repo.
+# Note: Operator-mode hidden HTML is not secrecy. Keep private evidence in a private repo.
 </code></pre>
           </details>
         </div>
@@ -415,15 +444,22 @@ echo "API_BASE_URL=$API_BASE_URL"</code></pre>
           <h2>Environment contract (the “real” variables this framework uses)</h2>
 
           <p class="mini">
-            This project uses environment files (e.g., <code>.env.dev</code>, <code>.env.qa</code>, <code>.env.prod</code>)
+            This project uses environment files (e.g., <code>.env.dev</code>, <code>.env.qa</code>, <code>.env.sprint4</code>)
             that define <code>TEST_ENV</code>, <code>WEB_BASE_URL</code>, and <code>API_BASE_URL</code>.
+            <code>CI_NAT_MODE</code> is an explicit mode switch used during temporary NAT recording runs.
             Some legacy scripts may still read <code>BASE_URL</code>; treat it as optional compatibility only.
           </p>
 
-          <pre><code># Required (preferred)
+          <pre><code># Default (BRIDGED/LAN)
 export TEST_ENV="qa"
 export WEB_BASE_URL="http://sut.testlab:3000"
 export API_BASE_URL="http://sut.testlab:3001/api"
+export CI_NAT_MODE="0"
+
+# Temporary (NAT recording mode)
+export CI_NAT_MODE="1"
+export WEB_BASE_URL="http://127.0.0.1:3000"
+export API_BASE_URL="http://127.0.0.1:3001/api"
 
 # Optional (compatibility only)
 export BASE_URL="${WEB_BASE_URL}"</code></pre>
@@ -431,6 +467,7 @@ export BASE_URL="${WEB_BASE_URL}"</code></pre>
           <h3 style="margin-top:14px;">Confirm values (CI)</h3>
           <pre><code>echo "Runner host: $(hostname)"
 echo "TEST_ENV=${TEST_ENV}"
+echo "CI_NAT_MODE=${CI_NAT_MODE:-0}"
 echo "WEB_BASE_URL=${WEB_BASE_URL}"
 echo "API_BASE_URL=${API_BASE_URL}"</code></pre>
 
@@ -454,8 +491,8 @@ API_PORT="3001"</code></pre>
           <h2>Proof blocks (CI, fail-fast)</h2>
 
           <p class="mini">
-            These blocks are written to match the actual environment contract (<code>WEB_BASE_URL</code>, <code>API_BASE_URL</code>).
-            Where we need <code>SUT_HOST</code> or ports, we derive them deterministically.
+            These blocks match the environment contract (<code>WEB_BASE_URL</code>, <code>API_BASE_URL</code>, <code>CI_NAT_MODE</code>).
+            Where we need host/ports, we derive them deterministically.
           </p>
 
           <h3>0) Derive SUT_HOST + ports (CI)</h3>
@@ -464,6 +501,7 @@ SUT_HOST="$(echo "$WEB_BASE_URL" | sed -E 's#^https?://([^:/]+).*#\1#')"
 WEB_PORT="3000"
 API_PORT="3001"
 
+echo "CI_NAT_MODE=${CI_NAT_MODE:-0}"
 echo "SUT_HOST=${SUT_HOST}"
 echo "WEB_PORT=${WEB_PORT}"
 echo "API_PORT=${API_PORT}"</code></pre>
@@ -471,24 +509,42 @@ echo "API_PORT=${API_PORT}"</code></pre>
           <div class="divider"></div>
 
           <h3>1) Name resolution proof (CI)</h3>
-          <p class="mini">Proves the CI runner can resolve the SUT hostname.</p>
-          <pre><code>getent hosts "${SUT_HOST}" \
-  || nslookup "${SUT_HOST}" \
-  || dig +short "${SUT_HOST}"</code></pre>
+          <p class="mini">
+            Proves the CI runner can resolve the SUT hostname in BRIDGED/LAN mode.
+            In NAT mode (<code>CI_NAT_MODE=1</code>) the host may be <code>127.0.0.1</code>, so name resolution is informational.
+          </p>
+          <pre><code>if [ "${CI_NAT_MODE:-0}" = "1" ]; then
+  echo "CI_NAT_MODE=1 → name resolution is informational (SUT_HOST may be localhost)"
+  getent hosts "${SUT_HOST}" || true
+else
+  getent hosts "${SUT_HOST}" \
+    || nslookup "${SUT_HOST}" \
+    || dig +short "${SUT_HOST}"
+fi</code></pre>
 
           <div class="divider"></div>
 
-          <h3>2) Localhost HTTP negative proof (CI)</h3>
+          <h3>2) Boundary proof (mode-aware) — localhost HTTP</h3>
           <p class="mini">
-            Deterministic: FAIL if localhost returns HTTP for the web port. PASS if connection refused/timeout.
+            Deterministic:
+            <br />• BRIDGED/LAN (<code>CI_NAT_MODE!=1</code>): localhost must NOT return SUT HTTP.
+            <br />• NAT RECORDING (<code>CI_NAT_MODE=1</code>): localhost MUST return SUT HTTP (port-forwards present).
           </p>
-          <pre><code>curl -fsS --max-time 2 "http://localhost:${WEB_PORT}/" >/dev/null \
-  && { echo "FAIL: localhost returned HTTP (boundary bypass)"; exit 1; } \
-  || echo "PASS: localhost did not respond (boundary enforced)"</code></pre>
+          <pre><code>if [ "${CI_NAT_MODE:-0}" = "1" ]; then
+  echo "CI_NAT_MODE=1 → localhost HTTP is expected (NAT port-forwards)"
+  curl -fsS --max-time 5 "http://127.0.0.1:${WEB_PORT}/" >/dev/null \
+    && echo "PASS: localhost returned HTTP (NAT mode)" \
+    || { echo "FAIL: localhost did not respond in NAT mode"; exit 1; }
+else
+  echo "CI_NAT_MODE!=1 → localhost HTTP must NOT be reachable"
+  curl -fsS --max-time 2 "http://localhost:${WEB_PORT}/" >/dev/null \
+    && { echo "FAIL: localhost returned HTTP (boundary bypass)"; exit 1; } \
+    || echo "PASS: localhost did not respond (boundary enforced)"
+fi</code></pre>
 
           <details class="private">
-            <summary>Private (operator): local listener diagnostics (if localhost succeeds)</summary>
-            <pre><code># If localhost unexpectedly succeeds, identify the listener.
+            <summary>Private (operator): local listener diagnostics (if localhost succeeds unexpectedly)</summary>
+            <pre><code># If BRIDGED/LAN mode unexpectedly sees localhost HTTP, identify the listener.
 # Linux:
 ss -lntp | egrep ":(3000|3001)\b" || true
 
@@ -500,9 +556,14 @@ lsof -nP -iTCP:3001 -sTCP:LISTEN || true</code></pre>
           <div class="divider"></div>
 
           <h3>3) TCP transport proof (CI)</h3>
-          <p class="mini">Success condition: exit code <code>0</code> for both handshakes.</p>
-          <pre><code>nc -vz -w 2 "${SUT_HOST}" "${WEB_PORT}"; echo "exit_code=$?"
-nc -vz -w 2 "${SUT_HOST}" "${API_PORT}"; echo "exit_code=$?"</code></pre>
+          <p class="mini">
+            Success condition: exit code <code>0</code> for both handshakes, with host determined by <code>WEB_BASE_URL</code>/<code>API_BASE_URL</code>.
+          </p>
+          <pre><code>WEB_HOST="$(echo "$WEB_BASE_URL" | sed -E 's#^https?://([^:/]+).*#\1#')"
+API_HOST="$(echo "$API_BASE_URL" | sed -E 's#^https?://([^:/]+).*#\1#')"
+
+nc -vz -w 2 "${WEB_HOST}" "${WEB_PORT}"; echo "web_exit_code=$?"
+nc -vz -w 2 "${API_HOST}" "${API_PORT}"; echo "api_exit_code=$?"</code></pre>
 
           <div class="divider"></div>
 
@@ -530,10 +591,12 @@ npx playwright test specs/sprint1/Sprint1.runner-to-sut.connectivity.spec.js \
   --reporter=line</code></pre>
 
           <details class="private">
-            <summary>Private (operator): strict guardrail (fail if WEB_BASE_URL is localhost)</summary>
-            <pre><code>echo "${WEB_BASE_URL}" | grep -qi "localhost" \
-  && { echo "FAIL: WEB_BASE_URL points to localhost"; exit 1; } \
-  || echo "PASS: WEB_BASE_URL is not localhost"</code></pre>
+            <summary>Private (operator): strict guardrail (BRIDGED/LAN only)</summary>
+            <pre><code>if [ "${CI_NAT_MODE:-0}" != "1" ]; then
+  echo "${WEB_BASE_URL}" | grep -Eqi 'localhost|127\.0\.0\.1|0\.0\.0\.0' \
+    && { echo "FAIL: WEB_BASE_URL points to localhost in BRIDGED/LAN mode"; exit 1; } \
+    || echo "PASS: WEB_BASE_URL is not localhost (BRIDGED/LAN mode)"
+fi</code></pre>
           </details>
         </div>
       </section>
@@ -549,43 +612,83 @@ npx playwright test specs/sprint1/Sprint1.runner-to-sut.connectivity.spec.js \
             Adjust tags/image to match your runner. Keep secrets masked.
           </p>
 
-          <pre><code>ci_runner_to_sut_proof:
+          <h3>BRIDGED/LAN example (default)</h3>
+          <pre><code>ci_runner_to_sut_proof_bridged:
   stage: test
   image: mcr.microsoft.com/playwright:v1.47.2-jammy
+  variables:
+    CI_NAT_MODE: "0"
   script:
-    # Load QA env (choose dev/qa/prod as appropriate)
     - dotenvx run -f .env.qa -- bash -lc '
         echo "Runner host: $(hostname)";
-        echo "TEST_ENV=$TEST_ENV";
+        echo "CI_NAT_MODE=${CI_NAT_MODE:-0}";
         echo "WEB_BASE_URL=$WEB_BASE_URL";
         echo "API_BASE_URL=$API_BASE_URL";
 
         SUT_HOST="$(echo "$WEB_BASE_URL" | sed -E "s#^https?://([^:/]+).*#\\1#")";
-        WEB_PORT="3000";
-        API_PORT="3001";
-
-        echo "SUT_HOST=$SUT_HOST";
+        WEB_PORT="3000"; API_PORT="3001";
 
         # Name resolution proof
         getent hosts "$SUT_HOST" || nslookup "$SUT_HOST" || dig +short "$SUT_HOST";
 
-        # Localhost HTTP negative proof
+        # Localhost boundary proof (must NOT respond)
         curl -fsS --max-time 2 "http://localhost:$WEB_PORT/" >/dev/null \
           && { echo "FAIL: localhost returned HTTP (boundary bypass)"; exit 1; } \
           || echo "PASS: localhost did not respond (boundary enforced)";
 
-        # TCP transport proof
+        # TCP + identity proofs
         nc -vz -w 2 "$SUT_HOST" "$WEB_PORT";
         nc -vz -w 2 "$SUT_HOST" "$API_PORT";
 
-        # Remote identity proof
-        curl -sS -I "$WEB_BASE_URL/" | head -n 1;
         curl -sS "$WEB_BASE_URL/" | grep -i "<title" | head -n 1;
-
-        curl -sS -I "$API_BASE_URL/tags" | head -n 1;
         curl -sS "$API_BASE_URL/tags" | head -c 200;
 
-        # Automation proof (single proof test)
+        # Automation proof
+        npx playwright test specs/sprint1/Sprint1.runner-to-sut.connectivity.spec.js -g "RW.NET.001" --project=chromium --reporter=line
+      '
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - playwright-report/
+      - test-results/</code></pre>
+
+          <h3 style="margin-top:14px;">NAT recording example (temporary)</h3>
+          <p class="mini">
+            Use this during Sprint 00–04 recordings when the SUT is in NAT mode and exposed via localhost port-forwards.
+          </p>
+          <pre><code>ci_runner_to_sut_proof_nat_recording:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.47.2-jammy
+  variables:
+    CI_NAT_MODE: "1"
+  script:
+    - dotenvx run -f .env.sprint4 -- bash -lc '
+        echo "Runner host: $(hostname)";
+        echo "CI_NAT_MODE=${CI_NAT_MODE:-0}";
+
+        # Force localhost contract for NAT mode (recording-safe)
+        export WEB_BASE_URL="http://127.0.0.1:3000";
+        export API_BASE_URL="http://127.0.0.1:3001/api";
+
+        echo "WEB_BASE_URL=$WEB_BASE_URL";
+        echo "API_BASE_URL=$API_BASE_URL";
+
+        WEB_PORT="3000"; API_PORT="3001";
+
+        # Localhost boundary proof (must respond)
+        curl -fsS --max-time 5 "http://127.0.0.1:$WEB_PORT/" >/dev/null \
+          && echo "PASS: localhost returned HTTP (NAT mode)" \
+          || { echo "FAIL: localhost did not respond in NAT mode"; exit 1; }
+
+        # TCP + identity proofs (localhost)
+        nc -vz -w 2 "127.0.0.1" "$WEB_PORT";
+        nc -vz -w 2 "127.0.0.1" "$API_PORT";
+
+        curl -sS "$WEB_BASE_URL/" | grep -i "<title" | head -n 1;
+        curl -sS "$API_BASE_URL/tags" | head -c 200;
+
+        # Automation proof
         npx playwright test specs/sprint1/Sprint1.runner-to-sut.connectivity.spec.js -g "RW.NET.001" --project=chromium --reporter=line
       '
   artifacts:
@@ -597,7 +700,7 @@ npx playwright test specs/sprint1/Sprint1.runner-to-sut.connectivity.spec.js \
 
           <details class="private">
             <summary>Private (operator): runner/network gating notes</summary>
-            <pre><code># If CI cannot reach the SUT:
+            <pre><code># If CI cannot reach the SUT in BRIDGED/LAN mode:
 # - Tag job to a runner on the correct network segment.
 # - Ensure VPN is active on the runner host if required.
 # - Confirm firewall rules allow runner → SUT on 3000/3001.
@@ -619,17 +722,28 @@ npx playwright test specs/sprint1/Sprint1.runner-to-sut.connectivity.spec.js \
 
           <div class="divider"></div>
 
-          <h3>Name resolution fails in CI</h3>
+          <h3>Name resolution fails in CI (BRIDGED/LAN)</h3>
           <p><strong>Symptom:</strong> <code>getent/nslookup/dig</code> returns nothing or errors.</p>
           <p><strong>Likely cause:</strong> CI runner not using the same DNS/hosts mapping as local runner.</p>
           <p><strong>Action:</strong> inject hosts mapping at runner level or move job to a runner with correct DNS/VPN.</p>
 
           <div class="divider"></div>
 
-          <h3>Localhost HTTP negative proof fails (localhost returns HTTP)</h3>
-          <p><strong>Symptom:</strong> localhost responds with <code>200</code>/<code>30x</code>.</p>
+          <h3>CI cannot reach <code>sut.testlab</code> during NAT recording mode</h3>
+          <p><strong>Symptom:</strong> <code>nc</code>/<code>curl</code> to <code>sut.testlab:3000/3001</code> times out.</p>
+          <p><strong>Likely cause:</strong> VM is in NAT mode; LAN hostname is not reachable.</p>
+          <p><strong>Action:</strong> set <code>CI_NAT_MODE=1</code> and use localhost port-forwards (<code>127.0.0.1:3000/3001</code>), or switch VM back to bridged networking.</p>
+
+          <div class="divider"></div>
+
+          <h3>Boundary proof fails</h3>
+          <p><strong>Symptom (BRIDGED/LAN):</strong> localhost responds with <code>200</code>/<code>30x</code>.</p>
           <p><strong>Likely cause:</strong> port-forward/proxy/local listener is bypassing the intended boundary.</p>
           <p><strong>Action:</strong> identify the listener, disable port-forwards, and re-run.</p>
+
+          <p style="margin-top:10px;"><strong>Symptom (NAT):</strong> localhost does not respond.</p>
+          <p><strong>Likely cause:</strong> VirtualBox port-forward missing, VM stopped, or SUT services not running.</p>
+          <p><strong>Action:</strong> confirm port forwards (3000/3001), VM state, and service health.</p>
 
           <div class="divider"></div>
 
@@ -653,13 +767,13 @@ npx playwright test specs/sprint1/Sprint1.runner-to-sut.connectivity.spec.js \
         <div class="card">
           <h2>Why it matters (production relevance)</h2>
           <p>
-            CI is the enforcement point for release confidence. If CI can only pass by targeting localhost, the pipeline is validating
-            a coupled execution environment rather than deployment reality. This runbook forces proof of name resolution, routing,
+            CI is the enforcement point for release confidence. If CI can only pass by targeting localhost in default mode,
+            the pipeline is validating a coupled execution environment rather than deployment reality. This runbook forces proof of name resolution, routing,
             and port exposure—exactly the surfaces that fail in production.
           </p>
           <p>
-            When this runbook passes, subsequent failures are far more likely to represent genuine application or infrastructure issues
-            rather than “works on my machine” artifacts. That improves diagnosability, change safety, and gate credibility.
+            NAT recording mode is a deliberate, temporary exception used to avoid exposing LAN details during recordings.
+            It must be explicit (<code>CI_NAT_MODE=1</code>) so the pipeline never “accidentally” validates the wrong boundary model.
           </p>
 
           <div class="callout">
