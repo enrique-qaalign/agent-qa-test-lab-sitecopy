@@ -6,38 +6,57 @@ const site = {
 };
 
 const sprintHighlights = [
+  // Sprint 00 (status 00–05 visible in the Sprint grid)
+  {
+    num: 0,
+    status: "done",
+    title: "Golden VM baseline",
+    proof: "A clean baseline with deterministic access and a rollback snapshot.",
+    deliverable: "Ubuntu Server + updates + SSH keys + snapshot.",
+    runbooks: [
+      {
+        label: "Runbook 00 — Golden VM baseline (Ubuntu Server + SSH keys + snapshot)",
+        href: "runbooks/runbook-00-golden-vm-baseline.html",
+      },
+    ],
+    video: { label: "Sprint 0 demo", youtubeId: null },
+  },
+
   {
     num: 1,
-    title: "Baseline topology (Runner → SUT)",
-    proof: "Tests cross a real network boundary. No localhost illusions.",
-    deliverable: "Architecture + runbook + working Compose SUT.",
+    status: "done",
+    title: "Baseline topology (CI runner → SUT)",
+    proof: "Tests cross a real network boundary. No localhost shortcuts.",
+    deliverable: "Topology + runbook + working Compose SUT.",
     runbooks: [
       {
         label: "Runbook 01 — Runner → SUT connectivity and naming",
         href: "runbooks/runbook-01-runner-to-sut.html",
       },
     ],
-    video: { label: "Sprint 1 demo", youtubeId: "" },
+    video: { label: "Sprint 1 demo", youtubeId: null },
   },
   {
     num: 2,
-    title: "Environment control (BASE_URL discipline)",
-    proof: "Configuration belongs to the environment, not the test code.",
-    deliverable: "Hard fail → debug evidence → clean fix via env baseURL.",
+    status: "done",
+    title: "Environment control (baseURL discipline)",
+    proof: "Configuration lives in the environment, not the test code.",
+    deliverable: "Hard fail → evidence → clean fix via env baseURL.",
     runbooks: [
       {
         label: "Runbook 02 — Compose deploy (dev) + health check",
         href: "runbooks/runbook-02-compose-deploy.html",
       },
       {
-        label: "Runbook 02a — BASE_URL discipline and proof",
+        label: "Runbook 02a — baseURL discipline and proof",
         href: "runbooks/runbook-02a-base-url-discipline.html",
       },
     ],
-    video: { label: "Sprint 2 demo", youtubeId: "" },
+    video: { label: "Sprint 2 demo", youtubeId: null },
   },
   {
     num: 3,
+    status: "done",
     title: "CI diagnosability (artifacts-first)",
     proof: "Every failure is explainable from artifacts alone.",
     deliverable: "GitLab pipeline publishes report/screenshots/videos/traces.",
@@ -47,12 +66,13 @@ const sprintHighlights = [
         href: "runbooks/runbook-03-diagnosability-intentional-failure.html",
       },
     ],
-    video: { label: "Sprint 3 demo", youtubeId: "" },
+    video: { label: "Sprint 3 demo", youtubeId: null },
   },
   {
     num: 4,
+    status: "done",
     title: "Flake taxonomy + guardrails",
-    proof: "Flakes are categorized and eliminated with principled fixes.",
+    proof: "Flakes get classified and eliminated with principled fixes.",
     deliverable: "Taxonomy + at least one flake removed without timeouts.",
     runbooks: [
       {
@@ -60,46 +80,44 @@ const sprintHighlights = [
         href: "runbooks/runbook-04-ci-artifacts.html",
       },
       {
-        label: "Sprint 4 Runbook — Nat + Port Forwarding Mode",
+        label: "Sprint 4 Runbook — NAT + Port Forwarding Mode",
         href: "runbooks/runbook-04-nat-mode-explained.html",
-      }
+      },
     ],
-    video: { label: "Sprint 4 demo", youtubeId: "" },
+    video: { label: "Sprint 4 demo", youtubeId: null },
   },
   {
     num: 5,
-  title: "Test data + state reset",
-  proof: "Runs are repeatable, idempotent, and parallel-friendly.",
-  deliverable: "Seed/reset strategy + independent tests.",
-  runbooks: [
-    {
-      label: "Runbook 05 — Test data + state reset",
-      href: "./runbooks/runbook-05-test-data-state-reset.html",
-    },
-  ],
-  video: { label: "Sprint 5 demo", youtubeId: "" },
+    status: "done",
+    title: "Test data + state reset",
+    proof: "Runs are repeatable, idempotent, and parallel-friendly.",
+    deliverable: "Seed/reset strategy + independent tests.",
+    runbooks: [
+      {
+        label: "Runbook 05 — Test data + state reset",
+        href: "runbooks/runbook-05-test-data-state-reset.html",
+      },
+    ],
+    video: { label: "Sprint 5 demo", youtubeId: null },
   },
-{
-  num: 6,
-  title: "Time-to-signal + release gates",
-  proof: "Quality gates map to risk, not coverage vanity.",
-  deliverable: "Smoke vs regression + explicit go/no-go criteria (BLOCK vs WARN).",
-  runbooks: [
-    { label: "Runbook 06 — Release gates + decision rubric", href: "./runbooks/runbook-06.html" },
-    { label: "Runbook 07 — Fixtures + composition rules", href: "./runbooks/runbook-07.html" }, // optional cross-link
-  ],
-  video: { label: "Sprint 6 demo", youtubeId: "" },
-
-  // Optional but strongly recommended (powers your deck slide 1)
-  ac: [
-    "Smoke gate provides fast time-to-signal",
-    "Each gate declares capability/persona/impact/owner",
-    "Release decision is explicit (BLOCK or WARN) per gate",
-    "Failure prints the Release Gate Failure Contract without reruns",
-    "Artifacts + logs are sufficient to diagnose"
-  ],
-}
-,
+  {
+    num: 6,
+    title: "Time-to-signal + release gates",
+    proof: "Quality gates map to risk, not coverage vanity.",
+    deliverable: "Smoke vs regression + explicit go/no-go criteria (BLOCK vs WARN).",
+    runbooks: [
+      { label: "Runbook 06 — Time-to-signal + release gates", href: "runbooks/runbook-06-time-to-signal.html" },
+      { label: "Runbook 07 — Custom fixtures (UI + API) + composition rules", href: "runbooks/runbook-07-custom-fixtures.html" },
+    ],
+    video: { label: "Sprint 6 demo", youtubeId: null },
+    ac: [
+      "Smoke gate provides fast time-to-signal",
+      "Each gate declares capability/persona/impact/owner",
+      "Release decision is explicit (BLOCK or WARN) per gate",
+      "Failure prints the Release Gate Failure Contract without reruns",
+      "Artifacts + logs are sufficient to diagnose",
+    ],
+  },
   {
     num: 7,
     title: "Custom fixtures (domain primitives)",
@@ -113,7 +131,7 @@ const sprintHighlights = [
         href: "runbooks/runbook-07-custom-fixtures.html",
       },
     ],
-    video: { label: "Sprint 7 demo", youtubeId: "" },
+    video: { label: "Sprint 7 demo", youtubeId: null },
   },
   {
     num: 8,
@@ -128,7 +146,7 @@ const sprintHighlights = [
         href: "runbooks/runbook-08-pom-at-scale.html",
       },
     ],
-    video: { label: "Sprint 8 demo", youtubeId: "" },
+    video: { label: "Sprint 8 demo", youtubeId: null },
   },
 ];
 
@@ -179,7 +197,7 @@ const publicVsPrivate = {
   safe: [
     "Architecture patterns (runner → SUT)",
     "Environment layout and conventions (dev/qa/stage)",
-    "BaseURL via env vars (pattern + reasoning)",
+    "baseURL via env vars (pattern + reasoning)",
     "Runbooks with sanitized examples",
     "Lessons learned and postmortems (sanitized)",
     "Reports/screenshots with secrets removed",
@@ -192,8 +210,6 @@ const publicVsPrivate = {
     "Credentials, API keys, or anything exploitable",
   ],
 };
-
-// Helper: simple video block placeholder
 ---
 
 <!doctype html>
@@ -212,62 +228,27 @@ const publicVsPrivate = {
         --link: #7aa2ff;
         --border: #24304d;
       }
-      * {
-        box-sizing: border-box;
-      }
-      html {
-        scroll-behavior: smooth;
-      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
       body {
         margin: 0;
-        font-family:
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          Segoe UI,
-          Roboto,
-          Arial;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
         background: var(--bg);
         color: var(--text);
       }
-      a {
-        color: var(--link);
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      .wrap {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 20px 18px 54px;
-      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 18px 54px; }
       .nav {
-        position: sticky;
-        top: 0;
-        z-index: 20;
+        position: sticky; top: 0; z-index: 20;
         backdrop-filter: blur(10px);
         background: rgba(11, 14, 20, 0.78);
         border-bottom: 1px solid var(--border);
         padding: 12px 0;
       }
-      .nav-inner {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-      }
-      .brand {
-        font-weight: 750;
-        letter-spacing: 0.2px;
-      }
-      .navlinks {
-        display: flex;
-        gap: 14px;
-        flex-wrap: wrap;
-        font-size: 14px;
-      }
+      .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+      .brand { font-weight: 750; letter-spacing: 0.2px; }
+      .navlinks { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; }
       .pill {
         display: inline-block;
         border: 1px solid var(--border);
@@ -275,52 +256,16 @@ const publicVsPrivate = {
         padding: 7px 10px;
         border-radius: 999px;
       }
-
-      section {
-        scroll-margin-top: 84px;
-      }
-      .hero {
-        padding: 26px 0 10px;
-      }
-      .h1 {
-        font-size: 40px;
-        line-height: 1.1;
-        margin: 0 0 10px;
-        letter-spacing: -0.6px;
-      }
-      .lead {
-        color: var(--muted);
-        font-size: 16px;
-        line-height: 1.6;
-        max-width: 850px;
-      }
-      .row {
-        display: flex;
-        gap: 14px;
-        flex-wrap: wrap;
-        margin-top: 14px;
-      }
-      .cta {
-        border: 1px solid var(--border);
-        background: var(--panel);
-        padding: 12px 14px;
-        border-radius: 14px;
-      }
-      .cta strong {
-        display: block;
-        margin-bottom: 4px;
-      }
-      .grid {
-        display: grid;
-        gap: 14px;
-      }
-      .grid2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .grid3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
+      section { scroll-margin-top: 84px; }
+      .hero { padding: 26px 0 10px; }
+      .h1 { font-size: 40px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -0.6px; }
+      .lead { color: var(--muted); font-size: 16px; line-height: 1.6; max-width: 850px; }
+      .row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; }
+      .cta { border: 1px solid var(--border); background: var(--panel); padding: 12px 14px; border-radius: 14px; }
+      .cta strong { display: block; margin-bottom: 4px; }
+      .grid { display: grid; gap: 14px; }
+      .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .card {
         background: var(--panel);
         border: 1px solid var(--border);
@@ -329,31 +274,12 @@ const publicVsPrivate = {
         margin-top: 14px;
         box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
       }
-      .muted {
-        color: var(--muted);
-      }
-      h2 {
-        margin: 0 0 10px;
-        font-size: 22px;
-      }
-      h3 {
-        margin: 0 0 10px;
-        font-size: 16px;
-      }
-      ul {
-        margin: 10px 0 0 18px;
-        color: var(--text);
-      }
-      li {
-        margin: 6px 0;
-        color: var(--muted);
-      }
-      .kpi {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-top: 10px;
-      }
+      .muted { color: var(--muted); }
+      h2 { margin: 0 0 10px; font-size: 22px; }
+      h3 { margin: 0 0 10px; font-size: 16px; }
+      ul { margin: 10px 0 0 18px; color: var(--text); }
+      li { margin: 6px 0; color: var(--muted); }
+      .kpi { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
       .kpi span {
         border: 1px solid var(--border);
         border-radius: 999px;
@@ -362,53 +288,24 @@ const publicVsPrivate = {
         background: rgba(255, 255, 255, 0.03);
         font-size: 13px;
       }
-      .divider {
-        height: 1px;
-        background: var(--border);
-        margin: 22px 0;
-      }
-      .video iframe {
-        border-radius: 12px;
-        border: 1px solid var(--border);
-      }
-      .mini {
-        font-size: 13px;
-        color: var(--muted);
-      }
-
-      .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-      }
-      .table td {
-        border-top: 1px solid var(--border);
-        padding: 10px 6px;
-        vertical-align: top;
-      }
-      .table td:first-child {
-        color: var(--muted);
-        width: 160px;
-      }
-
+      .divider { height: 1px; background: var(--border); margin: 22px 0; }
+      .video iframe { border-radius: 12px; border: 1px solid var(--border); }
+      .mini { font-size: 13px; color: var(--muted); }
+      .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+      .table td { border-top: 1px solid var(--border); padding: 10px 6px; vertical-align: top; }
+      .table td:first-child { color: var(--muted); width: 160px; }
       footer {
-        margin-top: 30px;
-        padding-top: 16px;
+        margin-top: 30px; padding-top: 16px;
         border-top: 1px solid var(--border);
-        color: var(--muted);
-        font-size: 14px;
+        color: var(--muted); font-size: 14px;
       }
       @media (max-width: 920px) {
-        .grid2,
-        .grid3 {
-          grid-template-columns: 1fr;
-        }
-        .h1 {
-          font-size: 32px;
-        }
+        .grid2, .grid3 { grid-template-columns: 1fr; }
+        .h1 { font-size: 32px; }
       }
     </style>
   </head>
+
   <body>
     <div class="nav">
       <div class="wrap">
@@ -445,82 +342,66 @@ const publicVsPrivate = {
             <div>
               <h3>What this is</h3>
               <p class="muted" style="margin:0;">
-                A production-realistic QA test lab that separates <strong
-                  >runner</strong
-                > and <strong>SUT</strong>, deploys environments via Docker
-                Compose, and validates releases through CI gates—designed for
-                hands-on practice without enterprise overhead.
+                A production-realistic QA test lab that separates <strong>CI runner</strong>
+                and <strong>SUT host</strong>, deploys environments via Docker
+                Compose, and validates releases through CI gates—built for hands-on practice
+                without enterprise overhead.
               </p>
             </div>
 
             <div>
               <h3>What proof exists today</h3>
               <ul style="margin:8px 0 0 18px;">
-                <li>Runner → SUT network boundary (no localhost shortcuts)</li>
+                <li>CI runner → SUT host network boundary (no localhost shortcuts)</li>
                 <li>
-                  Stable hostnames (<code>sut.testlab</code>) and environment
-                  config via <code>BASE_URL</code>
+                  Stable hostnames (<code>sut.testlab</code>) and env contract via
+                  <code>WEB_BASE_URL</code> / <code>API_BASE_URL</code>
                 </li>
                 <li>
-                  Live SUT deployed via Docker Compose (dev) and reachable by
-                  name
+                  Live SUT deployed via Docker Compose (dev) and reachable by name
                 </li>
               </ul>
             </div>
 
             <div>
-              <h3>Where to start (Sprint 1–3)</h3>
+              <h3>Fast path (Sprint 0–3)</h3>
               <ul style="margin:8px 0 0 18px;">
-                <li>
-                  <a href="#sprints">Sprint 1:</a> Topology baseline (Runner → SUT)
-                </li>
-                <li>
-                  <a href="#sprints">Sprint 2:</a>
-                  <code>BASE_URL</code> discipline (env-driven navigation)
-                </li>
-                <li>
-                  <a href="#sprints">Sprint 3:</a> Diagnosability via intentional
-                  failure (fix without rerun)
-                </li>
+                <li><a href="#sprints">Sprint 0:</a> Golden VM baseline + rollback</li>
+                <li><a href="#sprints">Sprint 1:</a> Topology baseline (CI runner → SUT)</li>
+                <li><a href="#sprints">Sprint 2:</a> baseURL discipline (env-driven navigation)</li>
+                <li><a href="#sprints">Sprint 3:</a> Diagnosability via intentional failure</li>
               </ul>
               <p class="mini" style="margin-top:10px;">
-                If you only have two minutes: read Sprint 1–3 and skim the
-                architecture section.
+                If you’re skimming: Sprint 0–3, then Architecture.
               </p>
             </div>
           </div>
         </div>
-
-        A production-realistic QA test lab designed to practice automation, CI,
-        and release discipline under real constraints—without enterprise
-        overhead.
       </section>
 
       <div class="row">
         <div class="cta">
           <strong>What this shows</strong>
           <div class="mini">
-            How CI signals, failure diagnosis, and release decisions behave
-            under realistic constraints.
+            How CI signals, failure diagnosis, and release decisions behave under realistic constraints.
           </div>
         </div>
         <div class="cta">
           <strong>What this is not</strong>
           <div class="mini">
-            Not a localhost demo. Not a tool collection. Not a green-build
-            vanity project.
+            Not a localhost demo. Not a tool collection. Not a green-build vanity project.
           </div>
         </div>
         <div class="cta">
           <strong>Videos</strong>
           <div class="mini">
-            Each sprint will includes a short demo clip (added progressively).
+            Sprint clips get added as they’re recorded.
           </div>
         </div>
       </div>
 
       <div class="kpi">
-        <span>Runner → SUT boundary</span>
+        <span>CI runner → SUT boundary</span>
         <span>Docker Compose environments</span>
         <span>GitLab CI artifacts</span>
         <span>Flake taxonomy</span>
@@ -533,35 +414,34 @@ const publicVsPrivate = {
 
     <!-- ABOUT -->
     <section id="about">
-      <h2>About</h2>
-      <div class="grid grid2" style="margin-top:14px;">
-        <div class="card">
-          <h3>What this lab is</h3>
-          <p class="muted">
-            QA Test Lab is a production-realistic environment built to stay
-            current with modern automation, CI/CD, and test infrastructure—
-            without the cost or operational overhead of full enterprise systems.
-            It is intentionally designed to surface real failure modes, not hide
-            them behind localhost shortcuts.
-          </p>
-          <div class="kpi" style="margin-top:12px;">
-            <span>Production-real topology</span>
-            <span>Env-driven config</span>
-            <span>Artifacts-first CI</span>
-            <span>Risk-based gates</span>
+      <div class="wrap">
+        <h2>About</h2>
+        <div class="grid grid2" style="margin-top:14px;">
+          <div class="card">
+            <h3>What this lab is</h3>
+            <p class="muted">
+              QA Test Lab is a production-realistic environment built to stay current with modern automation,
+              CI/CD, and test infrastructure—without the cost or operational overhead of full enterprise systems.
+              It’s intentionally designed to surface real failure modes, not hide them behind localhost shortcuts.
+            </p>
+            <div class="kpi" style="margin-top:12px;">
+              <span>Production-real topology</span>
+              <span>Env-driven config</span>
+              <span>Artifacts-first CI</span>
+              <span>Risk-based gates</span>
+            </div>
           </div>
-        </div>
 
-        <div class="card">
-          <h3>How it’s run</h3>
-          <p class="muted">
-            Each sprint delivers a concrete capability, an optional demo video,
-            and an accompanying runbook documenting setup, validation, and
-            failure modes.
-          </p>
-          <p class="mini" style="margin-top:10px;">
-            If it’s not documented, it doesn’t exist.
-          </p>
+          <div class="card">
+            <h3>How it’s run</h3>
+            <p class="muted">
+              Each sprint ships a concrete capability plus a runbook that documents setup, validation,
+              and the failure modes you actually see in real pipelines.
+            </p>
+            <p class="mini" style="margin-top:10px;">
+              If it’s not documented, it doesn’t exist.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -570,60 +450,45 @@ const publicVsPrivate = {
 
     <!-- ARCHITECTURE -->
     <section id="architecture">
-      <h2>Architecture (Production-Real Baseline)</h2>
-      <div class="grid grid2">
-        <div class="card">
-          <h3>Core idea</h3>
-          <p class="muted">
-            Tests run from a dedicated runner and target a remote SUT over a
-            real network boundary. This prevents false confidence that happens
-            when everything runs on the same machine.
-          </p>
-          <table class="table">
-            <tr
-              ><td>Runner</td><td
-                >CI executor (MacBook Pro) + also supports ad-hoc remote runs</td
-              ></tr
-            >
-            <tr
-              ><td>SUT</td><td
-                >Service host (Mac mini) running Docker Compose environments</td
-              ></tr
-            >
-            <tr
-              ><td>DNS</td><td
-                >Stable hostnames via <code>/etc/hosts</code> (e.g., <code
-                  >sut.testlab</code
-                >)</td
-              ></tr
-            >
-            <tr
-              ><td>Config</td><td
-                ><code>BASE_URL</code> drives navigation and avoids hardcoded domains</td
-              ></tr
-            >
-          </table>
-        </div>
+      <div class="wrap">
+        <h2>Architecture (Production-Real Baseline)</h2>
+        <div class="grid grid2">
+          <div class="card">
+            <h3>Core idea</h3>
+            <p class="muted">
+              CI runs from a dedicated runner and targets a SUT hosted on a separate machine boundary.
+              The SUT host also supports local Playwright runs for recording and debugging, but CI is the proof:
+              it must cross the boundary (CI runner → SUT host).
+            </p>
 
-        <div class="card">
-          <h3>Single-slide diagram (text version for now)</h3>
-          <p class="muted">Rudamentory diagram for architecture:</p>
-          <pre
-            style="margin:0; white-space:pre; color:var(--muted); background:rgba(255,255,255,.03); border:1px solid var(--border); padding:14px; border-radius:12px;">
-[GitLab CI Runner / MBP]
+            <table class="table">
+              <tr><td>CI Runner</td><td>New Mac mini running GitLab Runner pipeline jobs</td></tr>
+              <tr><td>SUT Host</td><td>MacBook Pro hosting Ubuntu VM + Docker Compose (web + api + db)</td></tr>
+              <tr><td>Local Runner</td><td>MacBook Pro also runs Playwright interactively (debug/recording)</td></tr>
+              <tr><td>DNS</td><td>Stable hostnames via <code>/etc/hosts</code> (e.g., <code>sut.testlab</code>)</td></tr>
+              <tr><td>Config</td><td><code>WEB_BASE_URL</code>/<code>API_BASE_URL</code> drive navigation and API calls (no hardcoded domains)</td></tr>
+            </table>
+          </div>
+
+          <div class="card">
+            <h3>Reference diagram (text)</h3>
+            <p class="muted">Quick topology sketch:</p>
+            <pre style="margin:0; white-space:pre; color:var(--muted); background:rgba(255,255,255,.03); border:1px solid var(--border); padding:14px; border-radius:12px;">
+[GitLab CI Runner / Mac mini]
         |
-        |  Playwright tests (BASE_URL)
+        |  Playwright tests (WEB_BASE_URL / API_BASE_URL)
         v
-[SUT Host / Mac mini]
-  Docker Compose:
-   - dev:  sut-dev  -> :3001
-   - qa:   sut-qa   -> :3002 (later)
-   - ... stage/prod (later)
+[SUT Host / MacBook Pro]
+  Ubuntu VM (VirtualBox)
+   Docker Compose:
+    - web  -> :3000
+    - api  -> :3001
+    - db   -> internal
             </pre>
-          <p class="mini" style="margin-top:10px;">
-            The goal is realism: environment separation, deploy/test flow, and
-            failures that look like corporate failures.
-          </p>
+            <p class="mini" style="margin-top:10px;">
+              This is deliberately “corporate-like”: clear boundaries, env contracts, and failures you can diagnose from artifacts.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -632,73 +497,79 @@ const publicVsPrivate = {
 
     <!-- SPRINTS -->
     <section id="sprints">
-      <h2>First 8 Sprints</h2>
-      <p class="muted">
-        These sprints are intentionally sequenced to produce topology realism,
-        environment discipline, CI diagnosability, flake elimination, data/state
-        control, risk-based release gates, fixture composition, and scalable
-        page object design.
-      </p>
+      <div class="wrap">
+        <h2>First 8 Sprints</h2>
+        <p class="muted">
+          The sprint sequence is intentional: topology realism, environment discipline, CI diagnosability,
+          flake elimination, data/state control, risk-based release gates, fixture composition,
+          and scalable page object design.
+        </p>
 
-  <div class="grid grid2" style="margin-top:14px;">
-    {
-      sprintHighlights.map((s) => (
-        <div class="card">
-          <h3>Sprint {s.num}: {s.title}</h3>
+        <div class="grid grid2" style="margin-top:14px;">
+          {
+            sprintHighlights.map((s) => (
+              <div class="card">
+                <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+                  <h3 style="margin:0;">Sprint {s.num}: {s.title}</h3>
 
-          <p class="muted">
-            <strong>What it proves:</strong> {s.proof}
-          </p>
+                  {s.status ? (
+                    <span class="pill" style="font-size:12px; padding:6px 10px;" title={`Status: ${s.status}`}>
+                      {String(s.status).toUpperCase()}
+                    </span>
+                  ) : null}
+                </div>
 
-          <p class="muted">
-            <strong>Deliverable:</strong> {s.deliverable}
-          </p>
+                <p class="muted" style="margin-top:10px;">
+                  <strong>What it proves:</strong> {s.proof}
+                </p>
 
-          {s.runbooks?.length ? (
-            <>
-              <p class="muted" style="margin-top:10px;">
-                <strong>Runbooks:</strong>
-              </p>
-              <ul style="margin:6px 0 0 18px;">
-                {s.runbooks.map((rb) => (
-                  <li><a href={rb.href}>{rb.label}</a></li>
-                ))}
-              </ul>
-            </>
-          ) : null}
+                <p class="muted">
+                  <strong>Deliverable:</strong> {s.deliverable}
+                </p>
 
-          {s.video?.youtubeId ? (
-            <div class="video" style="margin-top:12px;">
-              <iframe
-                width="100%"
-                height="420"
-                src={`https://www.youtube.com/embed/${s.video.youtubeId}`}
-                title={s.video.label}
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              />
-            </div>
-          ) : (
-            <p class="mini" style="margin-top:10px;">
-              Video: placeholder (add YouTube ID or switch to local MP4 later).
-            </p>
-          )}
+                {s.runbooks?.length ? (
+                  <>
+                    <p class="muted" style="margin-top:10px;">
+                      <strong>Runbooks:</strong>
+                    </p>
+                    <ul style="margin:6px 0 0 18px;">
+                      {s.runbooks.map((rb) => (
+                        <li><a href={rb.href}>{rb.label}</a></li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+
+                {/* Video embeds only show when a real YouTube ID exists */}
+                {s.video?.youtubeId ? (
+                  <div class="video" style="margin-top:12px;">
+                    <iframe
+                      width="100%"
+                      height="420"
+                      src={`https://www.youtube.com/embed/${s.video.youtubeId}`}
+                      title={s.video.label}
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                    />
+                  </div>
+                ) : null}
+              </div>
+            ))
+          }
         </div>
-      ))
-    }
-  </div>
-  </section>
+      </div>
+    </section>
 
-      <div class="divider"></div>
+    <div class="divider"></div>
 
-      <!-- PERSONAS -->
-      <section id="personas">
+    <!-- PERSONAS -->
+    <section id="personas">
+      <div class="wrap">
         <h2>Personas (Deliberate Practice Roles)</h2>
         <p class="muted">
-          Personas create structured pressure: pipeline design, flake elimination,
-          release risk thinking, and onboarding clarity. Each one drives a
-          different kind of engineering maturity.
+          Personas apply real pressure: pipeline design, flake elimination, release risk thinking,
+          and onboarding clarity. Each one pulls on a different maturity muscle.
         </p>
 
         <div class="grid grid2" style="margin-top:14px;">
@@ -706,52 +577,39 @@ const publicVsPrivate = {
             personas.map((p) => (
               <div class="card">
                 <h3>{p.title}</h3>
-                <p class="muted">
-                  <strong>Mission:</strong> {p.mission}
-                </p>
+                <p class="muted"><strong>Mission:</strong> {p.mission}</p>
 
-                <p style="margin-top:10px;">
-                  <strong>Outputs</strong>
-                </p>
-                <ul>
-                  {p.outputs.map((o) => (
-                    <li>{o}</li>
-                  ))}
-                </ul>
+                <p style="margin-top:10px;"><strong>Outputs</strong></p>
+                <ul>{p.outputs.map((o) => (<li>{o}</li>))}</ul>
 
-                <p style="margin-top:10px;">
-                  <strong>Rules</strong>
-                </p>
-                <ul>
-                  {p.rules.map((r) => (
-                    <li>{r}</li>
-                  ))}
-                </ul>
+                <p style="margin-top:10px;"><strong>Rules</strong></p>
+                <ul>{p.rules.map((r) => (<li>{r}</li>))}</ul>
 
                 <p class="mini" style="margin-top:10px;">
-                  Printable cards: keep this page clean; export a PDF from the
-                  browser print dialog.
+                  Quick tip: print this page to PDF if you want persona cards you can keep open during work.
                 </p>
               </div>
             ))
           }
         </div>
-      </section>
+      </div>
+    </section>
 
-      <div class="divider"></div>
+    <div class="divider"></div>
 
-      <!-- RUNBOOKS -->
-      <section id="runbooks">
+    <!-- RUNBOOKS -->
+    <section id="runbooks">
+      <div class="wrap">
         <h2>Runbooks</h2>
         <div class="grid grid2" style="margin-top:14px;">
           <div class="card">
-            <h3>Expected outputs (screenshots/log snippets)</h3>
+            <h3>What each runbook includes</h3>
             <ul>
               <li>Objective + success criteria</li>
               <li>Exact commands</li>
               <li>Expected outputs (screenshots/log snippets)</li>
-              <li>Failure modes + how to diagnose</li>
-              <li>Why it matters (production relevance)</li>
+              <li>Failure modes + how to debug</li>
+              <li>Why this exists</li>
             </ul>
           </div>
 
@@ -760,67 +618,65 @@ const publicVsPrivate = {
             <ul>
               <li>
                 <a href="runbooks/runbook-00-golden-vm-baseline.html">
-                  Runbook 00 — Golden VM baseline (Ubuntu Server + SSH keys +
-                  snapshot)
+                  Runbook 00 — Golden VM baseline (Ubuntu Server + SSH keys + snapshot)
                 </a>
               </li>
-            <li>
-              <a href="runbooks/runbook-01-runner-to-sut.html">
-                Runbook 01 — Runner → SUT connectivity and naming
-              </a>
-            </li>
-            <li>
-              <a href="runbooks/runbook-02-compose-deploy.html">
-                Runbook 02 — Compose deploy (dev) + health check
-              </a>
-            </li>
-            <li>
-              <a href="runbooks/runbook-02a-base-url-discipline.html">
-                Runbook 02a — BASE_URL discipline and proof
-              </a>
-            </li>
-            <li>
-              <a
-                href="runbooks/runbook-03-diagnosability-intentional-failure.html"
-              >
-                Runbook 03 — Diagnosability via Intentional Failure
-              </a>
-            </li>
+              <li>
+                <a href="runbooks/runbook-01-runner-to-sut.html">
+                  Runbook 01 — Runner → SUT connectivity and naming
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-02-compose-deploy.html">
+                  Runbook 02 — Compose deploy (dev) + health check
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-02a-base-url-discipline.html">
+                  Runbook 02a — baseURL discipline and proof
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-03-diagnosability-intentional-failure.html">
+                  Runbook 03 — Diagnosability via Intentional Failure
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-04-ci-artifacts.html">
+                  Runbook 04 — CI artifacts + “debug without rerun”
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-04-nat-mode-explained.html">
+                  Sprint 4 Runbook — NAT + Port Forwarding Mode
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-05-test-data-state-reset.html">
+                  Runbook 05 — Test data + state reset (API-seeded, idempotent runs)
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-06-time-to-signal.html">
+                  Runbook 06 — Time-to-signal + release gates
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-07-custom-fixtures.html">
+                  Runbook 07 — Custom fixtures (UI + API) + composition rules
+                </a>
+              </li>
+              <li>
+                <a href="runbooks/runbook-08-pom-at-scale.html">
+                  Runbook 08 — Page Objects at scale (pages/components/flows)
+                </a>
+              </li>
+            </ul>
 
-            <li>
-              <a href="runbooks/runbook-04-ci-artifacts.html">
-                Runbook 04 — CI artifacts + “debug without rerun”
-              </a>
-            </li>
-
-            <li>
-              <a href="runbooks/runbook-05-test-data-state-reset.html">
-                Runbook 05 — Test data + state reset (API-seeded, idempotent runs)
-              </a>
-            </li>
-
-            <li>
-              <a href="runbooks/runbook-06-Time-to-signal.html">
-                Runbook 06 — Time-to-signal + release gates
-              </a>
-            </li>
-
-            <li>
-              <a href="runbooks/runbook-07-custom-fixtures.html">
-                Runbook 07 — Custom fixtures (UI + API) + composition rules
-              </a>
-            </li>
-
-              <a href="runbooks/runbook-08-pom-at-scale.html">
-                Runbook 08 — Page Objects at scale (pages/components/flows)
-              </a>
-            </li>
-          </ul>
-          <p class="mini" style="margin-top:10px;">
-            Runbooks are command/expected-output documents. Examples are
-            sanitized.
-          </p>
-          <p class="mini" style="margin-top:10px;"></p>
+            <p class="mini" style="margin-top:10px;">
+              Runbooks are command + expected-output documents. Examples are sanitized.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -829,25 +685,22 @@ const publicVsPrivate = {
 
     <!-- PUBLIC VS PRIVATE -->
     <section id="public-private">
-      <h2>Public vs Private</h2>
-      <p class="muted">
-        I publish patterns and reasoning, and redact anything that increases
-        attack surface.
-      </p>
+      <div class="wrap">
+        <h2>Public vs Private</h2>
+        <p class="muted">
+          I publish patterns and reasoning, and I keep anything sensitive out of the repo.
+        </p>
 
-      <div class="grid grid2" style="margin-top:14px;">
-        <div class="card">
-          <h3>Safe to publish</h3>
-          <ul>
-            {publicVsPrivate.safe.map((x) => <li>{x}</li>)}
-          </ul>
-        </div>
+        <div class="grid grid2" style="margin-top:14px;">
+          <div class="card">
+            <h3>Safe to publish</h3>
+            <ul>{publicVsPrivate.safe.map((x) => <li>{x}</li>)}</ul>
+          </div>
 
-        <div class="card">
-          <h3>Keep private</h3>
-          <ul>
-            {publicVsPrivate.private.map((x) => <li>{x}</li>)}
-          </ul>
+          <div class="card">
+            <h3>Keep private</h3>
+            <ul>{publicVsPrivate.private.map((x) => <li>{x}</li>)}</ul>
+          </div>
         </div>
       </div>
     </section>
