@@ -6,7 +6,6 @@ const site = {
 };
 
 const sprintHighlights = [
-  // Sprint 00 (status 00–05 visible in the Sprint grid)
   {
     num: 0,
     status: "done",
@@ -21,7 +20,6 @@ const sprintHighlights = [
     ],
     video: { label: "Sprint 0 demo", youtubeId: null },
   },
-
   {
     num: 1,
     status: "done",
@@ -106,8 +104,14 @@ const sprintHighlights = [
     proof: "Quality gates map to risk, not coverage vanity.",
     deliverable: "Smoke vs regression + explicit go/no-go criteria (BLOCK vs WARN).",
     runbooks: [
-      { label: "Runbook 06 — Time-to-signal + release gates", href: "runbooks/runbook-06-time-to-signal.html" },
-      { label: "Runbook 07 — Custom fixtures (UI + API) + composition rules", href: "runbooks/runbook-07-custom-fixtures.html" },
+      {
+        label: "Runbook 06 — Time-to-signal + release gates",
+        href: "runbooks/runbook-06-time-to-signal.html",
+      },
+      {
+        label: "Runbook 07 — Custom fixtures (UI + API) + composition rules",
+        href: "runbooks/runbook-07-custom-fixtures.html",
+      },
     ],
     video: { label: "Sprint 6 demo", youtubeId: null },
     ac: [
@@ -220,6 +224,7 @@ const publicVsPrivate = {
     <title>{site.title}</title>
     <meta name="description" content={site.tagline} />
     <style>
+      /* Your existing styles unchanged — keeping them exactly as-is */
       :root {
         --bg: #0b0e14;
         --panel: #121827;
@@ -347,6 +352,9 @@ const publicVsPrivate = {
                 Compose, and validates releases through CI gates—built for hands-on practice
                 without enterprise overhead.
               </p>
+              <p class="mini" style="margin-top:10px;">
+                I built this because I got tired of “it works on my machine” being the default excuse.
+              </p>
             </div>
 
             <div>
@@ -361,6 +369,9 @@ const publicVsPrivate = {
                   Live SUT deployed via Docker Compose (dev) and reachable by name
                 </li>
               </ul>
+              <p class="mini" style="margin-top:10px;">
+                Learned the hard way: anything that only works on localhost dies the first time CI touches it.
+              </p>
             </div>
 
             <div>
@@ -389,7 +400,7 @@ const publicVsPrivate = {
         <div class="cta">
           <strong>What this is not</strong>
           <div class="mini">
-            Not a localhost demo. Not a tool collection. Not a green-build vanity project.
+            This isn’t another localhost demo — those fall apart the second you introduce CI and a separate machine.
           </div>
         </div>
         <div class="cta">
@@ -422,7 +433,10 @@ const publicVsPrivate = {
             <p class="muted">
               QA Test Lab is a production-realistic environment built to stay current with modern automation,
               CI/CD, and test infrastructure—without the cost or operational overhead of full enterprise systems.
-              It’s intentionally designed to surface real failure modes, not hide them behind localhost shortcuts.
+              It’s designed to surface the failure modes people usually hide (by accident) with localhost shortcuts.
+            </p>
+            <p class="mini" style="margin-top:10px;">
+              I built it this way because the real pain isn’t writing tests — it’s keeping them reliable when CI actually runs them.
             </p>
             <div class="kpi" style="margin-top:12px;">
               <span>Production-real topology</span>
@@ -437,6 +451,9 @@ const publicVsPrivate = {
             <p class="muted">
               Each sprint ships a concrete capability plus a runbook that documents setup, validation,
               and the failure modes you actually see in real pipelines.
+            </p>
+            <p class="mini" style="margin-top:10px;">
+              I learned this the hard way: if a system relies on tribal knowledge, it breaks when the person leaves.
             </p>
             <p class="mini" style="margin-top:10px;">
               If it’s not documented, it doesn’t exist.
@@ -461,6 +478,10 @@ const publicVsPrivate = {
               it must cross the boundary (CI runner → SUT host).
             </p>
 
+            <p class="mini" style="margin-top:10px;">
+              I made it “corporate-like” on purpose — that’s where I’ve seen the real pain: boundaries, naming drift, and env mismatches.
+            </p>
+
             <table class="table">
               <tr><td>CI Runner</td><td>New Mac mini running GitLab Runner pipeline jobs</td></tr>
               <tr><td>SUT Host</td><td>MacBook Pro hosting Ubuntu VM + Docker Compose (web + api + db)</td></tr>
@@ -468,6 +489,10 @@ const publicVsPrivate = {
               <tr><td>DNS</td><td>Stable hostnames via <code>/etc/hosts</code> (e.g., <code>sut.testlab</code>)</td></tr>
               <tr><td>Config</td><td><code>WEB_BASE_URL</code>/<code>API_BASE_URL</code> drive navigation and API calls (no hardcoded domains)</td></tr>
             </table>
+
+            <p class="mini" style="margin-top:10px;">
+              Learned the hard way: if naming and env config aren’t boring and consistent, debugging turns into archaeology.
+            </p>
           </div>
 
           <div class="card">
@@ -486,7 +511,7 @@ const publicVsPrivate = {
     - db   -> internal
             </pre>
             <p class="mini" style="margin-top:10px;">
-              This is deliberately “corporate-like”: clear boundaries, env contracts, and failures you can diagnose from artifacts.
+              This is the shape that keeps me honest: if CI can’t reach it by name, it doesn’t count as “working.”
             </p>
           </div>
         </div>
@@ -503,6 +528,10 @@ const publicVsPrivate = {
           The sprint sequence is intentional: topology realism, environment discipline, CI diagnosability,
           flake elimination, data/state control, risk-based release gates, fixture composition,
           and scalable page object design.
+        </p>
+
+        <p class="mini" style="margin-top:10px;">
+          I didn’t pick this order randomly — I picked it based on the failures I’ve seen teams hit over and over.
         </p>
 
         <div class="grid grid2" style="margin-top:14px;">
@@ -572,6 +601,10 @@ const publicVsPrivate = {
           and onboarding clarity. Each one pulls on a different maturity muscle.
         </p>
 
+        <p class="mini" style="margin-top:10px;">
+          I’ve seen teams collapse because nobody “owned” the boring parts. Personas make ownership visible.
+        </p>
+
         <div class="grid grid2" style="margin-top:14px;">
           {
             personas.map((p) => (
@@ -604,13 +637,13 @@ const publicVsPrivate = {
         <div class="grid grid2" style="margin-top:14px;">
           <div class="card">
             <h3>What each runbook includes</h3>
-            <ul>
-              <li>Objective + success criteria</li>
-              <li>Exact commands</li>
-              <li>Expected outputs (screenshots/log snippets)</li>
-              <li>Failure modes + how to debug</li>
-              <li>Why this exists</li>
-            </ul>
+            <p class="muted">
+              Each runbook has the goal, exact commands, what the output should look like,
+              how things usually break, and why I bothered building it this way.
+            </p>
+            <p class="mini" style="margin-top:10px;">
+              Learned the hard way: “we’ll remember how to do it” is the fastest path to repeated outages and reruns.
+            </p>
           </div>
 
           <div class="card">
@@ -689,6 +722,10 @@ const publicVsPrivate = {
         <h2>Public vs Private</h2>
         <p class="muted">
           I publish patterns and reasoning, and I keep anything sensitive out of the repo.
+        </p>
+
+        <p class="mini" style="margin-top:10px;">
+          Learned the hard way: “just redact later” turns into “we leaked it already.”
         </p>
 
         <div class="grid grid2" style="margin-top:14px;">
