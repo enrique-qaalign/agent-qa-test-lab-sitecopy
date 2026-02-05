@@ -370,7 +370,7 @@ const publicVsPrivate = {
                 </li>
               </ul>
               <p class="mini" style="margin-top:10px;">
-                Learned the hard way: anything that only works on localhost dies the first time CI touches it.
+                Lesson: anything that only works on localhost dies the first time CI touches it.
               </p>
             </div>
 
@@ -436,7 +436,7 @@ const publicVsPrivate = {
               It’s designed to surface the failure modes people usually hide (by accident) with localhost shortcuts.
             </p>
             <p class="mini" style="margin-top:10px;">
-              I built it this way because the real pain isn’t writing tests — it’s keeping them reliable when CI actually runs them.
+              This keeps tests reliable when CI actually runs them.
             </p>
             <div class="kpi" style="margin-top:12px;">
               <span>Production-real topology</span>
@@ -478,10 +478,6 @@ const publicVsPrivate = {
               it must cross the boundary (CI runner → SUT host).
             </p>
 
-            <p class="mini" style="margin-top:10px;">
-              I made it “corporate-like” on purpose — that’s where I’ve seen the real pain: boundaries, naming drift, and env mismatches.
-            </p>
-
             <table class="table">
               <tr><td>CI Runner</td><td>New Mac mini running GitLab Runner pipeline jobs</td></tr>
               <tr><td>SUT Host</td><td>MacBook Pro hosting Ubuntu VM + Docker Compose (web + api + db)</td></tr>
@@ -491,7 +487,7 @@ const publicVsPrivate = {
             </table>
 
             <p class="mini" style="margin-top:10px;">
-              Learned the hard way: if naming and env config aren’t boring and consistent, debugging turns into archaeology.
+              Lesson: if naming and env config aren’t boring, documented and consistent, debugging turns into archaeology.
             </p>
           </div>
 
@@ -531,7 +527,7 @@ const publicVsPrivate = {
         </p>
 
         <p class="mini" style="margin-top:10px;">
-          I didn’t pick this order randomly — I picked it based on the failures I’ve seen teams hit over and over.
+          I picked it based on the failures I’ve seen teams hit over and over.
         </p>
 
         <div class="grid grid2" style="margin-top:14px;">
@@ -642,7 +638,7 @@ const publicVsPrivate = {
               how things usually break, and why I bothered building it this way.
             </p>
             <p class="mini" style="margin-top:10px;">
-              Learned the hard way: “we’ll remember how to do it” is the fastest path to repeated outages and reruns.
+              Lesson: “we’ll remember how to do it” is the fastest path to repeated outages and reruns.
             </p>
           </div>
 
@@ -721,11 +717,11 @@ const publicVsPrivate = {
       <div class="wrap">
         <h2>Public vs Private</h2>
         <p class="muted">
-          I publish patterns and reasoning, and I keep anything sensitive out of the repo.
+          I attempt to keep anything sensitive out of the repo.
         </p>
 
         <p class="mini" style="margin-top:10px;">
-          Learned the hard way: “just redact later” turns into “we leaked it already.”
+          Lesson: “just redact later” turns into “we leaked it already.”
         </p>
 
         <div class="grid grid2" style="margin-top:14px;">
