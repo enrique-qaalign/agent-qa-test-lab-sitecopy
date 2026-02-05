@@ -234,7 +234,7 @@
           <h2>Environment contract used by this runbook</h2>
           <p class="mini">
             Prefer <code>WEB_BASE_URL</code> and <code>API_BASE_URL</code>. <code>BASE_URL</code> may exist as compatibility
-            (treat it as an alias for <code>WEB_BASE_URL</code> unless your framework says otherwise).
+            (treat it as an alias for <code>WEB_BASE_URL</code> unless the framework says otherwise).
           </p>
 
           <pre><code># Default (production-like)
@@ -355,7 +355,7 @@ export BASE_URL="${WEB_BASE_URL}"
 
 export AUTH_PATH="/api/users/login"
 export AUTH_REJECT_CODES="401,403,422"
-# If your suite reads user/pass from env, set a known-bad password:
+# If the suite reads user/pass from env, set a known-bad password:
 export RW_USER_EMAIL="rwuser@example.com"
 export RW_USER_PASSWORD="definitely-wrong"
 
@@ -373,8 +373,8 @@ export BASE_URL="${WEB_BASE_URL}"
 npx playwright test sprints/Sprint3.INTENTIONAL_FAILURES.TO_ENSURE_FIX_WITHOUT_RERUN.spec.ts -g "S3\.2"</code></pre>
 
           <p class="mini" style="margin-top: 12px;">
-            If your SUT uses a different auth route or payload shape, set <code>AUTH_PATH</code> and (optionally)
-            <code>AUTH_PAYLOAD_JSON</code> to match your app.
+            If the SUT uses a different auth route or payload shape, set <code>AUTH_PATH</code> and (optionally)
+            <code>AUTH_PAYLOAD_JSON</code> to match the app.
           </p>
         </div>
       </section>

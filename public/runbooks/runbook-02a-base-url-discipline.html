@@ -300,7 +300,7 @@ export BASE_URL="${WEB_BASE_URL}"
 # Optional: prove reachability fails outside Playwright
 curl -sv --max-time 3 "${WEB_BASE_URL}/" || true
 
-# Then run a single proof test (update grep/project to your suite)
+# Then run a single proof test 
 npx playwright test -g "RW\.NET\.001" --project=chromium --reporter=line</code></pre>
 
           <h3 style="margin-top: 14px;">5) Set correct targets and run (Runner)</h3>
@@ -332,7 +332,7 @@ grep -R "http://127\.0\.0\.1" -n pages tests fixtures playwright.config.* || tru
 grep -R "localhost:" -n pages tests fixtures playwright.config.* || true</code></pre>
 
           <p class="mini" style="margin-top: 12px;">
-            If your project still uses a legacy variable (e.g., <code>BASE_URL_TODO</code>), document it here and map it to
+            If the project still uses a legacy variable (e.g., <code>BASE_URL_TODO</code>), document it here and map it to
             <code>WEB_BASE_URL</code> explicitly rather than adding more implicit fallback behavior.
           </p>
         </div>

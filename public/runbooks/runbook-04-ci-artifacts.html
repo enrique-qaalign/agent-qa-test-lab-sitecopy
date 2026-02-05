@@ -248,7 +248,7 @@
           </table>
 
           <p class="mini" style="margin-top: 10px;">
-            If you are using <code>error-context.md</code> (like your Sprint 6 logs show), treat it as part of the evidence contract.
+            If using <code>error-context.md</code> (like Sprint 6 logs show), treat it as part of the evidence contract.
           </p>
         </div>
       </section>
@@ -269,12 +269,12 @@
           <h3 style="margin-top: 14px;">2) Download artifacts and replay trace locally</h3>
           <p class="mini">This is the “no rerun” power move: replay CI’s exact browser timeline.</p>
           <pre><code># After downloading artifacts zip(s) from GitLab:
-# Example trace path (from your logs):
+# Example trace path (from logs):
 npx playwright show-trace blob-report-2/**/trace.zip</code></pre>
 
           <h3 style="margin-top: 14px;">3) Review the error context file (if present)</h3>
           <pre><code># Many suites write an additional error context markdown file.
-# Example path (from your logs):
+# Example path (from logs):
 cat blob-report-2/**/error-context.md | sed -n '1,200p'</code></pre>
 
           <h3 style="margin-top: 14px;">4) Confirm it is not an environment illusion</h3>
@@ -348,7 +348,7 @@ test -f playwright-report/index.html || (echo "missing playwright-report/index.h
             </tr>
             <tr>
               <td><strong>Failure attachments</strong></td>
-              <td>Failed tests include screenshot and trace/video based on your config (<code>trace.zip</code>, <code>video.webm</code>, <code>test-failed-*.png</code>).</td>
+              <td>Failed tests include screenshot and trace/video based on config (<code>trace.zip</code>, <code>video.webm</code>, <code>test-failed-*.png</code>).</td>
             </tr>
             <tr>
               <td><strong>Diagnosis proof</strong></td>
@@ -392,7 +392,7 @@ node -e 'console.log("CI=", !!process.env.CI, "PW_VERSION=", require("@playwrigh
 
           <h3>Artifacts expire before review</h3>
           <p><strong>Symptom:</strong> artifacts missing due to expiration.</p>
-          <p><strong>Action:</strong> increase artifact retention window for your review workflow (especially MR review + triage).</p>
+          <p><strong>Action:</strong> increase artifact retention window for review workflow (especially MR review + triage).</p>
         </div>
       </section>
 

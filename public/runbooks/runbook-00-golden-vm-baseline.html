@@ -136,17 +136,17 @@
           patched to current updates, reachable via SSH using keys, with a snapshot used as the permanent rollback point.
         </p>
         <div class="kpi">
-          <span>Deterministic access</span>
-          <span>Known-good rollback</span>
-          <span>Repeatable rebuild</span>
-          <span>Lab-safe defaults</span>
+          <span>Deterministic access (no guessing which creds work)</span>
+          <span>Known-good rollback (no “what changed?” debugging)</span>
+          <span>Repeatable rebuild (new VM behaves like the last one)</span>
+          <span>Lab-safe defaults (nothing fragile or clever)</span>
         </div>
 
         <details class="private">
-          <summary>Private (operator): evidence bundle guidance</summary>
+          <summary>Private : evidence bundle guidance</summary>
           <p class="small" style="margin-top:8px;">
-            Operator mode is where you keep raw outputs and exact environment notes (hostnames, LAN IPs, screenshots, key fingerprints).
-            Public pages stay sanitized. If you need true secrecy, keep operator pages in a private repo (not just hidden in HTML).
+            Operator mode is where raw outputs and exact environment notes (hostnames, LAN IPs, screenshots, key fingerprints).
+            Public pages stay sanitized. For true secrecy, I will keep operator pages in a private repo.
           </p>
         </details>
       </div>
@@ -161,8 +161,8 @@
         </p>
 
         <details class="private">
-          <summary>Private (operator): your actual topology notes</summary>
-          <pre><code># Fill with your actuals (do not publish)
+          <summary>Private : topology notes</summary>
+          <pre><code># Fill with actuals
 # Hypervisor: VirtualBox
 # Adapter: NAT (baseline) OR Bridged (lab)
 # Host NIC (example): en6 (Belkin USB-C LAN)
@@ -189,7 +189,7 @@
         </ul>
 
         <details class="private">
-          <summary>Private (operator): proof checklist (copy/paste evidence)</summary>
+          <summary>Private : proof checklist (copy/paste evidence)</summary>
           <pre><code># Capture and keep these blocks for “proof of baseline”
 uname -a
 lsb_release -a || cat /etc/os-release
@@ -210,7 +210,7 @@ sudo ss -lntp | grep -E '(:22\s)'
         </table>
 
         <details class="private">
-          <summary>Private (operator): stable naming conventions</summary>
+          <summary>Private : stable naming conventions</summary>
           <pre><code># Recommended operator convention (adjust once, then keep stable)
 # VM name: sut-ubuntu (baseline-ubuntu-24.04.3-sshkeys)
 # Snapshot: baseline-ubuntu-sshkeys
@@ -231,8 +231,8 @@ sudo ss -lntp | grep -E '(:22\s)'
         </ul>
 
         <details class="private">
-          <summary>Private (operator): bridged adapter evidence (if used)</summary>
-          <pre><code># If you switch to Bridged, record adapter selection:
+          <summary>Private : bridged adapter evidence (if used)</summary>
+          <pre><code># To switch to Bridged, record adapter selection:
 # VirtualBox → Network → Attached to: Bridged Adapter
 # Name: (host NIC) e.g. en6: Belkin USB-C LAN
 # Promiscuous Mode: Deny
@@ -252,7 +252,7 @@ sudo ss -lntp | grep -E '(:22\s)'
         <p class="small">Expected: interface <code>enp0s3</code> shows an IP (often <code>10.0.2.x</code> on NAT).</p>
 
         <details class="private">
-          <summary>Private (operator): capture actual IP block</summary>
+          <summary>Private : capture actual IP block</summary>
           <pre><code>ip -4 -br a
 ip route
 </code></pre>
@@ -270,11 +270,11 @@ sudo ss -tlnp | grep ':22'</code></pre>
 Protocol: TCP
 Host IP: 127.0.0.1
 Host Port: 2222
-Guest IP: (blank)   # or guest IP if you prefer
+Guest IP: (blank)   
 Guest Port: 22</code></pre>
 
         <details class="private">
-          <summary>Private (operator): proof that 2222 is bound</summary>
+          <summary>Private : proof that 2222 is bound</summary>
           <pre><code># Host-side proof (macOS)
   ssh -p 2222 sut@127.0.0.1
 
@@ -297,7 +297,7 @@ Guest Port: 22</code></pre>
 sudo apt upgrade -y</code></pre>
 
         <details class="private">
-          <summary>Private (operator): prove patch state</summary>
+          <summary>Private : prove patch state</summary>
           <pre><code># inside VM
 sudo apt update
 sudo apt upgrade -y
@@ -319,12 +319,12 @@ uname -r
         <p class="small">Expected: login succeeds without a password prompt.</p>
 
         <details class="private">
-          <summary>Private (operator): key fingerprint capture</summary>
+          <summary>Private : key fingerprint capture</summary>
           <pre><code># Host key / known_hosts hygiene (host)
 ssh-keygen -R '[127.0.0.1]:2222' || true
 ssh -p 2222 sut@127.0.0.1
 
-# Record fingerprint once you accept it (do not publish)
+# Record fingerprint once accepted (will not publish)
 # (fingerprint shown at first connect)
 </code></pre>
         </details>
@@ -333,7 +333,7 @@ ssh -p 2222 sut@127.0.0.1
 
         <h3>11) Optional: disable password authentication (after keys work)</h3>
         <p class="small">
-          Safety rule: keep your current session open; validate changes in a separate terminal before closing anything.
+          Safety rule: keep current session open; validate changes in a separate terminal before closing anything.
         </p>
         <pre><code>sudo nano /etc/ssh/sshd_config
 
@@ -344,7 +344,7 @@ ssh -p 2222 sut@127.0.0.1
 sudo systemctl restart ssh</code></pre>
 
         <details class="private">
-          <summary>Private (operator): post-change verification</summary>
+          <summary>Private : post-change verification</summary>
           <pre><code># Keep one session open.
 # In a second terminal on host:
 ssh -p 2222 sut@127.0.0.1
@@ -361,9 +361,9 @@ sudo systemctl status ssh --no-pager | sed -n '1,14p'
         </ul>
 
         <details class="private">
-          <summary>Private (operator): snapshot discipline note</summary>
+          <summary>Private : snapshot discipline note</summary>
           <p class="small" style="margin-top:8px;">
-            Operator rule: if you ever have to “wonder what changed,” you missed a snapshot. Baseline snapshots are the lab’s
+            Lesson: if you ever have to “wonder what changed,” you missed a snapshot. Baseline snapshots are the lab’s
             equivalent of “golden AMI” discipline.
           </p>
         </details>
@@ -395,7 +395,7 @@ sudo systemctl status ssh --no-pager | sed -n '1,14p'
         </p>
 
         <details class="private">
-          <summary>Private (operator): rapid triage commands</summary>
+          <summary>Private : rapid triage commands</summary>
           <pre><code># Host side
 lsof -nP -iTCP:2222 -sTCP:LISTEN || true
 ssh -vvv -p 2222 sut@127.0.0.1 || true
