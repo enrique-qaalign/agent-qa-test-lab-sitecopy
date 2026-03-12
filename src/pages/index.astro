@@ -2,7 +2,17 @@
 const site = {
   title: "QA Test Lab",
   tagline:
-    "Production-realistic QA automation practice—without enterprise overhead.",
+    "A production-realistic QA automation lab demonstrating CI/CD validation, diagnosable failures, deterministic test design, and risk-based release gates across a real runner-to-SUT boundary.",
+  lastUpdated: "March 2026",
+  stack: [
+    "Playwright",
+    "Cypress",
+    "GitLab CI",
+    "Docker Compose",
+    "Ubuntu VM",
+    "JMeter",
+    "GitLab Pages",
+  ],
 };
 
 const sprintHighlights = [
@@ -74,7 +84,7 @@ const sprintHighlights = [
     deliverable: "Taxonomy + at least one flake removed without timeouts.",
     runbooks: [
       {
-        label: "Runbook 04 — CI artifacts + “debug without rerun”",
+        label: "Runbook 04 — CI artifacts + debug without rerun",
         href: "runbooks/runbook-04-ci-artifacts.html",
       },
       {
@@ -100,6 +110,7 @@ const sprintHighlights = [
   },
   {
     num: 6,
+    status: "done",
     title: "Time-to-signal + release gates",
     proof: "Quality gates map to risk, not coverage vanity.",
     deliverable: "Smoke vs regression + explicit go/no-go criteria (BLOCK vs WARN).",
@@ -124,6 +135,7 @@ const sprintHighlights = [
   },
   {
     num: 7,
+    status: "done",
     title: "Custom fixtures (domain primitives)",
     proof:
       "Tests read like business actions; auth, API helpers, and evidence are consistent and reusable.",
@@ -139,6 +151,7 @@ const sprintHighlights = [
   },
   {
     num: 8,
+    status: "done",
     title: "Page Objects at scale (POM + utilities)",
     proof:
       "UI automation stays maintainable at 50–200+ tests with stable locator strategy and flows.",
@@ -151,6 +164,112 @@ const sprintHighlights = [
       },
     ],
     video: { label: "Sprint 8 demo", youtubeId: null },
+  },
+  {
+    num: 9,
+    status: "planned",
+    title: "Cypress API harness (Sprint 1 for Cypress track)",
+    proof: "API tests run deterministically by env contract (no hardcoded URLs).",
+    deliverable:
+      "Cypress configured + 3 API tests (GET + POST + Negative) with structure assertions.",
+    runbooks: [
+      {
+        label: "Runbook 09 — Cypress API harness (setup + first 3 tests)",
+        href: "runbooks/runbook-09-cypress-api-harness.html",
+      },
+    ],
+    video: { label: "Sprint 9 demo", youtubeId: null },
+    ac: [
+      "API_BASE_URL is required (fail fast if missing)",
+      "3 API tests pass locally headless (npx cypress run)",
+      "Assertions validate payload structure, not just status codes",
+      "POST uses unique data per test (parallel-safe)",
+      "Negative test validates error status + error shape (if available)",
+    ],
+  },
+  {
+    num: 10,
+    status: "planned",
+    title: "Cypress determinism (auth + data isolation)",
+    proof: "Tests are isolated, order-independent, and parallel-friendly.",
+    deliverable:
+      "API auth helper + data naming convention + optional cleanup strategy.",
+    runbooks: [
+      {
+        label: "Runbook 10 — Cypress auth + deterministic test data",
+        href: "runbooks/runbook-10-cypress-auth-data-discipline.html",
+      },
+    ],
+    video: { label: "Sprint 10 demo", youtubeId: null },
+    ac: [
+      "Token acquisition strategy documented (login or env token)",
+      "API helpers centralize request/headers/logging",
+      "Each test owns its data (no shared state)",
+      "Failures show request/response evidence clearly",
+    ],
+  },
+  {
+    num: 11,
+    status: "planned",
+    title: "Cypress CI signal (reports + artifacts-first)",
+    proof: "Automation becomes a trustworthy release signal, not a local demo.",
+    deliverable:
+      "CI job runs Cypress API suite + publishes JUnit/HTML evidence artifacts.",
+    runbooks: [
+      {
+        label: "Runbook 11 — Cypress CI integration + evidence bundle",
+        href: "runbooks/runbook-11-cypress-ci-evidence.html",
+      },
+    ],
+    video: { label: "Sprint 11 demo", youtubeId: null },
+    ac: [
+      "CI produces JUnit + HTML report artifacts",
+      "Failure artifacts sufficient to diagnose without rerun",
+      "Retry policy documented and disciplined",
+    ],
+  },
+  {
+    num: 12,
+    status: "planned",
+    title: "JMeter baseline harness (non-GUI + HTML report)",
+    proof: "Performance tests are reproducible, versioned, and runnable in CI.",
+    deliverable:
+      "JMeter .jmx committed + CLI non-GUI run + HTML report artifact.",
+    runbooks: [
+      {
+        label: "Runbook 12 — JMeter baseline (CLI, reports, parameterization)",
+        href: "runbooks/runbook-12-jmeter-baseline.html",
+      },
+    ],
+    video: { label: "Sprint 12 demo", youtubeId: null },
+    ac: [
+      "Non-GUI execution documented (jmeter -n ...)",
+      "CSV parameterization for realistic load",
+      "HTML report generated and archived",
+      "Baseline p95/throughput/error-rate captured",
+    ],
+  },
+  {
+    num: 13,
+    status: "planned",
+    title: "JMeter contention vs baseline (bottleneck modeling)",
+    proof:
+      "Separates raw capacity from data contention (hot rows, locks, pool saturation).",
+    deliverable:
+      "A/B test plans: unique-data baseline vs contention profile + knee-point analysis.",
+    runbooks: [
+      {
+        label: "Runbook 13 — JMeter concurrency bottleneck modeling (unique vs contention)",
+        href: "runbooks/runbook-13-jmeter-contention-model.html",
+      },
+    ],
+    video: { label: "Sprint 13 demo", youtubeId: null },
+    ac: [
+      "Two load profiles produce explainable delta",
+      "Includes verification step (create + verify persisted state)",
+      "Documents likely constraint layers (app vs DB vs pools)",
+      "Produces a short executive summary chart/table",
+    ],
   },
 ];
 
@@ -214,6 +333,25 @@ const publicVsPrivate = {
     "Credentials, API keys, or anything exploitable",
   ],
 };
+
+const evidenceHighlights = [
+  "CI crosses a real machine boundary; no localhost shortcuts.",
+  "Configuration is env-driven through WEB_BASE_URL and API_BASE_URL.",
+  "GitLab artifacts support debug-without-rerun diagnosis.",
+  "Test data and state reset are designed for idempotent, parallel-friendly runs.",
+  "Release gates are explicit and mapped to risk rather than vanity coverage.",
+];
+
+const businessValue = [
+  "Faster time-to-signal on build and release risk",
+  "Lower flake noise and more trustworthy pipeline outcomes",
+  "Clearer release decisions through explicit gates",
+  "Reproducible failures diagnosable from artifacts alone",
+  "Faster onboarding through runbooks and conventions rather than tribal knowledge",
+];
+
+const completedSprints = sprintHighlights.filter((s) => s.status === "done");
+const plannedSprints = sprintHighlights.filter((s) => s.status !== "done");
 ---
 
 <!doctype html>
@@ -222,11 +360,13 @@ const publicVsPrivate = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{site.title}</title>
-    <script defer data-domain="qa-test-lab-site-3807df.gitlab.io"
-    src="https://plausible.io/js/script.js"></script>
+    <script defer data-domain="qa-test-lab-site-3807df.gitlab.io" src="https://plausible.io/js/script.js"></script>
     <meta name="description" content={site.tagline} />
+    <meta property="og:title" content={site.title} />
+    <meta property="og:description" content={site.tagline} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://qa-test-lab-site-3807df.gitlab.io/" />
     <style>
-      /* Your existing styles unchanged — keeping them exactly as-is */
       :root {
         --bg: #0b0e14;
         --panel: #121827;
@@ -322,7 +462,8 @@ const publicVsPrivate = {
             <a class="pill" href="#start-here">Start Here</a>
             <a class="pill" href="#about">About</a>
             <a class="pill" href="#architecture">Architecture</a>
-            <a class="pill" href="#sprints">Sprint Plan</a>
+            <a class="pill" href="#evidence">Evidence</a>
+            <a class="pill" href="#sprints">Sprint Roadmap</a>
             <a class="pill" href="#personas">Personas</a>
             <a class="pill" href="#runbooks">Runbooks</a>
             <a class="pill" href="#public-private">Public vs Private</a>
@@ -332,113 +473,119 @@ const publicVsPrivate = {
     </div>
 
     <div class="wrap">
-      <!-- HERO -->
       <section class="hero" id="start-here">
         <div class="h1">A Living QA Test Lab</div>
-
+      
         <p class="lead">
-          A production-realistic QA test lab designed to practice automation,
-          CI, and release discipline under real constraints—without enterprise
-          overhead.
+          {site.tagline}
         </p>
-
+      
+        <div class="kpi">
+          {site.stack.map((item) => <span>{item}</span>)}
+        </div>
+      
         <div class="card" style="margin-top:14px;">
           <h2 style="margin-bottom:8px;">30-second review</h2>
-
+      
           <div class="grid grid3" style="margin-top:10px;">
             <div>
               <h3>What this is</h3>
               <p class="muted" style="margin:0;">
-                A production-realistic QA test lab that separates <strong>CI runner</strong>
-                and <strong>SUT host</strong>, deploys environments via Docker
-                Compose, and validates releases through CI gates—built for hands-on practice
-                without enterprise overhead.
+                A production-realistic QA automation lab that separates the
+                <strong>system under test</strong>, <strong>CI/CD execution</strong>,
+                and <strong>local test execution</strong> across three machines.
               </p>
               <p class="mini" style="margin-top:10px;">
-                I built this because I got tired of “it works on my machine” being the default excuse.
+                The lab proves automation across a real runner-to-SUT network boundary,
+                mirroring how CI/CD pipelines validate systems under test.
               </p>
             </div>
-
+      
             <div>
               <h3>What proof exists today</h3>
               <ul style="margin:8px 0 0 18px;">
-                <li>CI runner → SUT host network boundary (no localhost shortcuts)</li>
-                <li>
-                  Stable hostnames (<code>sut.testlab</code>) and env contract via
-                  <code>WEB_BASE_URL</code> / <code>API_BASE_URL</code>
-                </li>
-                <li>
-                  Live SUT deployed via Docker Compose (dev) and reachable by name
-                </li>
+                <li>MBP hosts the SUT in Ubuntu with Docker Compose</li>
+                <li>Mac Mini 1 runs CI/CD through a local GitLab Runner</li>
+                <li>Mac Mini 2 runs Playwright as the dedicated test runner</li>
+                <li>Stable hostnames and env contract via <code>WEB_BASE_URL</code> / <code>API_BASE_URL</code></li>
               </ul>
-              <p class="mini" style="margin-top:10px;">
-                Lesson: anything that only works on localhost dies the first time CI touches it.
-              </p>
             </div>
-
+      
             <div>
-              <h3>Fast path (Sprint 0–3)</h3>
+              <h3>Fast path</h3>
               <ul style="margin:8px 0 0 18px;">
-                <li><a href="#sprints">Sprint 0:</a> Golden VM baseline + rollback</li>
-                <li><a href="#sprints">Sprint 1:</a> Topology baseline (CI runner → SUT)</li>
-                <li><a href="#sprints">Sprint 2:</a> baseURL discipline (env-driven navigation)</li>
-                <li><a href="#sprints">Sprint 3:</a> Diagnosability via intentional failure</li>
+                <li><a href="#video">Watch the lab walkthrough</a></li>
+                <li><a href="#architecture">Review the 3-machine architecture</a></li>
+                <li><a href="#evidence">See evidence highlights</a></li>
+                <li><a href="#sprints">Walk the sprint roadmap</a></li>
               </ul>
               <p class="mini" style="margin-top:10px;">
-                If you’re skimming: Sprint 0–3, then Architecture.
+                Quick review path: Start Here → Video Walkthrough → Architecture → Evidence → Sprint Roadmap.
               </p>
             </div>
+          </div>
+        </div>
+      
+        <section id="video">
+          <div class="card video" style="margin-top:14px;">
+            <h2 style="margin-bottom:8px;">Automation Lab Walkthrough</h2>
+            <p class="muted" style="margin-top:0;">
+              A short walkthrough of Sprint 0 - 3 of the QA automation lab architecture showing the
+              MBP as the system under test, Mac Mini 1 as the CI/CD machine, and
+              Mac Mini 2 as the dedicated Playwright test runner.
+            </p>
+      
+            <iframe
+              width="100%"
+              height="500"
+              src="https://www.youtube.com/embed/PrtC52v5WCk?cc_load_policy=1"
+              title="QA Automation Lab Architecture Overview"
+              frameborder="0"
+              allowfullscreen>
+            </iframe>
+      
+            <p class="mini" style="margin-top:10px;">
+              This overview shows the runner-to-SUT boundary, CI/CD separation, and
+              diagnostic failure classification used in the lab.
+            </p>
+          </div>
+        </section>
+      
+        <div class="row">
+          <div class="cta">
+            <strong>What this shows</strong>
+            <div class="mini">
+              How CI/CD signal, failure diagnosis, and release decisions behave under realistic machine boundaries.
+            </div>
+          </div>
+          <div class="cta">
+            <strong>Who this is for</strong>
+            <div class="mini">
+              Hiring managers, QA leads, and engineering teams interested in understanding
+              how I approach automation architecture, CI/CD reliability, and release
+              decision discipline.
+            </div>
+          </div>
+          <div class="cta">
+            <strong>Last updated</strong>
+            <div class="mini">{site.lastUpdated}</div>
           </div>
         </div>
       </section>
-
-      <div class="row">
-        <div class="cta">
-          <strong>What this shows</strong>
-          <div class="mini">
-            How CI signals, failure diagnosis, and release decisions behave under realistic constraints.
-          </div>
-        </div>
-        <div class="cta">
-          <strong>What this is not</strong>
-          <div class="mini">
-            This isn’t another localhost demo — those fall apart the second you introduce CI and a separate machine.
-          </div>
-        </div>
-        <div class="cta">
-          <strong>Videos</strong>
-          <div class="mini">
-            Sprint clips get added as they’re recorded.
-          </div>
-        </div>
-      </div>
-
-      <div class="kpi">
-        <span>CI runner → SUT boundary</span>
-        <span>Docker Compose environments</span>
-        <span>GitLab CI artifacts</span>
-        <span>Flake taxonomy</span>
-        <span>Idempotent test runs</span>
-        <span>Risk-based gates</span>
-      </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- ABOUT -->
     <section id="about">
       <div class="wrap">
-        <h2>About</h2>
+        <h2>About the Lab</h2>
         <div class="grid grid2" style="margin-top:14px;">
           <div class="card">
             <h3>What this lab is</h3>
             <p class="muted">
               QA Test Lab is a production-realistic environment built to stay current with modern automation,
               CI/CD, and test infrastructure—without the cost or operational overhead of full enterprise systems.
-              It’s designed to surface the failure modes people usually hide (by accident) with localhost shortcuts.
-            </p>
-            <p class="mini" style="margin-top:10px;">
-              This keeps tests reliable when CI actually runs them.
+              It’s designed to surface and/or prevent the kinds of failures that appear in real deployment environments.
             </p>
             <div class="kpi" style="margin-top:12px;">
               <span>Production-real topology</span>
@@ -449,17 +596,10 @@ const publicVsPrivate = {
           </div>
 
           <div class="card">
-            <h3>How it’s run</h3>
-            <p class="muted">
-              Each sprint ships a concrete capability plus a runbook that documents setup, validation,
-              and the failure modes you actually see in real pipelines.
-            </p>
-            <p class="mini" style="margin-top:10px;">
-              Lesson: if a system relies on tribal knowledge, it breaks when the person leaves.
-            </p>
-            <p class="mini" style="margin-top:10px;">
-              If it’s not documented, it doesn’t exist.
-            </p>
+            <h3>Why it matters in real teams</h3>
+            <ul>
+              {businessValue.map((item) => <li>{item}</li>)}
+            </ul>
           </div>
         </div>
       </div>
@@ -467,7 +607,6 @@ const publicVsPrivate = {
 
     <div class="divider"></div>
 
-    <!-- ARCHITECTURE -->
     <section id="architecture">
       <div class="wrap">
         <h2>Architecture (Production-Real Baseline)</h2>
@@ -475,42 +614,43 @@ const publicVsPrivate = {
           <div class="card">
             <h3>Core idea</h3>
             <p class="muted">
-              CI runs from a dedicated runner and targets a SUT hosted on a separate machine boundary.
-              The SUT host also supports local Playwright runs for recording and debugging, but CI is the proof:
-              it must cross the boundary (CI runner → SUT host).
+              The lab separates responsibilities across three machines. The MBP hosts the
+              system under test, Mac Mini 1 executes CI/CD through a local GitLab Runner,
+              and Mac Mini 2 acts as the dedicated Playwright test runner. Both CI/CD and
+              local proof runs must cross the runner-to-SUT boundary.
             </p>
-
+    
             <table class="table">
-              <tr><td>CI Runner</td><td>New Mac mini running GitLab Runner pipeline jobs</td></tr>
-              <tr><td>SUT Host</td><td>MacBook Pro hosting Ubuntu VM + Docker Compose (web + api + db)</td></tr>
-              <tr><td>Local Runner</td><td>MacBook Pro also runs Playwright interactively (debug/recording)</td></tr>
-              <tr><td>DNS</td><td>Stable hostnames via <code>/etc/hosts</code> (e.g., <code>sut.testlab</code>)</td></tr>
-              <tr><td>Config</td><td><code>WEB_BASE_URL</code>/<code>API_BASE_URL</code> drive navigation and API calls (no hardcoded domains)</td></tr>
+              <tr><td>SUT</td><td>MBP hosting the Ubuntu VM + Docker Compose stack (web + api + db)</td></tr>
+              <tr><td>CI/CD</td><td>Mac Mini 1 running the local GitLab Runner and pipeline jobs</td></tr>
+              <tr><td>Test Runner</td><td>Mac Mini 2 running Playwright locally for proof, debugging, and validation</td></tr>
+              <tr><td>DNS</td><td>Stable hostnames via <code>/etc/hosts</code> (for example <code>sut.testlab</code>)</td></tr>
+              <tr><td>Config</td><td><code>WEB_BASE_URL</code> and <code>API_BASE_URL</code> drive UI and API targeting</td></tr>
             </table>
-
-            <p class="mini" style="margin-top:10px;">
-              Lesson: if naming and env config aren’t boring, documented and consistent, debugging turns into archaeology.
-            </p>
           </div>
-
+    
           <div class="card">
             <h3>Reference diagram (text)</h3>
-            <p class="muted">Quick topology sketch:</p>
             <pre style="margin:0; white-space:pre; color:var(--muted); background:rgba(255,255,255,.03); border:1px solid var(--border); padding:14px; border-radius:12px;">
-[GitLab CI Runner / Mac mini]
-        |
-        |  Playwright tests (WEB_BASE_URL / API_BASE_URL)
-        v
-[SUT Host / MacBook Pro]
-  Ubuntu VM (VirtualBox)
-   Docker Compose:
-    - web  -> :3000
-    - api  -> :3001
-    - db   -> internal
+    [Mac Mini 1 / CI-CD]
+      local GitLab Runner
+            |
+            |  pipeline execution / validation
+            v
+    [MBP / SUT]
+      Ubuntu VM
+      Docker Compose:
+        - web  -> :3000
+        - api  -> :3001
+        - db   -> internal
+    
+    [Mac Mini 2 / Test Runner]
+      Playwright local execution
+            |
+            |  proof / debug / smoke validation
+            v
+    [MBP / SUT]
             </pre>
-            <p class="mini" style="margin-top:10px;">
-              This is the shape that keeps me honest: if CI can’t reach it by name, it doesn’t count as “working.”
-            </p>
           </div>
         </div>
       </div>
@@ -518,79 +658,84 @@ const publicVsPrivate = {
 
     <div class="divider"></div>
 
-    <!-- SPRINTS -->
+    <section id="evidence">
+      <div class="wrap">
+        <h2>Evidence Highlights</h2>
+        <div class="grid grid2" style="margin-top:14px;">
+          <div class="card">
+            <h3>What this lab proves</h3>
+            <ul>
+              {evidenceHighlights.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Outcomes this design supports</h3>
+            <ul>
+              <li>Repeatable runs against a separately hosted SUT</li>
+              <li>Faster failure diagnosis without reruns</li>
+              <li>Maintainable framework growth across UI, API, and performance tracks</li>
+              <li>Safer release decisions through explicit gates and evidence</li>
+              <li>Operator-style documentation that reduces onboarding drag</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
     <section id="sprints">
       <div class="wrap">
-        <h2>First 8 Sprints</h2>
+        <h2>Sprint Roadmap</h2>
         <p class="muted">
-          The sprint sequence is intentional: topology realism, environment discipline, CI diagnosability,
+          The sequence is intentional: topology realism, environment discipline, CI diagnosability,
           flake elimination, data/state control, risk-based release gates, fixture composition,
           and scalable page object design.
         </p>
 
-        <p class="mini" style="margin-top:10px;">
-          I picked it based on the failures I’ve seen teams hit over and over.
-        </p>
-
+        <h3 style="margin-top:18px;">Completed</h3>
         <div class="grid grid2" style="margin-top:14px;">
-          {
-            sprintHighlights.map((s) => (
-              <div class="card">
-                <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
-                  <h3 style="margin:0;">Sprint {s.num}: {s.title}</h3>
-
-                  {s.status ? (
-                    <span class="pill" style="font-size:12px; padding:6px 10px;" title={`Status: ${s.status}`}>
-                      {String(s.status).toUpperCase()}
-                    </span>
-                  ) : null}
-                </div>
-
-                <p class="muted" style="margin-top:10px;">
-                  <strong>What it proves:</strong> {s.proof}
-                </p>
-
-                <p class="muted">
-                  <strong>Deliverable:</strong> {s.deliverable}
-                </p>
-
-                {s.runbooks?.length ? (
-                  <>
-                    <p class="muted" style="margin-top:10px;">
-                      <strong>Runbooks:</strong>
-                    </p>
-                    <ul style="margin:6px 0 0 18px;">
-                      {s.runbooks.map((rb) => (
-                        <li><a href={rb.href}>{rb.label}</a></li>
-                      ))}
-                    </ul>
-                  </>
-                ) : null}
-
-                {/* Video embeds only show when a real YouTube ID exists */}
-                {s.video?.youtubeId ? (
-                  <div class="video" style="margin-top:12px;">
-                    <iframe
-                      width="100%"
-                      height="420"
-                      src={`https://www.youtube.com/embed/${s.video.youtubeId}`}
-                      title={s.video.label}
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowfullscreen
-                    />
-                  </div>
-                ) : null}
+          {completedSprints.map((s) => (
+            <div class="card">
+              <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+                <h3 style="margin:0;">Sprint {s.num}: {s.title}</h3>
+                <span class="pill" style="font-size:12px; padding:6px 10px;">DONE</span>
               </div>
-            ))
-          }
+              <p class="muted" style="margin-top:10px;"><strong>What it proves:</strong> {s.proof}</p>
+              <p class="muted"><strong>Deliverable:</strong> {s.deliverable}</p>
+              {s.runbooks?.length ? (
+                <ul style="margin:6px 0 0 18px;">
+                  {s.runbooks.map((rb) => <li><a href={rb.href}>{rb.label}</a></li>)}
+                </ul>
+              ) : null}
+            </div>
+          ))}
+        </div>
+
+        <h3 style="margin-top:22px;">Planned</h3>
+        <div class="grid grid2" style="margin-top:14px;">
+          {plannedSprints.map((s) => (
+            <div class="card">
+              <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+                <h3 style="margin:0;">Sprint {s.num}: {s.title}</h3>
+                <span class="pill" style="font-size:12px; padding:6px 10px;">PLANNED</span>
+              </div>
+              <p class="muted" style="margin-top:10px;"><strong>What it proves:</strong> {s.proof}</p>
+              <p class="muted"><strong>Deliverable:</strong> {s.deliverable}</p>
+              {s.runbooks?.length ? (
+                <ul style="margin:6px 0 0 18px;">
+                  {s.runbooks.map((rb) => <li><a href={rb.href}>{rb.label}</a></li>)}
+                </ul>
+              ) : null}
+            </div>
+          ))}
         </div>
       </div>
     </section>
 
     <div class="divider"></div>
 
-    <!-- PERSONAS -->
     <section id="personas">
       <div class="wrap">
         <h2>Personas (Deliberate Practice Roles)</h2>
@@ -599,36 +744,23 @@ const publicVsPrivate = {
           and onboarding clarity. Each one pulls on a different maturity muscle.
         </p>
 
-        <p class="mini" style="margin-top:10px;">
-          I’ve seen teams collapse because nobody “owned” the boring parts. Personas make ownership visible.
-        </p>
-
         <div class="grid grid2" style="margin-top:14px;">
-          {
-            personas.map((p) => (
-              <div class="card">
-                <h3>{p.title}</h3>
-                <p class="muted"><strong>Mission:</strong> {p.mission}</p>
-
-                <p style="margin-top:10px;"><strong>Outputs</strong></p>
-                <ul>{p.outputs.map((o) => (<li>{o}</li>))}</ul>
-
-                <p style="margin-top:10px;"><strong>Rules</strong></p>
-                <ul>{p.rules.map((r) => (<li>{r}</li>))}</ul>
-
-                <p class="mini" style="margin-top:10px;">
-                  Quick tip: print this page to PDF if you want persona cards you can keep open during work.
-                </p>
-              </div>
-            ))
-          }
+          {personas.map((p) => (
+            <div class="card">
+              <h3>{p.title}</h3>
+              <p class="muted"><strong>Mission:</strong> {p.mission}</p>
+              <p style="margin-top:10px;"><strong>Outputs</strong></p>
+              <ul>{p.outputs.map((o) => <li>{o}</li>)}</ul>
+              <p style="margin-top:10px;"><strong>Rules</strong></p>
+              <ul>{p.rules.map((r) => <li>{r}</li>)}</ul>
+            </div>
+          ))}
         </div>
       </div>
     </section>
 
     <div class="divider"></div>
 
-    <!-- RUNBOOKS -->
     <section id="runbooks">
       <div class="wrap">
         <h2>Runbooks</h2>
@@ -636,77 +768,32 @@ const publicVsPrivate = {
           <div class="card">
             <h3>What each runbook includes</h3>
             <p class="muted">
-              Each runbook has the goal, exact commands, what the output should look like,
-              how things usually break, and why I bothered building it this way.
-            </p>
-            <p class="mini" style="margin-top:10px;">
-              Lesson: “we’ll remember how to do it” is the fastest path to repeated outages and reruns.
+              Each runbook has the goal, exact commands, expected output, common failure modes,
+              and why the system is built that way.
             </p>
           </div>
 
           <div class="card">
-            <h3>Runbooks</h3>
+            <h3>Runbook index</h3>
             <ul>
-              <li>
-                <a href="runbooks/runbook-00-golden-vm-baseline.html">
-                  Runbook 00 — Golden VM baseline (Ubuntu Server + SSH keys + snapshot)
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-01-runner-to-sut.html">
-                  Runbook 01 — Runner → SUT connectivity and naming
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-02-compose-deploy.html">
-                  Runbook 02 — Compose deploy (dev) + health check
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-02a-base-url-discipline.html">
-                  Runbook 02a — baseURL discipline and proof
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-03-diagnosability-intentional-failure.html">
-                  Runbook 03 — Diagnosability via Intentional Failure
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-04-ci-artifacts.html">
-                  Runbook 04 — CI artifacts + “debug without rerun”
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-04-nat-mode-explained.html">
-                  Sprint 4 Runbook — NAT + Port Forwarding Mode
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-05-test-data-state-reset.html">
-                  Runbook 05 — Test data + state reset (API-seeded, idempotent runs)
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-06-time-to-signal.html">
-                  Runbook 06 — Time-to-signal + release gates
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-07-custom-fixtures.html">
-                  Runbook 07 — Custom fixtures (UI + API) + composition rules
-                </a>
-              </li>
-              <li>
-                <a href="runbooks/runbook-08-pom-at-scale.html">
-                  Runbook 08 — Page Objects at scale (pages/components/flows)
-                </a>
-              </li>
+              <li><a href="runbooks/runbook-00-golden-vm-baseline.html">Runbook 00 — Golden VM baseline</a></li>
+              <li><a href="runbooks/runbook-01-runner-to-sut.html">Runbook 01 — Runner → SUT connectivity and naming</a></li>
+              <li><a href="runbooks/runbook-02-compose-deploy.html">Runbook 02 — Compose deploy (dev) + health check</a></li>
+              <li><a href="runbooks/runbook-02a-base-url-discipline.html">Runbook 02a — baseURL discipline and proof</a></li>
+              <li><a href="runbooks/runbook-03-diagnosability-intentional-failure.html">Runbook 03 — Diagnosability via Intentional Failure</a></li>
+              <li><a href="runbooks/runbook-04-ci-artifacts.html">Runbook 04 — CI artifacts + debug without rerun</a></li>
+              <li><a href="runbooks/runbook-04-nat-mode-explained.html">Sprint 4 Runbook — NAT + Port Forwarding Mode</a></li>
+              <li><a href="runbooks/runbook-05-test-data-state-reset.html">Runbook 05 — Test data + state reset</a></li>
+              <li><a href="runbooks/runbook-06-time-to-signal.html">Runbook 06 — Time-to-signal + release gates</a></li>
+              <li><a href="runbooks/runbook-07-custom-fixtures.html">Runbook 07 — Custom fixtures (UI + API) + composition rules</a></li>
+              <li><a href="runbooks/runbook-08-pom-at-scale.html">Runbook 08 — Page Objects at scale</a></li>
+              <li><a href="runbooks/runbook-09-cypress-api-harness.html">Runbook 09 — Cypress API harness</a></li>
+              <li><a href="runbooks/runbook-10-cypress-auth-data-discipline.html">Runbook 10 — Cypress auth + deterministic test data</a></li>
+              <li><a href="runbooks/runbook-11-cypress-ci-evidence.html">Runbook 11 — Cypress CI integration + evidence bundle</a></li>
+              <li><a href="runbooks/runbook-12-jmeter-baseline.html">Runbook 12 — JMeter baseline</a></li>
+              <li><a href="runbooks/runbook-13-jmeter-contention-model.html">Runbook 13 — JMeter concurrency bottleneck modeling</a></li>
             </ul>
-
-            <p class="mini" style="margin-top:10px;">
-              Runbooks are command + expected-output documents. Examples are sanitized.
-            </p>
+            <p class="mini" style="margin-top:10px;">Runbooks are command + expected-output documents. Examples are sanitized.</p>
           </div>
         </div>
       </div>
@@ -714,17 +801,10 @@ const publicVsPrivate = {
 
     <div class="divider"></div>
 
-    <!-- PUBLIC VS PRIVATE -->
     <section id="public-private">
       <div class="wrap">
         <h2>Public vs Private</h2>
-        <p class="muted">
-          I attempt to keep anything sensitive out of the repo.
-        </p>
-
-        <p class="mini" style="margin-top:10px;">
-          Lesson: “just redact later” turns into “we leaked it already.”
-        </p>
+        <p class="muted">I keep sensitive material out of the repo and document only what is safe to publish.</p>
 
         <div class="grid grid2" style="margin-top:14px;">
           <div class="card">
@@ -740,6 +820,8 @@ const publicVsPrivate = {
       </div>
     </section>
 
-    <footer></footer>
+    <footer>
+      QA Test Lab — built as a living portfolio of production-realistic QA automation practice.
+    </footer>
   </body>
 </html>

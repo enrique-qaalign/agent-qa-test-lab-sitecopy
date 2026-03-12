@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 09 — Cypress API harness (setup + first 3 tests)</title>
+    <meta
+      name="description"
+      content="Runbook 09 — Cypress API harness. Adds an API-first Cypress suite with env-driven base URL, 3 starter tests (GET + POST + Negative), and deterministic data rules."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 20px 18px 54px; }
+      .topbar {
+        position: sticky; top: 0; z-index: 10;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar-inner { display:flex; justify-content:space-between; gap:12px; padding: 12px 0; flex-wrap: wrap; }
+      .brand { font-weight: 750; }
+      .pill {
+        display:inline-block; border:1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        padding: 7px 10px; border-radius: 999px; font-size: 13px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 14px;
+      }
+      h1 { margin: 10px 0 0; font-size: 24px; }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      h3 { margin: 0 0 10px; font-size: 16px; }
+      p { margin: 10px 0; color: var(--muted); line-height: 1.6; }
+      ul, ol { margin: 10px 0 0 18px; color: var(--muted); }
+      li { margin: 6px 0; }
+      code { color: var(--text); }
+      section { scroll-margin-top: 90px; }
+      .divider { height: 1px; background: var(--border); margin: 18px 0; }
+      .callout {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        border-radius: 12px;
+        padding: 12px 12px;
+        margin-top: 12px;
+      }
+      .tag {
+        display:inline-block; font-size: 12px; padding: 4px 8px;
+        border-radius: 999px; border: 1px solid var(--border);
+        background: rgba(255,255,255,.03); color: var(--muted);
+        margin-right: 6px;
+      }
+      pre {
+        margin: 10px 0 0;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        color: var(--muted);
+        overflow: auto;
+      }
+      .ok { color: var(--good); }
+      .warn { color: var(--warn); }
+      .bad { color: var(--bad); }
+      .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+      .table td {
+        border-top: 1px solid var(--border);
+        padding: 10px 6px;
+        vertical-align: top;
+      }
+      .table td:first-child { width: 190px; color: var(--muted); }
+      .toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      footer { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 14px; color: var(--muted); font-size: 13px; }
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <div class="wrap">
+        <div class="topbar-inner">
+          <div class="brand">QA Test Lab • Runbook 09</div>
+          <div>
+            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <h1>Runbook 09 — Cypress API harness (setup + first 3 tests)</h1>
+
+      <div class="card">
+        <h2>Quick links</h2>
+        <div class="callout" style="margin-top:10px;">
+          <span class="tag">Navigation</span>
+          <p style="margin:8px 0 0;">Use anchors as checklist items.</p>
+          <div class="toc">
+            <a class="pill" href="#scope">Scope</a>
+            <a class="pill" href="#exit">Exit criteria</a>
+            <a class="pill" href="#contract">Env contract</a>
+            <a class="pill" href="#setup">Setup</a>
+            <a class="pill" href="#tests">Starter tests</a>
+            <a class="pill" href="#commands">Commands</a>
+            <a class="pill" href="#expected">Expected outputs</a>
+            <a class="pill" href="#failures">Failure modes</a>
+          </div>
+        </div>
+      </div>
+
+      <section id="scope" class="card">
+        <h2>Scope</h2>
+        <ul>
+          <li>Add an API-first Cypress harness (no UI dependency in Sprint 09).</li>
+          <li>Enforce env-driven base URL (no hardcoded domains in tests).</li>
+          <li>Ship 3 starter API tests: GET + POST + Negative.</li>
+          <li>Prove deterministic data strategy (unique data per POST).</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            If CI can’t run it by env contract, it doesn’t count as “working.”
+          </p>
+        </div>
+      </section>
+
+      <section id="exit" class="card">
+        <h2>Exit criteria</h2>
+        <ul>
+          <li><span class="ok">✔</span> Cypress installed and runnable headless (<code>npx cypress run</code>).</li>
+          <li><span class="ok">✔</span> <code>API_BASE_URL</code> is required; missing env fails fast.</li>
+          <li><span class="ok">✔</span> 3 API tests pass locally (GET + POST + Negative).</li>
+          <li><span class="ok">✔</span> POST uses unique data per test run (parallel-safe pattern).</li>
+          <li><span class="ok">✔</span> Assertions validate payload structure, not just status codes.</li>
+        </ul>
+      </section>
+
+      <section id="contract" class="card">
+        <h2>Env contract</h2>
+        <table class="table">
+          <tr>
+            <td><code>API_BASE_URL</code></td>
+            <td>
+              Base URL to the API host. Examples:
+              <ul>
+                <li><code>http://sut.testlab:3001</code></li>
+                <li><code>http://127.0.0.1:3001</code> (NAT/port-forward mode only)</li>
+              </ul>
+              <div class="callout">
+                <span class="tag">Rule</span>
+                <p style="margin:8px 0 0;">
+                  Do not bake <code>/api</code> into the base URL if your callers already include it.
+                  Pick one convention and document it.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code>API_EMAIL</code></td>
+            <td>RW user email for login/token acquisition (if POST requires auth).</td>
+          </tr>
+          <tr>
+            <td><code>API_PASSWORD</code></td>
+            <td>RW user password for login/token acquisition.</td>
+          </tr>
+          <tr>
+            <td><code>API_TOKEN</code></td>
+            <td>
+              Optional. If supplied, tests may use it instead of logging in.
+              Prefer token acquisition for repeatability unless tokens are stable by design.
+            </td>
+          </tr>
+        </table>
+
+        <div class="callout warn">
+          <span class="tag">Security</span>
+          <p style="margin:8px 0 0;">
+            Never commit credentials or tokens. Use env vars locally and CI secret variables for pipelines.
+          </p>
+        </div>
+      </section>
+
+      <section id="setup" class="card">
+        <h2>Setup</h2>
+
+        <h3>Install</h3>
+        <pre><code>npm install --save-dev cypress</code></pre>
+
+        <div class="divider"></div>
+
+        <h3>Initialize Cypress folder structure</h3>
+        <pre><code>npx cypress open</code></pre>
+
+        <div class="callout">
+          <span class="tag">Note</span>
+          <p style="margin:8px 0 0;">
+            This creates <code>cypress/</code> folders and a baseline config. We keep this repo API-first in Sprint 09.
+          </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3>Config (env-driven base URL)</h3>
+        <pre><code>// cypress.config.js
+const { defineConfig } = require('cypress')
+
+module.exports = defineConfig({
+  e2e: {
+    baseUrl: process.env.API_BASE_URL,
+    setupNodeEvents(on, config) {
+      if (!config.baseUrl) {
+        throw new Error('Missing required env: API_BASE_URL')
+      }
+      return config
+    },
+  },
+})</code></pre>
+      </section>
+
+      <section id="tests" class="card">
+        <h2>Starter tests</h2>
+
+        <div class="callout">
+          <span class="tag">Convention</span>
+          <p style="margin:8px 0 0;">
+            Tests validate structure + meaning. Avoid “status code only” tests.
+          </p>
+        </div>
+
+        <h3>File: <code>cypress/e2e/api/articles.cy.js</code></h3>
+
+        <pre><code>describe('API.ARTICLES.001 - Get Articles', () =&gt; {
+  it('returns list with expected shape', () =&gt; {
+    cy.request('GET', '/api/articles').then((res) =&gt; {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('articles')
+      expect(res.body.articles).to.be.an('array')
+
+      if (res.body.articles.length &gt; 0) {
+        const a = res.body.articles[0]
+        expect(a).to.have.property('title')
+        expect(a).to.have.property('slug')
+        expect(a).to.have.property('author')
+      }
+    })
+  })
+})
+
+describe('API.ARTICLES.002 - Create Article', () =&gt; {
+  it('creates a unique article (requires auth)', () =&gt; {
+    const title = `Sprint09 ${Date.now()}`
+    const token = Cypress.env('API_TOKEN')
+
+    // If your API requires login, set API_TOKEN via env or add a login helper in Sprint 10.
+    expect(token, 'API_TOKEN is required for create').to.be.a('string').and.not.be.empty
+
+    cy.request({
+      method: 'POST',
+      url: '/api/articles',
+      headers: { Authorization: `Token ${token}` },
+      body: {
+        article: {
+          title,
+          description: 'Cypress API harness seed',
+          body: 'Sprint 09 POST test'
+        }
+      }
+    }).then((res) =&gt; {
+      expect(res.status).to.eq(201)
+      expect(res.body).to.have.property('article')
+      expect(res.body.article.title).to.eq(title)
+      expect(res.body.article).to.have.property('slug')
+    })
+  })
+})
+
+describe('API.ARTICLES.003 - Unauthorized Create', () =&gt; {
+  it('fails with 401 when no token provided', () =&gt; {
+    cy.request({
+      method: 'POST',
+      url: '/api/articles',
+      failOnStatusCode: false,
+      body: {
+        article: {
+          title: `ShouldFail ${Date.now()}`,
+          description: 'no auth',
+          body: 'negative path'
+        }
+      }
+    }).then((res) =&gt; {
+      expect(res.status).to.eq(401)
+    })
+  })
+})</code></pre>
+
+        <div class="callout warn">
+          <span class="tag">Sprint boundary</span>
+          <p style="margin:8px 0 0;">
+            Sprint 09 allows using <code>API_TOKEN</code> directly.
+            Sprint 10 adds deterministic token acquisition (login) + request helpers.
+          </p>
+        </div>
+      </section>
+
+      <section id="commands" class="card">
+        <h2>Commands</h2>
+
+        <h3>Preflight: verify API reachable</h3>
+        <pre><code>export API_BASE_URL="http://sut.testlab:3001"
+curl -sS "$API_BASE_URL/api/articles" | head</code></pre>
+
+        <div class="divider"></div>
+
+        <h3>Run Cypress headless</h3>
+        <pre><code>export API_BASE_URL="http://sut.testlab:3001"
+export API_TOKEN="&lt;token&gt;"   # store in shell/CI secrets, never commit
+npx cypress run</code></pre>
+
+        <div class="callout">
+          <span class="tag">Note</span>
+          <p style="margin:8px 0 0;">
+            If you are in NAT/port-forward mode, base URL may be <code>http://127.0.0.1:3001</code> instead.
+          </p>
+        </div>
+      </section>
+
+      <section id="expected" class="card">
+        <h2>Expected outputs</h2>
+        <ul>
+          <li><span class="ok">✔</span> Cypress launches and executes the 3 specs.</li>
+          <li><span class="ok">✔</span> Missing <code>API_BASE_URL</code> fails immediately with a clear error.</li>
+          <li><span class="ok">✔</span> GET test validates response structure.</li>
+          <li><span class="ok">✔</span> POST test creates a unique article and asserts returned fields.</li>
+          <li><span class="ok">✔</span> Negative test returns 401 when no token provided.</li>
+        </ul>
+      </section>
+
+      <section id="failures" class="card">
+        <h2>Failure modes</h2>
+        <ul>
+          <li><strong>Wrong baseUrl shape:</strong> baseUrl includes <code>/api</code> but tests also call <code>/api/...</code> → double <code>/api/api</code>. Pick one convention.</li>
+          <li><strong>Auth missing:</strong> POST create requires token → provide <code>API_TOKEN</code> or implement login helper (Sprint 10).</li>
+          <li><strong>State collision:</strong> non-unique titles/slugs cause conflicts under parallel runs → ensure unique IDs via timestamp/GUID.</li>
+          <li><strong>CI mismatch:</strong> works locally but not in CI → confirm runner can resolve <code>sut.testlab</code> (name/IP contract).</li>
+          <li><strong>Over-asserting dynamic fields:</strong> avoid asserting full objects with fields that vary (timestamps, counts).</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            This sprint proves the harness. Sprint 10 hardens auth + helpers. Sprint 11 turns it into a CI-grade signal.
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        <div>Runbook 09 • QA Test Lab</div>
+      </footer>
+    </div>
+  </body>
+</html>
