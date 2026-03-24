@@ -28,28 +28,28 @@ const sprintHighlights = [
         href: "runbooks/runbook-00-golden-vm-baseline.html",
       },
     ],
-    video: { label: "Sprint 0 demo", youtubeId: null },
+    video: { label: "Sprint 0 demo", youtubeId: "i7WTUbTx2z8" },
   },
   {
     num: 1,
     status: "done",
-    title: "Baseline topology (CI runner → SUT)",
-    proof: "Tests cross a real network boundary. No localhost shortcuts.",
-    deliverable: "Topology + runbook + working Compose SUT.",
+    title: "Runner → SUT network boundary",
+    proof: "Automation crosses a real runner-to-SUT network boundary using hostname-based targeting. Localhost shortcuts are explicitly rejected.",
+    deliverable: "Boundary proof + runbook + working Compose SUT.",
     runbooks: [
       {
         label: "Runbook 01 — Runner → SUT connectivity and naming",
         href: "runbooks/runbook-01-runner-to-sut.html",
       },
     ],
-    video: { label: "Sprint 1 demo", youtubeId: null },
+    video: { label: "Sprint 1 demo", youtubeId: "JFCYXlenJBA" },
   },
   {
     num: 2,
     status: "done",
-    title: "Environment control (baseURL discipline)",
-    proof: "Configuration lives in the environment, not the test code.",
-    deliverable: "Hard fail → evidence → clean fix via env baseURL.",
+    title: "Environment discipline (explicit targeting)",
+    proof: "Targets are explicit, validated at runtime, and enforced through WEB_BASE_URL and API_BASE_URL.",
+    deliverable: "Fail-fast config proof + localhost rejection + remote HTTP validation.",
     runbooks: [
       {
         label: "Runbook 02 — Compose deploy (dev) + health check",
@@ -60,7 +60,7 @@ const sprintHighlights = [
         href: "runbooks/runbook-02a-base-url-discipline.html",
       },
     ],
-    video: { label: "Sprint 2 demo", youtubeId: null },
+   video: { label: "Sprint 2 demo", youtubeId: "ReM0MSXloPg" },
   },
   {
     num: 3,
@@ -74,7 +74,7 @@ const sprintHighlights = [
         href: "runbooks/runbook-03-diagnosability-intentional-failure.html",
       },
     ],
-    video: { label: "Sprint 3 demo", youtubeId: null },
+    video: { label: "Sprint 3 demo", youtubeId: "_JKkrztbaUE" },
   },
   {
     num: 4,
@@ -92,7 +92,7 @@ const sprintHighlights = [
         href: "runbooks/runbook-04-nat-mode-explained.html",
       },
     ],
-    video: { label: "Sprint 4 demo", youtubeId: null },
+    video: { label: "Sprint 4 demo", youtubeId: "sMpdwccgs5w" },
   },
   {
     num: 5,
@@ -709,8 +709,25 @@ const plannedSprints = sprintHighlights.filter((s) => s.status !== "done");
                   {s.runbooks.map((rb) => <li><a href={rb.href}>{rb.label}</a></li>)}
                 </ul>
               ) : null}
+
+              {s.video?.youtubeId ? (
+                <div class="video" style="margin-top:12px;">
+                  <iframe
+                    width="100%"
+                    height="315"
+                    src={`https://www.youtube.com/embed/${s.video.youtubeId}`}
+                    title={s.video.label}
+                    frameborder="0"
+                    allowfullscreen>
+                  </iframe>
+                  <p class="mini" style="margin-top:8px;">
+                    {s.video.label}
+                  </p>
+                </div>
+              ) : null}
             </div>
           ))}
+
         </div>
 
         <h3 style="margin-top:22px;">Planned</h3>
