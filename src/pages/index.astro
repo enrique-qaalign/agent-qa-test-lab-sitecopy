@@ -119,10 +119,6 @@ const sprintHighlights = [
         label: "Runbook 06 — Time-to-signal + release gates",
         href: "runbooks/runbook-06-time-to-signal.html",
       },
-      {
-        label: "Runbook 07 — Custom fixtures (UI + API) + composition rules",
-        href: "runbooks/runbook-07-custom-fixtures.html",
-      },
     ],
     video: { label: "Sprint 6 demo", youtubeId: null },
     ac: [
@@ -164,6 +160,29 @@ const sprintHighlights = [
       },
     ],
     video: { label: "Sprint 8 demo", youtubeId: null },
+  },  
+  {
+    num: 9.5,
+    status: "done",
+    title: "URL → Test Plan Agent (discovery layer)",
+    proof:
+      "A system URL can be turned into a deterministic capability map, baseline test plan, and locator inventory.",
+    deliverable:
+      "URL-driven discovery script + structured test-plan.json + locator-map.json outputs.",
+    runbooks: [
+      {
+        label: "Runbook 09.5 — URL → Test Plan Agent",
+        href: "runbooks/runbook-09.5-url-to-testplanagent.html",
+      },
+    ],
+    video: { label: "Sprint 9.5 demo", youtubeId: null },
+    ac: [
+      "Same URL produces the same structured plan on repeat runs",
+      "At least one capability is identified from real navigation or page structure",
+      "At least one smoke candidate is identified",
+      "Locator map is generated alongside the test plan",
+      "Output is deterministic and avoids uncontrolled crawling",
+    ],
   },
   {
     num: 9,
@@ -270,8 +289,59 @@ const sprintHighlights = [
       "Documents likely constraint layers (app vs DB vs pools)",
       "Produces a short executive summary chart/table",
     ],
+    },{
+    num: 14,
+    status: "done",
+    title: "Agent artifact contract + failure taxonomy",
+    proof: "Agent outputs are deterministic, structured, and auditable.",
+    deliverable: "JSON artifact schema + failure classification contract.",
+    runbooks: [
+      {
+        label: "Runbook 14 — Agent artifact contract + taxonomy",
+        href: "runbooks/runbook-14-artifact-contract-failure-taxonomy.html",
+      },
+    ],
   },
-];
+  {
+    num: 15,
+    status: "done",
+    title: "CI failure triage agent",
+    proof: "Failures are automatically classified with root cause and next action.",
+    deliverable: "Agent analyzes CI artifacts and produces triage report.",
+    runbooks: [
+      {
+        label: "Runbook 15 — CI failure triage agent",
+        href: "runbooks/runbook-15-ci-failure-triage-agent.html",
+      },
+    ],
+  },
+  {
+    num: 16,
+    status: "done",
+    title: "Locator intelligence agent",
+    proof: "UI locator strategy is derived from accessibility and validated automatically.",
+    deliverable: "Agent produces locator map + Playwright-ready selectors.",
+    runbooks: [
+      {
+        label: "Runbook 16 — Locator intelligence agent",
+        href: "runbooks/runbook-16-locator-intelligence-agent.html",
+      },
+    ],
+  },
+  {
+    num: 17,
+    status: "done",
+    title: "Release gate agent",
+    proof: "Release decisions are enforced automatically with risk-based reasoning.",
+    deliverable: "Agent evaluates signals and outputs BLOCK/WARN decision.",
+    runbooks: [
+      {
+        label: "Runbook 17 — Release gate agent",
+        href: "runbooks/runbook-17-release-gate-agent.html",
+      },
+    ],
+    video: { label: "Sprint 14–17 demo", youtubeId: "SdtJeDUYWuA" },
+  }];
 
 const personas = [
   {

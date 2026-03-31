@@ -1,0 +1,150 @@
+<!-- ========================= RUNBOOK 16 ========================= -->
+
+      <section id="done" class="card">
+        <h2>Definition of done</h2>
+        <ul>
+          <li><span class="ok">✔</span> One real page can be inventoried end-to-end.</li>
+          <li><span class="ok">✔</span> Output includes role, accessible name, locator, and risk.</li>
+          <li><span class="ok">✔</span> Ambiguous elements are flagged instead of forced into brittle selectors.</li>
+          <li><span class="ok">✔</span> Generated recommendations are usable in the framework with minimal editing.</li>
+        </ul>
+      </section>
+
+      <section id="priority" class="card">
+        <h2>Locator priority model</h2>
+        <table class="table">
+          <tr>
+            <td>Priority 1</td>
+            <td><code>getByRole(role, { name })</code></td>
+          </tr>
+          <tr>
+            <td>Priority 2</td>
+            <td><code>getByLabel()</code></td>
+          </tr>
+          <tr>
+            <td>Priority 3</td>
+            <td><code>getByPlaceholder()</code></td>
+          </tr>
+          <tr>
+            <td>Priority 4</td>
+            <td><code>getByText()</code> only when stable and semantically anchored</td>
+          </tr>
+          <tr>
+            <td>Last resort</td>
+            <td>CSS/XPath, explicitly flagged as higher risk</td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <span class="tag">Risk model</span>
+          <ul style="margin:8px 0 0 18px;">
+            <li><strong>LOW:</strong> unique role + unique accessible name</li>
+            <li><strong>MEDIUM:</strong> stable semantics but repeated names or dynamic text dependence</li>
+            <li><strong>HIGH:</strong> index-based, CSS chain, or missing accessibility semantics</li>
+          </ul>
+        </div>
+      </section>
+      
+      <section id="mechanics" class="card">
+        <h2>Mechanics</h2>
+        <ul>
+          <li>Navigate to the target route in a known state.</li>
+          <li>Capture the accessibility tree.</li>
+          <li>Normalize nodes by role, name, and interactive value.</li>
+          <li>Generate ranked locator recommendations.</li>
+          <li>Attach ambiguity and accessibility risk flags.</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Extraction</span>
+          <pre><code>const snapshot = await page.accessibility.snapshot({ interestingOnly: false });</code></pre>
+        </div>
+
+        <h3 style="margin-top:14px;">Recommended output schema</h3>
+        <pre><code>{
+  "page": "/#/editor",
+  "generatedAt": "2026-03-28T10:10:00Z",
+  "elements": [
+    {
+      "role": "textbox",
+      "name": "Article Title",
+      "locator": "page.getByRole('textbox', { name: 'Article Title' })",
+      "priority": 1,
+      "risk": "LOW",
+      "reason": "Explicit role and accessible name are stable and user-facing."
+    },
+    {
+      "role": "button",
+      "name": "Publish Article",
+      "locator": "page.getByRole('button', { name: 'Publish Article' })",
+      "priority": 1,
+      "risk": "LOW",
+      "reason": "Action control with unique accessible name."
+    }
+  ],
+  "risks": [
+    "2 buttons share the name 'Save'",
+    "1 input lacks an accessible label"
+  ]
+}</code></pre>
+      </section>
+
+      <section id="commands" class="card">
+        <h2>Commands</h2>
+        <pre><code>node scripts/locator-intelligence.js \
+  --url http://sut.testlab:3000/#/editor \
+  --project auth-chromium</code></pre>
+
+        <div class="callout">
+          <span class="tag">Do</span>
+          <ul style="margin:8px 0 0 18px;">
+            <li>Prefer accessibility-driven selectors.</li>
+            <li>Expose ambiguity explicitly.</li>
+            <li>Use the output as a locator inventory and as a product accessibility signal.</li>
+          </ul>
+          <div class="divider"></div>
+          <span class="tag">Don’t</span>
+          <ul style="margin:8px 0 0 18px;">
+            <li>Do not default to CSS because it is faster to type.</li>
+            <li>Do not hide missing labels or duplicate names.</li>
+            <li>Do not treat DOM depth as meaning.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="expected" class="card">
+        <h2>Expected outputs</h2>
+        <ul>
+          <li><span class="ok">✔</span> Page inventory of interactive controls.</li>
+          <li><span class="ok">✔</span> Ranked locator recommendations tied to accessibility semantics.</li>
+          <li><span class="ok">✔</span> Risk flags for duplicate names and missing labels.</li>
+          <li><span class="ok">✔</span> Reusable machine-readable locator catalog.</li>
+        </ul>
+      </section>
+
+      <section id="failures" class="card">
+        <h2>Failure modes</h2>
+        <ul>
+          <li><strong>Accessibility tree incomplete:</strong> action: ensure the page is in the right state before snapshot.</li>
+          <li><strong>Multiple elements share role/name:</strong> action: annotate ambiguity and suggest stronger semantic anchor.</li>
+          <li><strong>Team falls back to CSS anyway:</strong> action: preserve risk labels and policy note.</li>
+          <li><strong>Dynamic content makes text unstable:</strong> action: parameterize test data or favor role+label on controls.</li>
+        </ul>
+      </section>
+
+      <section id="ops" class="card">
+        <h2>Operational value</h2>
+        <ul>
+          <li>Faster authoring of stable Playwright locators.</li>
+          <li>Consistent accessibility-first locator policy.</li>
+          <li>Reusable page inventory for framework growth.</li>
+          <li>Better UI diagnosability when locator failures occur.</li>
+        </ul>
+      </section>
+
+      <footer>
+        <div>Runbook 16 • QA Test Lab</div>
+      </footer>
+    </div>
+  </body>
+</html>

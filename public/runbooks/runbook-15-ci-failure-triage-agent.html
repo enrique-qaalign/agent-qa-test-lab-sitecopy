@@ -1,0 +1,132 @@
+<!-- ========================= RUNBOOK 15 ========================= -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 15 — CI failure triage agent</title>
+    <meta
+      name="description"
+      content="Runbook 15 — CI failure triage agent. Deterministic first-pass classification, evidence-first reasoning, and bounded next-step guidance."
+    />
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="wrap">
+        <div class="topbar-inner">
+          <div class="brand">QA Test Lab • Runbook 15</div>
+          <div>
+            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+          </div>
+        </div>
+      </div>
+    </div>
+        <div class="wrap">
+      <h1>Runbook 15 — CI failure triage agent</h1>
+
+      <div class="card">
+        <h2>Quick links</h2>
+        <div class="callout" style="margin-top:10px;">
+          <span class="tag">Navigation</span>
+          <p style="margin:8px 0 0;">Use as a checklist.</p>
+          <div class="toc">
+            <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#done">Done</a>
+            <a class="pill" href="#inputs">Inputs</a>
+            <a class="pill" href="#mechanics">Mechanics</a>
+            <a class="pill" href="#commands">Commands</a>
+            <a class="pill" href="#expected">Expected</a>
+            <a class="pill" href="#failures">Failure modes</a>
+            <a class="pill" href="#ops">Operational value</a>
+          </div>
+        </div>
+      </div>
+
+      <section id="objective" class="card">
+        <h2>Objective</h2>
+        <ul>
+          <li>Read the structured failure artifacts from Sprint 14.</li>
+          <li>Produce a deterministic first-pass diagnosis for each failed test.</li>
+          <li>Point the reviewer to the right evidence first.</li>
+          <li>Reduce time-to-orientation without pretending to fix the issue.</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            The triage agent is a disciplined first responder, not an autonomous fixer.
+          </p>
+        </div>
+      </section>
+
+      <section id="done" class="card">
+        <h2>Definition of done</h2>
+        <ul>
+}</code></pre>
+
+  return {
+    classification: 'UNKNOWN',
+    confidence: 0.4,
+    reason: 'No current deterministic rule matched.',
+    recommendedNextStep: 'Inspect trace and extend taxonomy if pattern is legitimate.'
+  };
+}</code></pre>
+        </div>
+      </section>
+
+      <section id="commands" class="card">
+        <h2>Commands</h2>
+        <pre><code>node scripts/triage-agent.js
+cat test-results/triage/triage-report.json | jq .</code></pre>
+
+        <div class="callout">
+          <span class="tag">GitLab shape</span>
+          <pre><code>triage_failures:
+  stage: report
+  script:
+    - node scripts/triage-agent.js
+    - cat test-results/triage/triage-report.json
+  artifacts:
+    when: always
+    paths:
+      - test-results/triage/</code></pre>
+        </div>
+      </section>
+
+      <section id="expected" class="card">
+        <h2>Expected outputs</h2>
+        <ul>
+          <li><span class="ok">✔</span> Every failed test is classified into a bounded category.</li>
+          <li><span class="ok">✔</span> The report gives a reason and a next step rather than echoing raw stack text.</li>
+          <li><span class="ok">✔</span> The reviewer knows which artifact to open first.</li>
+          <li><span class="ok">✔</span> Unknown remains available when the rule set is incomplete.</li>
+        </ul>
+      </section>
+
+      <section id="failures" class="card">
+        <h2>Failure modes</h2>
+        <ul>
+          <li><strong>Triage adds no value:</strong> it only repeats raw error text. Action: summarize category, reason, next step.</li>
+          <li><strong>Everything becomes TIMING:</strong> action: prioritize specific rules above generic timeout handling.</li>
+          <li><strong>LLM enrichment contradicts deterministic rule:</strong> action: deterministic classification wins.</li>
+          <li><strong>Bad fix suggestions:</strong> action: forbid timeout inflation, blind retries, and DOM-coupled selector drift.</li>
+        </ul>
+      </section>
+
+      <section id="ops" class="card">
+        <h2>Operational value</h2>
+        <ul>
+          <li>Faster failure orientation in CI.</li>
+          <li>Consistent first-pass diagnosis across reviewers.</li>
+          <li>Clear evidence-first workflow for new hires.</li>
+          <li>Foundation for future trend reporting and agent memory.</li>
+        </ul>
+      </section>
+
+      <footer>
+        <div>Runbook 15 • QA Test Lab</div>
+      </footer>
+    </div>
+  </body>
+</html>

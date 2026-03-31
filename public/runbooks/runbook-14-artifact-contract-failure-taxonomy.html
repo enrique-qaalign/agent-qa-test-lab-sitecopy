@@ -1,0 +1,279 @@
+<!-- ========================= RUNBOOK 14 ========================= -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 14 — Artifact contract + failure taxonomy for agents</title>
+    <meta
+      name="description"
+      content="Runbook 14 — Artifact contract + failure taxonomy for agents. Machine-readable failure evidence for deterministic triage, review, and agent consumption."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 20px 18px 54px; }
+      .topbar {
+        position: sticky; top: 0; z-index: 10;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar-inner { display:flex; justify-content:space-between; gap:12px; padding: 12px 0; flex-wrap: wrap; }
+      .brand { font-weight: 750; }
+      .pill {
+        display:inline-block; border:1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        padding: 7px 10px; border-radius: 999px; font-size: 13px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 14px;
+      }
+      h1 { margin: 10px 0 0; font-size: 24px; }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      h3 { margin: 0 0 10px; font-size: 16px; }
+      p { margin: 10px 0; color: var(--muted); line-height: 1.6; }
+      ul { margin: 10px 0 0 18px; color: var(--muted); }
+      li { margin: 6px 0; }
+      code { color: var(--text); }
+      section { scroll-margin-top: 90px; }
+      .divider { height: 1px; background: var(--border); margin: 18px 0; }
+      .callout {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        border-radius: 12px;
+        padding: 12px 12px;
+        margin-top: 12px;
+      }
+      .tag {
+        display:inline-block; font-size: 12px; padding: 4px 8px;
+        border-radius: 999px; border: 1px solid var(--border);
+        background: rgba(255,255,255,.03); color: var(--muted);
+        margin-right: 6px;
+      }
+    pre {
+    margin: 10px 0 0;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,.03);
+    color: var(--muted);
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    }
+    .ok { color: var(--good); }
+    .warn { color: var(--warn); }
+    .bad { color: var(--bad); }
+    .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .table td {
+    border-top: 1px solid var(--border);
+    padding: 10px 6px;
+    vertical-align: top;
+    }
+    .table td:first-child { width: 220px; color: var(--muted); }
+    .toc { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+    footer {
+    margin-top: 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    color: var(--muted);
+    font-size: 13px;
+    }
+      </style>
+</head>
+      <section id="objective" class="card">
+        <h2>Objective</h2>
+        <ul>
+          <li>Create a deterministic artifact contract that an agent can consume without guessing.</li>
+          <li>Represent each failed test as a structured record with evidence paths.</li>
+          <li>Normalize first-pass classification into a controlled vocabulary.</li>
+          <li>Make failure evidence reviewable without rerun.</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            If a failure is not diagnosable for a human, it is not ready for an agent.
+          </p>
+        </div>
+      </section>
+
+      <section id="done" class="card">
+        <h2>Definition of done</h2>
+        <ul>
+          <li><span class="ok">✔</span> At least one pipeline run emits structured failure artifacts.</li>
+          <li><span class="ok">✔</span> Each failed test maps to one primary classification.</li>
+          <li><span class="ok">✔</span> Artifact paths are stable and repository-relative.</li>
+          <li><span class="ok">✔</span> A reviewer can validate whether the classification is reasonable.</li>
+        </ul>
+      </section>
+
+      <section id="contract" class="card">
+        <h2>Artifact contract</h2>
+        <table class="table">
+          <tr>
+            <td>Canonical location</td>
+            <td><code>test-results/</code></td>
+          </tr>
+          <tr>
+            <td>Failure records</td>
+            <td><code>test-results/failures/&lt;test-id&gt;.json</code></td>
+          </tr>
+          <tr>
+            <td>Triage output</td>
+            <td><code>test-results/triage/triage-report.json</code></td>
+          </tr>
+          <tr>
+            <td>Supporting evidence</td>
+            <td>Trace, screenshot, video, stdout, stderr, JUnit, Playwright results.</td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <span class="tag">Recommended structure</span>
+          <pre><code>/test-results/
+  junit.xml
+  results.json
+  failures/
+    &lt;test-id&gt;.json
+  triage/
+    triage-report.json</code></pre>
+        </div>
+
+<h3 style="margin-top:14px;">Canonical failure schema</h3>
+<pre><code>{
+  "schemaVersion": "1.0",
+  "testId": "auth-chromium::specs/sprint5/article.publish.spec.js::user can publish article",
+  "title": "user can publish article",
+  "project": "auth-chromium",
+  "file": "specs/sprint5/article.publish.spec.js",
+  "line": 42,
+  "environment": "qa",
+  "status": "failed",
+  "startedAt": "2026-03-28T10:00:00Z",
+  "durationMs": 18432,
+  "errorType": "TimeoutError",
+  "errorMessage": "Timeout 10000ms exceeded while waiting for getByRole('button', { name: 'Publish Article' })",
+  "step": "Click Publish Article",
+  "evidence": {
+    "trace": "test-results/traces/publish-article-trace.zip",
+    "screenshot": "test-results/screenshots/publish-article.png",
+    "video": "test-results/videos/publish-article.webm",
+    "stdout": "test-results/logs/publish-article.stdout.log",
+    "stderr": "test-results/logs/publish-article.stderr.log"
+  },
+  "networkContext": {
+    "webBaseUrl": "http://sut.testlab:3000",
+    "apiBaseUrl": "http://sut.testlab:3001/api",
+    "ciNatMode": false
+  },
+  "classification": {
+    "primary": "LOCATOR",
+    "secondary": "TIMING",
+    "confidence": 0.86,
+    "ruleId": "locator_not_found_role_name"
+  }
+}</code></pre>
+      </section>
+
+      <section id="taxonomy" class="card">
+        <h2>Failure taxonomy</h2>
+        <ul>
+          <li><code>ENV</code> — hostname resolution, refused connection, unavailable dependency, bad config</li>
+          <li><code>DATA</code> — collisions, stale records, seed/reset failures, non-idempotent state</li>
+          <li><code>AUTH</code> — login/setup/token/session/storage state failures</li>
+          <li><code>LOCATOR</code> — missing role/name, unstable selector, duplicate match, detached element</li>
+          <li><code>TIMING</code> — waits exceeded, rendering race, eventual consistency issue</li>
+          <li><code>ASSERTION</code> — product mismatch, wrong persisted state, contract mismatch</li>
+          <li><code>INFRA</code> — runner issue, artifact upload problem, transient CI/platform fault</li>
+          <li><code>UNKNOWN</code> — evidence insufficient or rule gap</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Deterministic rules first</span>
+          <pre><code>const FAILURE_RULES = [
+  { id: 'dns_lookup_failed', match: /ENOTFOUND|getaddrinfo/i, primary: 'ENV' },
+  { id: 'connection_refused', match: /ECONNREFUSED/i, primary: 'ENV' },
+  { id: 'unauthorized_forbidden', match: /401|403|unauthorized|forbidden/i, primary: 'AUTH' },
+  { id: 'duplicate_or_exists', match: /duplicate|already exists|unique constraint/i, primary: 'DATA' },
+  { id: 'locator_not_found_role_name', match: /locator|getByRole|getByLabel|strict mode violation|not found/i, primary: 'LOCATOR' },
+  { id: 'timeout_waiting', match: /Timeout|waiting for/i, primary: 'TIMING' },
+  { id: 'assertion_failure', match: /expect\\(|toBe|toEqual|received|expected/i, primary: 'ASSERTION' }
+];</code></pre>
+        </div>
+      </section>
+
+      <section id="commands" class="card">
+        <h2>Commands</h2>
+        <h3>Validate artifact surface</h3>
+        <pre><code>find test-results -maxdepth 3 -type f | sort
+cat test-results/failures/sample-failure.json | jq .</code></pre>
+
+        <div class="callout">
+          <span class="tag">Human override rule</span>
+          <p style="margin:8px 0 0;">
+            If the classification is wrong, fix the rule or add a rule. Do not patch output manually and call that “agent intelligence.”
+          </p>
+        </div>
+      </section>
+
+      <section id="expected" class="card">
+        <h2>Expected outputs</h2>
+        <ul>
+          <li><span class="ok">✔</span> Each failed test produces one normalized JSON artifact.</li>
+          <li><span class="ok">✔</span> Evidence paths line up with the actual trace/screenshot/video files.</li>
+          <li><span class="ok">✔</span> Classifications are explicit and reviewable.</li>
+          <li><span class="ok">✔</span> JSON is the source of truth; summaries are derived from it.</li>
+        </ul>
+      </section>
+
+      <section id="failures" class="card">
+        <h2>Failure modes</h2>
+        <ul>
+          <li><strong>Artifact too sparse:</strong> only error message, no evidence paths. Action: include trace, screenshot, stdout, stderr.</li>
+          <li><strong>Multiple classifications compete:</strong> locator timeout vs generic timeout. Action: preserve primary + secondary and rule ID.</li>
+          <li><strong>Local vs CI path drift:</strong> consumer cannot find artifacts. Action: standardize on repository-relative paths.</li>
+          <li><strong>Human-readable output disagrees with JSON:</strong> action: JSON wins; report is derived.</li>
+        </ul>
+      </section>
+
+      <section id="ops" class="card">
+        <h2>Operational value</h2>
+        <ul>
+          <li>Structured inputs for CI triage agents.</li>
+          <li>Reviewable evidence without rerun.</li>
+          <li>Stable taxonomy for trend analysis later.</li>
+          <li>Machine-readable failures instead of screenshot archaeology.</li>
+        </ul>
+      </section>
+
+      <footer>
+        <div>Runbook 14 • QA Test Lab</div>
+      </footer>
+    </div>
+  </body>
+</html>

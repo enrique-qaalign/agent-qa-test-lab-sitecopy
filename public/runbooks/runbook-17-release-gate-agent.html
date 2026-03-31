@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 17 — Release gate agent</title>
+    <meta
+      name="description"
+      content="Runbook 17 — Release gate agent. Explicit GO / WARN / BLOCK policy driven by suite intent, business risk, and triage evidence."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 20px 18px 54px; }
+      .topbar {
+        position: sticky; top: 0; z-index: 10;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar-inner { display:flex; justify-content:space-between; gap:12px; padding: 12px 0; flex-wrap: wrap; }
+      .brand { font-weight: 750; }
+      .pill {
+        display:inline-block; border:1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        padding: 7px 10px; border-radius: 999px; font-size: 13px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 14px;
+      }
+      h1 { margin: 10px 0 0; font-size: 24px; }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      h3 { margin: 0 0 10px; font-size: 16px; }
+      p { margin: 10px 0; color: var(--muted); line-height: 1.6; }
+      ul { margin: 10px 0 0 18px; color: var(--muted); }
+      li { margin: 6px 0; }
+      code { color: var(--text); }
+      section { scroll-margin-top: 90px; }
+      .divider { height: 1px; background: var(--border); margin: 18px 0; }
+      .callout {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        border-radius: 12px;
+        padding: 12px 12px;
+        margin-top: 12px;
+      }
+      .tag {
+        display:inline-block; font-size: 12px; padding: 4px 8px;
+        border-radius: 999px; border: 1px solid var(--border);
+        background: rgba(255,255,255,.03); color: var(--muted);
+        margin-right: 6px;
+      }
+      pre {
+        margin: 10px 0 0;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        color: var(--muted);
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .ok { color: var(--good); }
+      .warn { color: var(--warn); }
+      .bad { color: var(--bad); }
+      .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+      .table td {
+        border-top: 1px solid var(--border);
+        padding: 10px 6px;
+        vertical-align: top;
+      }
+      .table td:first-child { width: 220px; color: var(--muted); }
+      .toc { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+      footer { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 14px; color: var(--muted); font-size: 13px; }
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <div class="wrap">
+        <div class="topbar-inner">
+          <div class="brand">QA Test Lab • Runbook 17</div>
+          <div>
+            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <h1>Runbook 17 — Release gate agent</h1>
+
+      <div class="card">
+        <h2>Quick links</h2>
+        <div class="callout" style="margin-top:10px;">
+          <span class="tag">Navigation</span>
+          <p style="margin:8px 0 0;">Use as a checklist.</p>
+          <div class="toc">
+            <a class="pill" href="#objective">Objective</a>
+            <a class="pill" href="#done">Done</a>
+            <a class="pill" href="#policy">Policy</a>
+            <a class="pill" href="#mechanics">Mechanics</a>
+            <a class="pill" href="#commands">Commands</a>
+            <a class="pill" href="#expected">Expected</a>
+            <a class="pill" href="#failures">Failure modes</a>
+            <a class="pill" href="#ops">Operational value</a>
+          </div>
+        </div>
+      </div>
+
+      <section id="objective" class="card">
+        <h2>Objective</h2>
+        <ul>
+          <li>Encode release gate reasoning into explicit, auditable policy.</li>
+          <li>Drive GO / WARN / BLOCK from suite intent, business capability, and triage evidence.</li>
+          <li>Preserve the distinction between fast stop-signal and broader confidence signal.</li>
+          <li>Make release-night decisions reviewable from artifacts alone.</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            Coverage percentages do not ship software. Risk-based gates do.
+          </p>
+        </div>
+      </section>
+
+      <section id="done" class="card">
+        <h2>Definition of done</h2>
+        <ul>
+          <li><span class="ok">✔</span> Gate output is driven by explicit policy, not narrative summary text.</li>
+          <li><span class="ok">✔</span> Every BLOCK or WARN includes capability-level rationale.</li>
+          <li><span class="ok">✔</span> Smoke and regression outcomes are clearly distinguished.</li>
+          <li><span class="ok">✔</span> Reviewers can explain the decision from artifacts alone.</li>
+        </ul>
+      </section>
+
+      <section id="policy" class="card">
+        <h2>Decision policy</h2>
+        <table class="table">
+          <tr>
+            <td>Smoke failure</td>
+            <td>Critical capability failure in smoke suite → <code>BLOCK</code></td>
+          </tr>
+          <tr>
+            <td>Regression failure</td>
+            <td>Non-critical regression issue with passing smoke → <code>WARN</code></td>
+          </tr>
+          <tr>
+            <td>All gate criteria pass</td>
+            <td>→ <code>GO</code></td>
+          </tr>
+          <tr>
+            <td>Optional later state</td>
+            <td><code>HOLD</code> for missing evidence or infrastructure ambiguity</td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <span class="tag">Risk map contract</span>
+          <pre><code>{
+  "testId": "auth-chromium::specs/smoke/login.spec.js::user can sign in",
+  "suite": "smoke",
+  "capability": "Authentication",
+  "impact": "Users cannot access protected features.",
+  "gateBehavior": "BLOCK",
+  "ownerHint": "Auth / platform"
+}</code></pre>
+        </div>
+      </section>
+
+      <section id="mechanics" class="card">
+        <h2>Mechanics</h2>
+        <ul>
+          <li>Validate evidence completeness.</li>
+          <li>Evaluate smoke outcomes first.</li>
+          <li>Evaluate regression outcomes second.</li>
+          <li>Attach business capability impact and owner hint.</li>
+          <li>Emit final GO / WARN / BLOCK decision with rationale.</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Decision order</span>
+          <pre><code>if (missingRequiredEvidence) return 'HOLD';
+if (hasFailedSmokeBlockingCapability) return 'BLOCK';
+if (hasRegressionFailures) return 'WARN';
+return 'GO';</code></pre>
+        </div>
+
+        <h3 style="margin-top:14px;">Output schema</h3>
+        <pre><code>{
+  "generatedAt": "2026-03-28T10:20:00Z",
+  "decision": "BLOCK",
+  "summary": "2 smoke failures in authentication and article publishing capabilities.",
+  "reasons": [
+    {
+      "capability": "Authentication",
+      "suite": "smoke",
+      "impact": "Users cannot reliably sign in.",
+      "classification": "AUTH",
+      "ownerHint": "Auth / platform"
+    },
+    {
+      "capability": "Article Publishing",
+      "suite": "smoke",
+      "impact": "Core content creation path is impaired.",
+      "classification": "LOCATOR",
+      "ownerHint": "UI / test automation review"
+    }
+  ],
+  "policy": {
+    "smokeFailuresBlock": true,
+    "regressionFailuresWarn": true
+  }
+}</code></pre>
+      </section>
+
+      <section id="commands" class="card">
+        <h2>Commands</h2>
+        <pre><code>node scripts/release-gate-agent.js
+cat test-results/release-gate/release-gate.json | jq .</code></pre>
+
+        <div class="callout">
+          <span class="tag">GitLab shape</span>
+          <pre><code>release_gate:
+  stage: report
+  script:
+    - node scripts/release-gate-agent.js
+    - cat test-results/release-gate/release-gate.json
+  artifacts:
+    when: always
+    paths:
+      - test-results/release-gate/</code></pre>
+        </div>
+      </section>
+
+      <section id="expected" class="card">
+        <h2>Expected outputs</h2>
+        <ul>
+          <li><span class="ok">✔</span> One explicit gate decision per run.</li>
+          <li><span class="ok">✔</span> Capability-level rationale attached to each warning or block.</li>
+          <li><span class="ok">✔</span> A reviewer can explain the decision without opening raw logs first.</li>
+          <li><span class="ok">✔</span> The policy remains stable across reviewers and runs.</li>
+        </ul>
+      </section>
+
+      <section id="failures" class="card">
+        <h2>Failure modes</h2>
+        <ul>
+          <li><strong>Pass percentage replaces risk logic:</strong> action: anchor the gate to capability and impact.</li>
+          <li><strong>Regression failures block everything:</strong> action: preserve smoke vs regression intent.</li>
+          <li><strong>Agent hides uncertainty:</strong> action: call out missing evidence or ambiguous classification.</li>
+          <li><strong>No ownership hint:</strong> action: include <code>ownerHint</code> in the risk map.</li>
+        </ul>
+      </section>
+
+      <section id="ops" class="card">
+        <h2>Operational value</h2>
+        <ul>
+          <li>Explicit release-night decision support.</li>
+          <li>Clear separation between stop-signal and confidence-signal suites.</li>
+          <li>Auditable release rationale tied to business risk.</li>
+          <li>Stronger stakeholder communication than raw dashboard percentages.</li>
+        </ul>
+      </section>
+
+      <footer>
+        <div>Runbook 17 • QA Test Lab</div>
+      </footer>
+    </div>
+  </body>
+</html>
