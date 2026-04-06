@@ -28,7 +28,7 @@ const sprintHighlights = [
         href: "runbooks/runbook-00-golden-vm-baseline.html",
       },
     ],
-    video: { label: "Sprint 0 demo", youtubeId: "i7WTUbTx2z8" },
+    video: { label: "Sprint 0 demo", youtubeId: "CuHtOT5lI_s" },
   },
   {
     num: 1,
@@ -42,7 +42,7 @@ const sprintHighlights = [
         href: "runbooks/runbook-01-runner-to-sut.html",
       },
     ],
-    video: { label: "Sprint 1 demo", youtubeId: "31ObHxje7Lw" },
+    video: { label: "Sprint 1 demo", youtubeId: "paM9Ds2hEqg" },
   },
   {
     num: 2,
@@ -541,22 +541,22 @@ const plannedSprints = sprintHighlights.filter((s) => s.status !== "done");
         </div>
       </div>
     </div>
-
+    
     <div class="wrap">
       <section class="hero" id="start-here">
         <div class="h1">A Living QA Test Lab</div>
-      
+        
         <p class="lead">
           {site.tagline}
         </p>
-      
+        
         <div class="kpi">
           {site.stack.map((item) => <span>{item}</span>)}
         </div>
-      
+        
         <div class="card" style="margin-top:14px;">
           <h2 style="margin-bottom:8px;">30-second review</h2>
-      
+          
           <div class="grid grid3" style="margin-top:10px;">
             <div>
               <h3>What this is</h3>
@@ -570,7 +570,7 @@ const plannedSprints = sprintHighlights.filter((s) => s.status !== "done");
                 mirroring how CI/CD pipelines validate systems under test.
               </p>
             </div>
-      
+            
             <div>
               <h3>What proof exists today</h3>
               <ul style="margin:8px 0 0 18px;">
@@ -580,7 +580,7 @@ const plannedSprints = sprintHighlights.filter((s) => s.status !== "done");
                 <li>Stable hostnames and env contract via <code>WEB_BASE_URL</code> / <code>API_BASE_URL</code></li>
               </ul>
             </div>
-      
+            
             <div>
               <h3>Fast path</h3>
               <ul style="margin:8px 0 0 18px;">
@@ -595,7 +595,159 @@ const plannedSprints = sprintHighlights.filter((s) => s.status !== "done");
             </div>
           </div>
         </div>
-      
+  <!-- <section class="card" id="choose-your-path">
+  <h2>Choose Your Path</h2>
+  <p>
+    This lab can be entered from different starting points depending on what you need.
+    The system is the same. The recommended review path changes by audience.
+  </p>
+
+  <div class="callout good">
+    <span class="tag">Start here</span>
+    <p style="margin:8px 0 0;">
+      Pick the path that matches your role. Each path starts with a short narrative overview,
+      then routes you to the most relevant evidence.
+    </p>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Path</th>
+        <th>What this path focuses on</th>
+        <th>Recommended first stops</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>For Hiring Managers</strong><br />
+          <a class="pill" href="for-hiring-managers.html" style="margin-top:8px;">Open path</a>
+        </td>
+        <td>
+          Team impact, release confidence, reduced triage time, and what changes operationally when
+          the automation system becomes deterministic.
+        </td>
+        <td>
+          <a href="#architecture">Architecture Overview</a><br />
+          <a href="runbooks/runbook-06-time-to-signal.html">Sprint 06 — Release gates</a><br />
+          <a href="#evidence">Evidence highlights</a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>For Staff Engineers</strong><br />
+          <a class="pill" href="for-staff-engineers.html" style="margin-top:8px;">Open path</a>
+        </td>
+        <td>
+          Architecture, system boundaries, deterministic execution, state control, diagnosability,
+          and how the pieces compose into a reliable release signal.
+        </td>
+        <td>
+          <a href="#architecture">Architecture Overview</a><br />
+          <a href="runbooks/runbook-05-test-data-state-reset.html">Sprint 05 — State control</a><br />
+          <a href="runbooks/runbook-07-custom-fixtures.html">Sprint 07 — Controlled execution</a><br />
+          <a href="runbooks/runbook-06-time-to-signal.html">Sprint 06 — Release gates</a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>For Implementers</strong><br />
+          <a class="pill" href="for-implementers.html" style="margin-top:8px;">Open path</a>
+        </td>
+        <td>
+          Incremental adoption path, implementation order, and the specific controls to add first
+          in an existing framework.
+        </td>
+        <td>
+          <a href="runbooks/runbook-02-compose-deploy.html">Sprint 02 — Environment discipline</a><br />
+          <a href="runbooks/runbook-03-diagnosability-intentional-failure.html">Sprint 03 — Diagnosability</a><br />
+          <a href="runbooks/runbook-05-test-data-state-reset.html">Sprint 05 — State reset</a><br />
+          <a href="runbooks/runbook-07-custom-fixtures.html">Sprint 07 — Fixtures + composition</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <span class="tag">Reading order</span>
+    <p style="margin:8px 0 0;">
+      Sprint numbers reflect build order. They do not need to be read sequentially.
+      Each landing page provides a focused narrative and a shorter path through the system.
+    </p>
+  </div>
+</section>       -->
+        <!-- <section class="card" id="how-to-read-this-lab">
+    <h2>How to Read This Lab</h2>
+    <p>
+      This lab can be read from different entry points depending on what you need.
+      The system is the same. The recommended path changes by audience.
+    </p>
+    
+    <div class="callout good">
+      <span class="tag">Start here</span>
+      <p style="margin:8px 0 0;">
+        If you are evaluating the lab quickly, start with the Architecture Overview,
+        then move to Sprint 06, then Sprint 14–17.
+      </p>
+    </div>
+    
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Audience</th>
+          <th>What to review first</th>
+          <th>What it answers</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Hiring manager</td>
+          <td>
+            <a href="#architecture">Architecture Overview</a><br />
+            <a href="runbooks/runbook-06-time-to-signal.html">Sprint 06 — Release gates</a><br />
+            <a href="#sprint-14-17">Sprint 14–17 — Failure analysis + RCA</a>
+          </td>
+          <td>
+            What changes for the team, how release decisions improve, and how failures become actionable.
+          </td>
+        </tr>
+        <tr>
+          <td>Staff / Principal engineer</td>
+          <td>
+            <a href="runbooks/runbook-02-compose-deploy.html">Sprint 02 — Environment discipline</a><br />
+            <a href="runbooks/runbook-05-test-data-state-reset.html">Sprint 05 — State control</a><br />
+            <a href="runbooks/runbook-07-custom-fixtures.html">Sprint 07 — Controlled execution</a><br />
+            <a href="runbooks/runbook-06-time-to-signal.html">Sprint 06 — Release gates</a>
+          </td>
+          <td>
+            How the system enforces determinism, separates concerns, and scales without hidden state.
+          </td>
+        </tr>
+        <tr>
+          <td>Senior SDET / implementer</td>
+          <td>
+            <a href="runbooks/runbook-02-compose-deploy.html">Sprint 02 — Environment discipline</a><br />
+            <a href="runbooks/runbook-03-diagnosability-intentional-failure.html">Sprint 03 — Diagnosability</a><br />
+            <a href="runbooks/runbook-05-test-data-state-reset.html">Sprint 05 — State reset</a><br />
+            <a href="runbooks/runbook-07-custom-fixtures.html">Sprint 07 — Fixtures + composition</a><br />
+            <a href="runbooks/runbook-06-time-to-signal.html">Sprint 06 — Release gates</a>
+          </td>
+          <td>
+            How to adopt the system incrementally and what order to implement the controls in.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="callout warn">
+      <span class="tag">Reading order</span>
+      <p style="margin:8px 0 0;">
+        The sprint numbers reflect build order. They do not have to be read in sequence.
+        For most readers, Architecture Overview → Sprint 06 → Sprint 14–17 is the fastest path to value.
+      </p>
+    </div>
+    </section> -->
         <section id="video">
           <div class="card video" style="margin-top:14px;">
             <h2 style="margin-bottom:8px;">Automation Lab Walkthrough</h2>
