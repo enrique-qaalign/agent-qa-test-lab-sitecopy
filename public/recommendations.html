@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Recommendations — QA Test Lab</title>
+    <meta
+      name="description"
+      content="Third-party validation from managers, clients, product owners, and teammates who worked with Enrique Henderson across automation, QA strategy, and customer-facing systems."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 18px 54px; }
+      .nav {
+        position: sticky; top: 0; z-index: 20;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 0;
+      }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .brand { font-weight: 750; letter-spacing: 0.2px; }
+      .navlinks { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; }
+      .pill {
+        display: inline-block;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 7px 10px;
+        border-radius: 999px;
+      }
+      .hero { padding: 26px 0 10px; }
+      .h1 {
+        font-size: 40px;
+        line-height: 1.1;
+        margin: 0 0 10px;
+        letter-spacing: -0.6px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.6;
+        max-width: 850px;
+      }
+      .grid { display: grid; gap: 14px; }
+      .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 14px;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
+      }
+      h2 { margin: 0 0 10px; font-size: 22px; }
+      h3 { margin: 0 0 10px; font-size: 16px; }
+      .muted { color: var(--muted); }
+      .quote {
+        font-size: 16px;
+        line-height: 1.7;
+        margin: 0;
+        color: var(--text);
+      }
+      .meta {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+      }
+      .mini { font-size: 13px; color: var(--muted); }
+      .context {
+        margin-top: 10px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+      }
+      .context strong {
+        display: inline-block;
+        min-width: 72px;
+        color: var(--text);
+      }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 22px 0;
+      }
+      footer {
+        margin-top: 30px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 14px;
+      }
+      @media (max-width: 920px) {
+        .grid2 { grid-template-columns: 1fr; }
+        .h1 { font-size: 32px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="nav">
+      <div class="wrap">
+        <div class="nav-inner">
+          <div class="brand"><a href="index.html">QA Test Lab</a></div>
+          <div class="navlinks">
+            <a class="pill" href="index.html#start-here">Start Here</a>
+            <a class="pill" href="index.html#about">About</a>
+            <a class="pill" href="index.html#architecture">Architecture</a>
+            <a class="pill" href="index.html#evidence">Evidence</a>
+            <a class="pill" href="index.html#sprints">Sprint Roadmap</a>
+            <a class="pill" href="index.html#personas">Personas</a>
+            <a class="pill" href="index.html#runbooks">Runbooks</a>
+            <a class="pill" href="recommendations.html">Recommendations</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <section class="hero">
+        <div class="h1">Recommendations</div>
+        <p class="lead">
+          Third-party validation from managers, clients, product owners, and teammates who worked
+          directly with me across automation strategy, customer-facing products, release readiness,
+          and framework reliability.
+        </p>
+      </section>
+
+      <div class="card">
+        <h2>Why this page exists</h2>
+        <p class="muted" style="margin:0;">
+          The lab shows how I think and build. These recommendations show how that work translated
+          in real teams: ownership, delivery confidence, framework improvement, and quality signal
+          people could trust.
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="grid grid2">
+        <div class="card">
+          <h3>Paul Smith</h3>
+          <p class="quote">
+            “I hired Enrique to lead the QA effort for an entire product all by himself, and he not
+            only preformed to the highest level, he drove quality within that entire team. His
+            attention to detail is amazing, often finding things that other QAs before him had over
+            looked. This is a person that you can trust will always deliver the best quality and
+            within the deadlines given! If given the chance I would hire him back in a heartbeat! He
+            would be a great asset to any company!”
+          </p>
+          <div class="context">
+            <div class="mini"><strong>Role:</strong> Senior Director of Quality Engineering</div>
+            <div class="mini"><strong>Context:</strong> Managed me directly</div>
+            <div class="mini"><strong>Project:</strong> Product-level QA leadership and full ownership of quality execution</div>
+            <div class="mini"><strong>Signal:</strong> Ownership, trust, release confidence, independent delivery</div>
+          </div>
+          <div class="meta mini">Source: LinkedIn recommendation</div>
+        </div>
+
+        <div class="card">
+          <h3>Susan Matyas Breedlove</h3>
+          <p class="quote">
+            “Enrique acted as our lead QA for the project I was the Product Owner for. I leaned on
+            Enrique to be the source of truth when it came to the QA testing. He OWNED the testing
+            component and I never had to second guess or question his work. If he did not approve
+            it, understand it or see it – the feature did not pass and I never had to question
+            that. His communication and organization is the best I have ever experienced with a QA
+            team. He constantly keeps me in the loop with items that were trending towards ‘not
+            passing’. He has a technical component that adds great value when talking with the
+            development team and is able to manipulate the data for testing independently from
+            development assistance. Enrique is flexible, team oriented and easy to work with. I
+            hope to work on another project with Enrique and would be jealous of the team that
+            snags first.”
+          </p>
+          <div class="context">
+            <div class="mini"><strong>Role:</strong> Product Owner</div>
+            <div class="mini"><strong>Context:</strong> Worked with me on the same team</div>
+            <div class="mini"><strong>Project:</strong> Customer-facing product delivery with feature approval tied directly to QA signoff</div>
+            <div class="mini"><strong>Signal:</strong> Source of truth, release gatekeeping, communication, independent data validation</div>
+          </div>
+          <div class="meta mini">Source: LinkedIn recommendation</div>
+        </div>
+
+        <div class="card">
+          <h3>Albert Gil Moreno</h3>
+          <p class="quote">
+            “Enrique is not only a good professional, but he really is a good ‘QA professional’.
+            He has a clear mindset to improve any QA framework he may face making it as useful as
+            possible for the whole team or company. He listens very carefully to his clients, he
+            keeps listening to understand as much as possible the team/company culture&practices,
+            specially related to QA (of course), and then he does provides very good ideas,
+            improvements and changes to make a difference. And when he manages to align everybody
+            on a good QA direction, he is the first one to work hard to develop all those good
+            ideas. Yes, it’s a pleasure to work with him!”
+          </p>
+          <div class="context">
+            <div class="mini"><strong>Role:</strong> Software Engineer</div>
+            <div class="mini"><strong>Context:</strong> Client</div>
+            <div class="mini"><strong>Project:</strong> Consulting engagement focused on framework improvement and practical QA direction</div>
+            <div class="mini"><strong>Signal:</strong> Client listening, framework improvement, team alignment, follow-through</div>
+          </div>
+          <div class="meta mini">Source: LinkedIn recommendation</div>
+        </div>
+
+        <div class="card">
+          <h3>Travis Witherington</h3>
+          <p class="quote">
+            “In the time I worked with Enrique on the OnlifeHealth projects, I was very impressed
+            at his ability to break down complicated structures into testable areas. His attention
+            to detail and self driven attitude was exactly what the team needed. If you ever needed
+            help in any area, Enrique was usually the first to volunteer his time and assistance. I
+            would gladly work along side Enrique in the future.”
+          </p>
+          <div class="context">
+            <div class="mini"><strong>Role:</strong> Test Engineer</div>
+            <div class="mini"><strong>Context:</strong> Worked with me on the same team</div>
+            <div class="mini"><strong>Project:</strong> QA execution across complex product areas requiring decomposition into testable components</div>
+            <div class="mini"><strong>Signal:</strong> System breakdown, execution discipline, team support, detail orientation</div>
+          </div>
+          <div class="meta mini">Source: LinkedIn recommendation</div>
+        </div>
+
+        <div class="card">
+          <h3>Kelly Poe</h3>
+          <p class="quote">
+            “Enrique did a great job teaching Selenium and Ruby development principles to other
+            team members. He demonstrated patience and creativity in his teaching approach.
+            Enrique is a take ownership kind of guy...once he knows what it required, he runs with
+            it and owns it.”
+          </p>
+          <div class="context">
+            <div class="mini"><strong>Role:</strong> Senior Director of Software Engineering</div>
+            <div class="mini"><strong>Context:</strong> Managed me directly</div>
+            <div class="mini"><strong>Project:</strong> Selenium and Ruby automation work with team enablement and technical mentorship</div>
+            <div class="mini"><strong>Signal:</strong> Ownership, mentoring, automation teaching, leadership through execution</div>
+          </div>
+          <div class="meta mini">Source: LinkedIn recommendation</div>
+        </div>
+      </div>
+
+      <footer>
+        QA Test Lab — Recommendations page curated from LinkedIn recommendations and organized to
+        reflect real project context, customer-facing impact, and delivery trust.
+      </footer>
+    </div>
+  </body>
+</html>
