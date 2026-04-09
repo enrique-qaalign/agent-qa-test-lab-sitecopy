@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Deterministic QA System — No AI</title>
+  <style>
+    :root { --bg:#0b0e14; --panel:#121827; --text:#e6e9ef; --muted:#aab2c5; --link:#7aa2ff; --border:#24304d; --bad:#ff7b72; --warn:#f0b429; --good:#3ddc97; }
+    *{box-sizing:border-box} body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    a{color:var(--link);text-decoration:none} a:hover{text-decoration:underline} .wrap{max-width:1060px;margin:0 auto;padding:22px 18px 54px}
+    .pill{display:inline-block;border:1px solid var(--border);background:rgba(255,255,255,.04);padding:8px 12px;border-radius:999px;color:var(--text)}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:16px}.grid{display:grid;gap:16px}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    h1{font-size:38px;line-height:1.1;margin:8px 0 12px}.lead,p,li{color:var(--muted);line-height:1.6} h2{margin:0 0 10px;font-size:24px} h3{margin:0 0 8px;font-size:18px}
+    ul{margin:8px 0 0 18px}.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.trust-low{color:var(--bad)}.trust-med{color:var(--warn)}.trust-high{color:var(--good)}
+    footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted)} @media(max-width:900px){.grid2{grid-template-columns:1fr} h1{font-size:32px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="pill" href="/offerings/">← Back to offering paths</a>
+    <h1>Deterministic QA System</h1>
+    <p class="lead">Build a system you can trust, step by step. This path is manual-first, fully transparent, and optimized for explainability before speed.</p>
+
+    <div class="card">
+      <h2>What this path is</h2>
+      <p>We build the testing system deliberately. What is tested, how elements are located, how tests are structured, and how results are interpreted are all visible and intentional.</p>
+      <div class="cta">
+        <a class="pill" href="/#sprints">See the existing sprint proof</a>
+        <a class="pill" href="/#runbooks">Review runbooks</a>
+      </div>
+    </div>
+
+    <div class="grid grid2">
+      <div class="card">
+        <h2>Walkthrough structure</h2>
+        <ol>
+          <li>Capability mapping</li>
+          <li>Locator strategy</li>
+          <li>Scenario design</li>
+          <li>Deterministic test construction</li>
+          <li>Execution and observation</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h2>What you get</h2>
+        <ul>
+          <li>test-plan.md</li>
+          <li>locator-map.json</li>
+          <li>Structured scenarios</li>
+          <li>Maintainable test specs</li>
+          <li>Environment contract</li>
+          <li>Clear execution results</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Trust-based entry points</h2>
+      <div class="grid grid2">
+        <div>
+          <h3 class="trust-low">Low trust</h3>
+          <p>Tests are unreliable, failures are unclear, and release confidence is low.</p>
+          <ul>
+            <li>Anti-pattern validation first</li>
+            <li>Sprint 3 — CI Diagnosability</li>
+            <li>Sprint 4 — Flake Taxonomy and Guardrails</li>
+            <li>Sprint 5 — Test Data and State Reset</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="trust-med">Medium trust</h3>
+          <p>The system mostly works, but the signal is not strong enough to support confident release decisions.</p>
+          <ul>
+            <li>Sprint 5 — Test Data and State Reset</li>
+            <li>Sprint 6 — Time-to-Signal and Release Gates</li>
+          </ul>
+          <h3 class="trust-high" style="margin-top:16px;">High trust</h3>
+          <p>The system is already stable enough to scale.</p>
+          <ul>
+            <li>Sprint 7 — Custom Fixtures</li>
+            <li>Sprint 8 — Page Object Architecture at Scale</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Who this is for</h2>
+      <ul>
+        <li>Teams that do not trust their current automation</li>
+        <li>Teams early in modernization</li>
+        <li>Environments where explainability matters</li>
+      </ul>
+      <div class="cta"><a class="pill" href="mailto:qaalignllc@gmail.com?subject=Deterministic%20QA%20System">Talk through the deterministic path</a></div>
+    </div>
+
+    <footer>QA Test Lab — Deterministic QA System</footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,448 @@
+---
+const trustMatrix = [
+  {
+    level: "Low Trust",
+    description:
+      "Tests are flaky, failures are unclear, and results are not yet safe to use for release decisions.",
+    focus: "Start with diagnosability, flake elimination, and state control.",
+  },
+  {
+    level: "Medium Trust",
+    description:
+      "Tests mostly work, but the system still has drift, partial confidence, or inconsistent release signal.",
+    focus: "Tighten state control, formalize release gates, and improve consistency.",
+  },
+  {
+    level: "High Trust",
+    description:
+      "Tests are stable, diagnosable, and already contribute to release confidence.",
+    focus: "Scale safely, optimize structure, and accelerate with confidence.",
+  },
+];
+
+const paths = [
+  {
+    title: "No AI",
+    href: "/offerings/no-ai/",
+    kicker: "Deterministic QA System",
+    summary:
+      "Build a system you can trust step by step, with full transparency and no generated artifacts.",
+    bullets: [
+      "Capability mapping",
+      "Locator strategy",
+      "Scenario design",
+      "Deterministic test construction",
+      "Clear execution and observation",
+    ],
+  },
+  {
+    title: "Some AI",
+    href: "/offerings/some-ai/",
+    kicker: "Controlled AI QA System",
+    summary:
+      "Introduce AI carefully where it helps, while keeping strict validation and human-readable structure.",
+    bullets: [
+      "AI-assisted planning",
+      "Validated locator suggestions",
+      "Controlled generation",
+      "Deterministic execution",
+      "Failure analysis before trust",
+    ],
+  },
+  {
+    title: "AI Forward",
+    href: "/offerings/ai-forward/",
+    kicker: "AI-Accelerated QA System",
+    summary:
+      "Move faster with AI-generated assets, while preserving control through validation, artifacts, triage, and release gates.",
+    bullets: [
+      "Accelerated generation",
+      "Validation layer",
+      "Structured artifacts",
+      "Automated triage",
+      "GO / WARN / BLOCK release logic",
+    ],
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Offerings | QA Test Lab</title>
+    <meta
+      name="description"
+      content="Choose the right QA modernization path: deterministic, controlled AI, or AI-forward. Same goal: safe, trustworthy release decisions."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      a {
+        color: var(--link);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .wrap {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 20px 18px 56px;
+      }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 0;
+      }
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        font-weight: 750;
+        letter-spacing: 0.2px;
+      }
+
+      .navlinks {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 14px;
+      }
+
+      .pill {
+        display: inline-block;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 7px 10px;
+        border-radius: 999px;
+      }
+
+      .hero {
+        padding: 28px 0 12px;
+      }
+
+      .h1 {
+        font-size: 42px;
+        line-height: 1.08;
+        margin: 0 0 10px;
+        letter-spacing: -0.6px;
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.65;
+        max-width: 900px;
+        margin: 0;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .grid2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 14px;
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
+      }
+
+      h2 {
+        margin: 0 0 10px;
+        font-size: 24px;
+      }
+
+      h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+      }
+
+      .kicker {
+        font-size: 13px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+
+      p, li {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      ul {
+        margin: 10px 0 0 18px;
+      }
+
+      li {
+        margin: 6px 0;
+      }
+
+      .cta-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+
+      .button {
+        display: inline-block;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        padding: 11px 14px;
+        border-radius: 12px;
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .button.primary {
+        background: rgba(122, 162, 255, 0.12);
+        border-color: #3a5ca8;
+      }
+
+      .section-title {
+        margin-top: 28px;
+      }
+
+      .small {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 24px 0;
+      }
+
+      .trust-level {
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+
+      footer {
+        margin-top: 32px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 920px) {
+        .grid2, .grid3 {
+          grid-template-columns: 1fr;
+        }
+
+        .h1 {
+          font-size: 34px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="nav">
+      <div class="wrap">
+        <div class="nav-inner">
+          <div class="brand">QA Test Lab</div>
+          <div class="navlinks">
+            <a class="pill" href="/">Lab</a>
+            <a class="pill" href="/offerings/">Offerings</a>
+            <a class="pill" href="/recommendations.html">Recommendations</a>
+            <a class="pill" href="/#runbooks">Runbooks</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <section class="hero">
+        <div class="h1">Modernize your QA system safely</div>
+        <p class="lead">
+          Some teams need structure before speed. Others are already moving fast and need control.
+          This page helps route each team to the right system: no AI, some AI, or AI-forward.
+          Different path, same goal: trustworthy release decisions.
+        </p>
+
+        <div class="cta-row">
+          <a class="button primary" href="#paths">Choose your path</a>
+          <a class="button" href="/#sprints">See sprint proof</a>
+        </div>
+      </section>
+
+      <div class="card">
+        <h2>Two systems. Three entry paths. Same outcome.</h2>
+        <p>
+          Not every team should start in the same place. The right entry point depends on two things:
+          how much AI you want in the system, and how much trust you currently have in your automation.
+        </p>
+        <ul>
+          <li>No AI: fully deterministic, step-by-step buildout</li>
+          <li>Some AI: controlled acceleration with validation</li>
+          <li>AI Forward: fast generation with strict release-safe guardrails</li>
+        </ul>
+      </div>
+
+      <section id="paths" class="section-title">
+        <h2>Choose your path</h2>
+        <div class="grid grid3">
+          {paths.map((path) => (
+            <div class="card">
+              <div class="kicker">{path.kicker}</div>
+              <h3>{path.title}</h3>
+              <p>{path.summary}</p>
+              <ul>
+                {path.bullets.map((bullet) => <li>{bullet}</li>)}
+              </ul>
+              <div class="cta-row">
+                <a class="button primary" href={path.href}>Open path</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section>
+        <h2>Trust level determines where we start</h2>
+        <p class="small">
+          Before introducing speed, scale, or AI, the first question is simple:
+          how much can your team trust the current system?
+        </p>
+
+        <div class="grid grid3">
+          {trustMatrix.map((item) => (
+            <div class="card">
+              <div class="trust-level">{item.level}</div>
+              <p>{item.description}</p>
+              <p><strong style="color:var(--text);">How we respond:</strong> {item.focus}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section>
+        <h2>Every engagement starts with anti-pattern validation</h2>
+        <p>
+          Before recommending a sprint path, I assess the current system for the failure patterns that
+          usually destroy trust first.
+        </p>
+        <div class="grid grid2">
+          <div class="card">
+            <h3>What I check first</h3>
+            <ul>
+              <li>Shared state and order-dependent tests</li>
+              <li>Brittle locator strategy</li>
+              <li>Environment drift between local and CI</li>
+              <li>Rerun-based debugging habits</li>
+              <li>Lack of artifact-first diagnosability</li>
+              <li>No usable release decision logic</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>What that produces</h3>
+            <ul>
+              <li>Current trust level: low, medium, or high</li>
+              <li>Recommended system path</li>
+              <li>Recommended sprint entry point</li>
+              <li>Immediate next step for the first week</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section>
+        <h2>Where the sprint system fits</h2>
+        <p>
+          The offerings do not replace the lab. They route teams into the right parts of it.
+          Sprint callouts are used where they matter most.
+        </p>
+        <div class="grid grid2">
+          <div class="card">
+            <h3>Typical low-trust entry</h3>
+            <ul>
+              <li>Sprint 3: CI Diagnosability</li>
+              <li>Sprint 4: Flake Taxonomy and Guardrails</li>
+              <li>Sprint 5: Test Data and State Reset</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Typical acceleration path</h3>
+            <ul>
+              <li>Sprint 6: Time-to-Signal and Release Gates</li>
+              <li>Sprint 14: Agent Artifact Contract and Failure Taxonomy</li>
+              <li>Sprint 15–17: Triage and release decision automation</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <div class="card">
+        <h2>Start with the right system</h2>
+        <p>
+          I do not push teams into AI before their system is ready. I also do not force manual-only
+          execution when controlled acceleration makes sense. The right move depends on trust, risk,
+          and operational maturity.
+        </p>
+        <div class="cta-row">
+          <a class="button primary" href="/offerings/no-ai/">No AI path</a>
+          <a class="button" href="/offerings/some-ai/">Some AI path</a>
+          <a class="button" href="/offerings/ai-forward/">AI Forward path</a>
+        </div>
+      </div>
+
+      <footer>
+        QA Test Lab — offerings layer on top of the sprint-based proof system.
+      </footer>
+    </div>
+  </body>
+</html>
