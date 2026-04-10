@@ -1,23 +1,18 @@
 ---
 const specImports = `{ test, expect }`;
-const fixtureImports = `{ test, expect }`;  
-const example = ` editor, api`;
 
-const authChomium = ` name: 'auth-chromium', storageState: '.auth/storageState.json`;
-const unauthChromium = ` name: 'unauth-chromium', storageState: '.auth/emptyState.json'`;
+const fixtureImportSnippet = `const { test, expect } = require('../../fixtures/rw');`;
 
+const exampleSnippet = `test('example', async ({ editor, api }) => {
+  // fixtures injected — no setup required
+});`;
 
+const projectsSnippet = `projects: [
+  { name: 'auth-chromium', storageState: '.auth/storageState.json' },
+  { name: 'unauth-chromium', storageState: '.auth/emptyState.json' }
+]`;
 ---
 
-<section class="runbook-gate">
-  <p><strong>🔒 Preview only</strong></p>
-  <p>
-    This page shows a high-level overview of the runbook.
-    The full implementation (commands, patterns, and enforcement rules)
-    is available upon request.
-  </p>
-  <a href="/contact" class="cta">Request full runbook</a>
-</section>
 
 <!doctype html>
 <html lang="en">
@@ -26,8 +21,8 @@ const unauthChromium = ` name: 'unauth-chromium', storageState: '.auth/emptyStat
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Runbook 07 — Custom fixtures + composition</title>
     <meta
-      name="description"
-      content="Runbook 07 — Custom fixtures + composition. Defines a single fixture entrypoint, deterministic auth, injected domain primitives, and explicit execution modes."
+    name="description"
+    content="Runbook 07 — Custom fixtures + composition. Defines a single fixture entrypoint, deterministic auth, injected domain primitives, and explicit execution modes."
     />
     <style>
       :root {
@@ -120,9 +115,9 @@ const unauthChromium = ` name: 'unauth-chromium', storageState: '.auth/emptyStat
       .table th { color: var(--text); font-weight: 650; }
       .table td:first-child { width: 230px; color: var(--muted); }
       footer { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 14px; color: var(--muted); font-size: 13px; }
-    </style>
+      </style>
   </head>
-
+  
   <body>
     <div class="topbar">
       <div class="wrap">
@@ -135,10 +130,29 @@ const unauthChromium = ` name: 'unauth-chromium', storageState: '.auth/emptyStat
         </div>
       </div>
     </div>
-
+    <section class="runbook-gate">
+      <p><strong>🔒 Preview only</strong></p>
+      <p>
+        This page shows a high-level overview of the runbook.
+        The full implementation (commands, patterns, and enforcement rules)
+        is available upon request.
+      </p>
+      <a href="/contact" class="cta">Request full runbook</a>
+    </section>
+    
     <div class="wrap">
-      <h1>Runbook 07 — Custom fixtures + composition</h1>
+      <section class="runbook-gate">
+        <p><strong>🔒 Preview only</strong></p>
+        <p>
+          This page shows a high-level overview of the runbook.
+          The full implementation (commands, patterns, and enforcement rules)
+          is available upon request.
+        </p>
+        <a href="/contact" class="cta">Request full runbook</a>
+      </section>
 
+      <h1>Runbook 07 — Custom fixtures + composition</h1>
+      
       <div class="card">
         <h2>Scope</h2>
         <ul>
@@ -173,9 +187,7 @@ const unauthChromium = ` name: 'unauth-chromium', storageState: '.auth/emptyStat
       <div class="card">
         <h2>Single entrypoint</h2>
 
-        <pre><code>const {fixtureImports} = require('../../fixtures/rw');</code></pre>
-
-        <div class="callout good">
+          <pre><code>{fixtureImportSnippet}</code></pre>        <div class="callout good">
           <span class="tag">AC1</span>
           <p style="margin:8px 0 0;">
             Specs use fixture-owned <code>test</code> and <code>expect</code>. No direct spec-level setup is allowed.
@@ -257,9 +269,7 @@ const unauthChromium = ` name: 'unauth-chromium', storageState: '.auth/emptyStat
           </tbody>
         </table>
 
-        <pre><code>test('example', async ({example}) =&gt; {
-  // fixtures injected — no setup required
-});</code></pre>
+        <pre><code>{exampleSnippet}</code></pre>
 
         <div class="callout good">
           <span class="tag">AC4</span>
@@ -273,10 +283,7 @@ const unauthChromium = ` name: 'unauth-chromium', storageState: '.auth/emptyStat
         <h2>Execution model</h2>
 
         <h3>Projects</h3>
-        <pre><code>projects: [
-        {authChomium}
-        {unauthChromium}
-        ]</code></pre>
+        <pre><code>{projectsSnippet}</code></pre>
 
         <h3 style="margin-top:14px;">Tagging</h3>
         <ul>
