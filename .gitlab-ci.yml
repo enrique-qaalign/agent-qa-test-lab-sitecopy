@@ -10,16 +10,16 @@ pages:
     - find dist/runbooks -maxdepth 3 -type f | sort
     - 'echo "RUNBOOK_PWD length: ${#RUNBOOK_PWD}"'
     - |
-      for rb in 05 06 07 08 09 09.5 14 15 16 17; do
-        file="dist/runbooks/$rb/full/index.html"
-        if [ -f "$file" ]; then
-          echo "Encrypting $file"
-          staticrypt "$file" -p "$RUNBOOK_PWD" --short -o "$file"
-        else
-          echo "Missing $file"
-          exit 1
-        fi
-      done
+        for rb in 05 06 07 08 09 09.5 14 15 16 17; do
+          file="dist/runbooks/$rb/full/index.html"
+          if [ -f "$file" ]; then
+            echo "Encrypting $file"
+            staticrypt "$file" -p "$RUNBOOK_PWD" -o "$file"
+          else
+            echo "Missing $file"
+            exit 1
+          fi
+        done
     - rm -rf public
     - mkdir -p public
     - cp -R dist/* public/
