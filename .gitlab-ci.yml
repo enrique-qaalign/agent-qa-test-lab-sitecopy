@@ -23,8 +23,10 @@ pages:
     - rm -rf public
     - mkdir -p public
     - cp -R dist/* public/
+
   artifacts:
     paths:
       - public
+
   only:
     - master
