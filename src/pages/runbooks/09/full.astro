@@ -1,3 +1,103 @@
+---
+const installSnippet = `npm install --save-dev cypress`;
+
+const initSnippet = `npx cypress open`;
+
+const cypressConfigSnippet = `// cypress.config.js
+const { defineConfig } = require('cypress')
+
+module.exports = defineConfig({
+  e2e: {
+    baseUrl: process.env.API_BASE_URL,
+    setupNodeEvents(on, config) {
+      if (!config.baseUrl) {
+        throw new Error('Missing required env: API_BASE_URL')
+      }
+      return config
+    },
+  },
+})`;
+
+const articlesSpecSnippet = `describe('API.ARTICLES.001 - Get Articles', () => {
+  it('returns list with expected shape', () => {
+    cy.request('GET', '/api/articles').then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('articles')
+      expect(res.body.articles).to.be.an('array')
+
+      if (res.body.articles.length > 0) {
+        const a = res.body.articles[0]
+        expect(a).to.have.property('title')
+        expect(a).to.have.property('slug')
+        expect(a).to.have.property('author')
+      }
+    })
+  })
+})
+
+describe('API.ARTICLES.002 - Create Article', () => {
+  it('creates a unique article (requires auth)', () => {
+    const title = \`Sprint09 \${Date.now()}\`
+    const token = Cypress.env('API_TOKEN')
+
+    // If your API requires login, set API_TOKEN via env or add a login helper in Sprint 10.
+    expect(token, 'API_TOKEN is required for create').to.be.a('string').and.not.be.empty
+
+    cy.request({
+      method: 'POST',
+      url: '/api/articles',
+      headers: { Authorization: \`Token \${token}\` },
+      body: {
+        article: {
+          title,
+          description: 'Cypress API harness seed',
+          body: 'Sprint 09 POST test'
+        }
+      }
+    }).then((res) => {
+      expect(res.status).to.eq(201)
+      expect(res.body).to.have.property('article')
+      expect(res.body.article.title).to.eq(title)
+      expect(res.body.article).to.have.property('slug')
+    })
+  })
+})
+
+describe('API.ARTICLES.003 - Unauthorized Create', () => {
+  it('fails with 401 when no token provided', () => {
+    cy.request({
+      method: 'POST',
+      url: '/api/articles',
+      failOnStatusCode: false,
+      body: {
+        article: {
+          title: \`ShouldFail \${Date.now()}\`,
+          description: 'no auth',
+          body: 'negative path'
+        }
+      }
+    }).then((res) => {
+      expect(res.status).to.eq(401)
+    })
+  })
+})`;
+
+const preflightSnippet = `export API_BASE_URL="http://sut.testlab:3001"
+curl -sS "$API_BASE_URL/api/articles" | head`;
+
+const runSnippet = `export API_BASE_URL="http://sut.testlab:3001"
+export API_TOKEN="<token>"   # store in shell/CI secrets, never commit
+npx cypress run`;
+---
+<section class="runbook-gate">
+  <p><strong>🔒 Preview only</strong></p>
+  <p>
+    This page shows a high-level overview of the runbook.
+    The full implementation (commands, patterns, and enforcement rules)
+    is available upon request.
+  </p>
+  <a href="/contact" class="cta">Request full runbook</a>
+</section>
 <!doctype html>
 <html lang="en">
   <head>
@@ -108,8 +208,8 @@
         <div class="topbar-inner">
           <div class="brand">QA Test Lab • Runbook 09</div>
           <div>
-            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
-            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+            <a class="pill" href="/#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="/#sprints">Sprint Plan</a>
           </div>
         </div>
       </div>
@@ -230,20 +330,7 @@
         <div class="divider"></div>
 
         <h3>Config (env-driven base URL)</h3>
-        <pre><code>// cypress.config.js
-const { defineConfig } = require('cypress')
-
-module.exports = defineConfig({
-  e2e: {
-    baseUrl: process.env.API_BASE_URL,
-    setupNodeEvents(on, config) {
-      if (!config.baseUrl) {
-        throw new Error('Missing required env: API_BASE_URL')
-      }
-      return config
-    },
-  },
-})</code></pre>
+        
       </section>
 
       <section id="tests" class="card">
@@ -258,69 +345,12 @@ module.exports = defineConfig({
 
         <h3>File: <code>cypress/e2e/api/articles.cy.js</code></h3>
 
-        <pre><code>describe('API.ARTICLES.001 - Get Articles', () =&gt; {
-  it('returns list with expected shape', () =&gt; {
-    cy.request('GET', '/api/articles').then((res) =&gt; {
-      expect(res.status).to.eq(200)
-      expect(res.body).to.have.property('articles')
-      expect(res.body.articles).to.be.an('array')
-
-      if (res.body.articles.length &gt; 0) {
-        const a = res.body.articles[0]
-        expect(a).to.have.property('title')
-        expect(a).to.have.property('slug')
-        expect(a).to.have.property('author')
-      }
-    })
-  })
-})
-
-describe('API.ARTICLES.002 - Create Article', () =&gt; {
-  it('creates a unique article (requires auth)', () =&gt; {
-    const title = `Sprint09 ${Date.now()}`
-    const token = Cypress.env('API_TOKEN')
-
-    // If your API requires login, set API_TOKEN via env or add a login helper in Sprint 10.
-    expect(token, 'API_TOKEN is required for create').to.be.a('string').and.not.be.empty
-
-    cy.request({
-      method: 'POST',
-      url: '/api/articles',
-      headers: { Authorization: `Token ${token}` },
-      body: {
-        article: {
-          title,
-          description: 'Cypress API harness seed',
-          body: 'Sprint 09 POST test'
-        }
-      }
-    }).then((res) =&gt; {
-      expect(res.status).to.eq(201)
-      expect(res.body).to.have.property('article')
-      expect(res.body.article.title).to.eq(title)
-      expect(res.body.article).to.have.property('slug')
-    })
-  })
-})
-
-describe('API.ARTICLES.003 - Unauthorized Create', () =&gt; {
-  it('fails with 401 when no token provided', () =&gt; {
-    cy.request({
-      method: 'POST',
-      url: '/api/articles',
-      failOnStatusCode: false,
-      body: {
-        article: {
-          title: `ShouldFail ${Date.now()}`,
-          description: 'no auth',
-          body: 'negative path'
-        }
-      }
-    }).then((res) =&gt; {
-      expect(res.status).to.eq(401)
-    })
-  })
-})</code></pre>
+        <pre><code>{installSnippet}</code></pre>
+        <pre><code>{initSnippet}</code></pre>
+        <pre><code>{cypressConfigSnippet}</code></pre>
+        <pre><code>{articlesSpecSnippet}</code></pre>
+        <pre><code>{preflightSnippet}</code></pre>
+        <pre><code>{runSnippet}</code></pre>
 
         <div class="callout warn">
           <span class="tag">Sprint boundary</span>

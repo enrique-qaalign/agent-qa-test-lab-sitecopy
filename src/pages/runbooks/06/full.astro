@@ -1,3 +1,33 @@
+---
+const exampleCode = `test(
+"RW.SMOKE.001 — Login establishes authenticated session",
+releaseGate(
+{
+  id: "RW.SMOKE.001",
+  capability: "Authentication: establish session",
+  persona: "Registered user",
+  failureMeans: "Users cannot authenticate; authenticated journeys unavailable",
+  releaseDecision: "BLOCK",
+  mitigation: "Rollback auth change; validate /api/users/login and storageState",
+  owner: "Web + API",
+},
+["home"],
+async ({ home }) => {
+  await home.open();
+  await home.expectLoggedInNav();
+}
+)
+);`;
+---
+<section class="runbook-gate">
+  <p><strong>🔒 Preview only</strong></p>
+  <p>
+    This page shows a high-level overview of the runbook.
+    The full implementation (commands, patterns, and enforcement rules)
+    is available upon request.
+  </p>
+  <a href="/contact" class="cta">Request full runbook</a>
+</section>
 <!doctype html>
 <html lang="en">
   <head>
@@ -108,8 +138,8 @@
         <div class="topbar-inner">
           <div class="brand">QA Test Lab • Runbook 06</div>
           <div>
-            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
-            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+            <a class="pill" href="/#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="/#sprints">Sprint Plan</a>
           </div>
         </div>
       </div>
@@ -137,6 +167,42 @@
           </p>
         </div>
       </div>
+        <div class="card">
+      <h2>System contract</h2>
+
+      <table class="table">
+        <tr>
+          <td>INPUT</td>
+          <td>
+            Deterministic test outcomes (pass/fail)<br/>
+            Tests annotated with gate metadata (id, capability, decision, owner)
+          </td>
+        </tr>
+        <tr>
+          <td>OUTPUT</td>
+          <td>
+            Immediate release signal (BLOCK or WARN)<br/>
+            Human-readable gate contract printed in CI logs
+          </td>
+        </tr>
+        <tr>
+          <td>DETERMINISM</td>
+          <td>
+            Each test encodes its own decision rules<br/>
+            No external interpretation required<br/>
+            Same failure always produces same decision
+          </td>
+        </tr>
+        <tr>
+          <td>FAILURE SIGNAL</td>
+          <td>
+            Missing contract → hard fail<br/>
+            Gate failure → BLOCK or WARN decision emitted<br/>
+            No silent or ambiguous failures
+          </td>
+        </tr>
+      </table>
+    </div>
 
       <div class="card">
         <h2>Exit criteria</h2>
@@ -185,25 +251,7 @@
         <h2>Gate structure</h2>
         <p>Implementation uses <code>helpers/releaseGate.js</code> to enforce required fields and print failure contracts.</p>
 
-        <pre><code>test(
-  "RW.SMOKE.001 — Login establishes authenticated session",
-  releaseGate(
-    {
-      id: "RW.SMOKE.001",
-      capability: "Authentication: establish session",
-      persona: "Registered user",
-      failureMeans: "Users cannot authenticate; authenticated journeys unavailable",
-      releaseDecision: "BLOCK",
-      mitigation: "Rollback auth change; validate /api/users/login and storageState generation",
-      owner: "Web + API",
-    },
-    ["home"],
-    async ({ home }) =&gt; {
-      await home.open();
-      await home.expectLoggedInNav();
-    }
-  )
-);</code></pre>
+        <pre><code>{exampleCode}</code></pre>
 
         <div class="callout good">
           <span class="tag">Validation</span>
@@ -316,6 +364,34 @@ export RW_USER_PASSWORD="yourpassword"</code></pre>
             <li>Do not add waits to “stabilize” a gate.</li>
             <li>Do not rerun without a change.</li>
           </ul>
+        </div>
+      </div>
+      <div class="card">
+        <h2>System flow</h2>
+
+        <table class="table">
+          <tr>
+            <td>UPSTREAM</td>
+            <td>
+              Sprint 5 — Deterministic state (idempotent, isolated tests)
+            </td>
+          </tr>
+          <tr>
+            <td>DOWNSTREAM</td>
+            <td>
+              Sprint 14 — Failure artifacts (structured evidence)<br/>
+              Sprint 15 — Failure classification (triage-report.json)<br/>
+              Sprint 17 — Automated release decision (release-gate.json)
+            </td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <span class="tag">Why this matters</span>
+          <p style="margin:8px 0 0;">
+            This runbook converts test failures into business decisions.
+            Without this layer, failures are just noise. With it, they become actionable release signals.
+          </p>
         </div>
       </div>
 

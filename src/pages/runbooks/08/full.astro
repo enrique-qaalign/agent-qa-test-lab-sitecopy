@@ -1,3 +1,13 @@
+<section class="runbook-gate">
+  <p><strong>🔒 Preview only</strong></p>
+  <p>
+    This page shows a high-level overview of the runbook.
+    The full implementation (commands, patterns, and enforcement rules)
+    is available upon request.
+  </p>
+  <a href="/contact" class="cta">Request full runbook</a>
+</section>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -340,6 +350,42 @@ export API_BASE_URL="http://sut.testlab:3001/api"</code></pre>
           <li><strong>Wait-based stabilization:</strong> added sleeps/timeouts → replace with state assertions and trace-first debugging.</li>
         </ul>
       </section>
+      <div class="card">
+        <h2>System flow</h2>
+
+        <table class="table">
+          <tr>
+            <td>UPSTREAM</td>
+            <td>
+              Sprint 07 — Fixtures (execution control)<br/>
+              Sprint 05 — Test data (state correctness)
+            </td>
+          </tr>
+          <tr>
+            <td>CURRENT LAYER</td>
+            <td>
+              UI abstraction layer (this runbook)<br/>
+              Converts raw UI into stable domain actions
+            </td>
+          </tr>
+          <tr>
+            <td>DOWNSTREAM</td>
+            <td>
+              Sprint 14 — Failure artifacts<br/>
+              Sprint 15 — Failure classification<br/>
+              Sprint 17 — Release decisions
+            </td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <span class="tag">Why this matters</span>
+          <p style="margin:8px 0 0;">
+            If UI abstraction is unstable, all downstream signals (failures, triage, release gates)
+            become unreliable.
+          </p>
+        </div>
+      </div>
 
       <footer>
         <div>Runbook 08 • QA Test Lab</div>

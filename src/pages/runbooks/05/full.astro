@@ -1,3 +1,30 @@
+---
+const envSnippet = `export WEB_BASE_URL="http://sut.testlab:3000"
+export API_BASE_URL="http://sut.testlab:3001/api"
+export RW_USER_EMAIL="YOUR_USER_EMAIL"
+export RW_USER_PASSWORD="YOUR_USER_PASSWORD"`;
+
+const runSprint5Snippet = `npx playwright test specs/sprint5 \
+  --project=auth-chromium \
+  --workers=1 \
+  --reporter=line`;
+
+const grepSnippet = `npx playwright test specs/sprint5 \
+  --project=auth-chromium \
+  -g "S5.003" \
+  --workers=1 \
+  --reporter=line`;
+---
+
+<section class="runbook-gate">
+  <p><strong>🔒 Preview only</strong></p>
+  <p>
+    This page shows a high-level overview of the runbook.
+    The full implementation (commands, patterns, and enforcement rules)
+    is available upon request.
+  </p>
+  <a href="/contact" class="cta">Request full runbook</a>
+</section>
 <!doctype html>
 <html lang="en">
   <head>
@@ -103,8 +130,8 @@
         <div class="topbar-inner">
           <div class="brand">QA Test Lab • Runbook 05</div>
           <div>
-            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
-            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+            <a class="pill" href="/#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="/#sprints">Sprint Plan</a>
           </div>
         </div>
       </div>
@@ -140,6 +167,7 @@
           <li>State is explicit: seed via API, validate via UI, no cross-test dependencies.</li>
         </ul>
 
+
         <div class="callout">
           <span class="tag">Auth contract</span>
           <ul style="margin:8px 0 0 18px;">
@@ -159,6 +187,44 @@
           </p>
         </div>
       </section>
+
+      <section class="card">
+  <h2>System contract</h2>
+
+  <table class="table">
+    <tr>
+      <td>INPUT</td>
+      <td>
+        Authenticated user (API + UI)<br/>
+        Clean or irrelevant prior state<br/>
+        Unique test data generator
+      </td>
+    </tr>
+    <tr>
+      <td>OUTPUT</td>
+      <td>
+        Deterministic records created via API<br/>
+        UI reflects created state immediately
+      </td>
+    </tr>
+    <tr>
+      <td>DETERMINISM</td>
+      <td>
+        Unique identifiers per run<br/>
+        No shared state between tests<br/>
+        No ordering dependency
+      </td>
+    </tr>
+    <tr>
+      <td>FAILURE SIGNAL</td>
+      <td>
+        UI cannot find seeded data → state propagation or API issue<br/>
+        API 401/403 → auth/environment contract failure<br/>
+        Duplicate/collision → test data generator failure
+      </td>
+    </tr>
+  </table>
+</section>
 
       <section id="done" class="card">
         <h2>Definition of done</h2>
@@ -245,25 +311,9 @@
         <h2>Commands</h2>
 
         <h3>Set environment (example)</h3>
-        <pre><code>export WEB_BASE_URL="http://sut.testlab:3000"
-export API_BASE_URL="http://sut.testlab:3001/api"
-export RW_USER_EMAIL="YOUR_USER_EMAIL"
-export RW_USER_PASSWORD="YOUR_USER_PASSWORD"</code></pre>
-
-        <div class="divider"></div>
-
-        <h3>Run Sprint 5 suite</h3>
-        <pre><code>npx playwright test specs/sprint5 \
-  --project=auth-chromium \
-  --workers=1 \
-  --reporter=line</code></pre>
-
-        <h3 style="margin-top:14px;">Run one test (grep)</h3>
-        <pre><code>npx playwright test specs/sprint5 \
-  --project=auth-chromium \
-  -g "S5.003" \
-  --workers=1 \
-  --reporter=line</code></pre>
+          <pre><code>{envSnippet}</code></pre>
+          <pre><code>{runSprint5Snippet}</code></pre>
+          <pre><code>{grepSnippet}</code></pre>
 
         <div class="callout">
           <span class="tag">Reset behavior</span>
@@ -336,6 +386,35 @@ curl -sS -I "$API_BASE_URL/tags" | head -n 3</code></pre>
           <li>Increase workers later without redesign.</li>
           <li>Diagnose failures using CI logs + artifacts.</li>
         </ul>
+      </section>
+      <section class="card">
+        <h2>System flow</h2>
+
+        <table class="table">
+          <tr>
+            <td>UPSTREAM</td>
+            <td>
+              Sprint 4 — Flake control and environment discipline
+            </td>
+          </tr>
+          <tr>
+            <td>DOWNSTREAM</td>
+            <td>
+              Sprint 6 — Time-to-signal (fast failure visibility)<br/>
+              Sprint 14 — Structured failure artifacts<br/>
+              Sprint 15 — Failure triage classification<br/>
+              Sprint 17 — Release gate decision
+            </td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <span class="tag">Why this matters</span>
+          <p style="margin:8px 0 0;">
+            If state is not deterministic here, all downstream signals become unreliable.
+            This runbook ensures failures are attributable to the system under test—not test design.
+          </p>
+        </div>
       </section>
 
       <footer>

@@ -1,3 +1,46 @@
+---
+const releaseGateSnippet = `{
+  "failures": [
+    {
+      "capability": "Article Publishing",
+      "suite": "smoke",
+      "impact": "Core content creation path is impaired.",
+      "classification": "LOCATOR",
+      "ownerHint": "UI / test automation review"
+    }
+  ],
+  "policy": {
+    "smokeFailuresBlock": true,
+    "regressionFailuresWarn": true
+  }
+
+}`;
+
+const commandsSnippet = `node scripts/release-gate-agent.js
+cat test-results/release-gate/release-gate.json | jq .`;
+
+
+const riskMapSnippet = `{
+  "testId": "auth-chromium::specs/smoke/login.spec.js::user can sign in",
+  "suite": "smoke",
+  "capability": "Authentication",
+  "impact": "Users cannot access protected features.",
+  "gateBehavior": "BLOCK",
+  "ownerHint": "Auth / platform"
+}`;
+
+---
+  <section class="runbook-gate card">
+    <h2>🔒 Preview only</h2>
+    <p>
+      This page shows a high-level overview of the runbook.
+      The full implementation (commands, scripts, and enforcement rules)
+      is available upon request.
+    </p>
+    <a href="/contact" class="cta-primary">Request full runbook</a>
+  </section>      
+
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -183,14 +226,8 @@
 
         <div class="callout">
           <span class="tag">Risk map contract</span>
-          <pre><code>{
-  "testId": "auth-chromium::specs/smoke/login.spec.js::user can sign in",
-  "suite": "smoke",
-  "capability": "Authentication",
-  "impact": "Users cannot access protected features.",
-  "gateBehavior": "BLOCK",
-  "ownerHint": "Auth / platform"
-}</code></pre>
+          <pre><code>{riskMapSnippet}</code></pre>
+          
         </div>
       </section>
 
@@ -213,37 +250,12 @@ return 'GO';</code></pre>
         </div>
 
         <h3 style="margin-top:14px;">Output schema</h3>
-        <pre><code>{
-  "generatedAt": "2026-03-28T10:20:00Z",
-  "decision": "BLOCK",
-  "summary": "2 smoke failures in authentication and article publishing capabilities.",
-  "reasons": [
-    {
-      "capability": "Authentication",
-      "suite": "smoke",
-      "impact": "Users cannot reliably sign in.",
-      "classification": "AUTH",
-      "ownerHint": "Auth / platform"
-    },
-    {
-      "capability": "Article Publishing",
-      "suite": "smoke",
-      "impact": "Core content creation path is impaired.",
-      "classification": "LOCATOR",
-      "ownerHint": "UI / test automation review"
-    }
-  ],
-  "policy": {
-    "smokeFailuresBlock": true,
-    "regressionFailuresWarn": true
-  }
-}</code></pre>
+        <pre><code>{releaseGateSnippet}</code></pre>
       </section>
 
       <section id="commands" class="card">
         <h2>Commands</h2>
-        <pre><code>node scripts/release-gate-agent.js
-cat test-results/release-gate/release-gate.json | jq .</code></pre>
+        <pre><code>{commandsSnippet}</code></pre>
 
         <div class="callout">
           <span class="tag">GitLab shape</span>

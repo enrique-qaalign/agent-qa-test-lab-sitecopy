@@ -1,5 +1,14 @@
     <!-- ========================= RUNBOOK 09.5 ========================= -->
- <!doctype html>
+ <section class="runbook-gate">
+  <p><strong>🔒 Preview only</strong></p>
+  <p>
+    This page shows a high-level overview of the runbook.
+    The full implementation (commands, patterns, and enforcement rules)
+    is available upon request.
+  </p>
+  <a href="/contact" class="cta">Request full runbook</a>
+</section>
+    <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -180,10 +189,10 @@
 
         <div class="callout">
           <span class="tag">Example input</span>
-          <pre><code>{
-  "url": "http://sut.testlab:3000",
-  "env": "qa"
-}</code></pre>
+          <pre><code>&#123;
+            "url": "http://sut.testlab:3000",
+            "env": "qa"
+          &#125;</code></pre>
         </div>
       </section>
 
@@ -208,16 +217,16 @@
         </div>
 
         <h3 style="margin-top:14px;">Output shape</h3>
-        <pre><code>{
+        <pre><code>&#123;
   "capabilities": [
-    {
+    &#123;
       "name": "Authentication",
       "priority": "SMOKE",
       "tests": [
         "User can login with valid credentials",
         "User cannot login with invalid credentials"
       ]
-    }
+    &#125;
   ]
 }</code></pre>
       </section>

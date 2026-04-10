@@ -1,3 +1,39 @@
+# image: node:20
+
+# pages:
+#   stage: deploy
+#   script:
+#     - npm ci
+#     - npm run build
+#     - npm i -g staticrypt
+
+#     # Fail fast if runbooks didn't land in dist
+#     - test -d dist/runbooks
+#     - ls -la dist/runbooks
+
+#     # Encrypt full runbooks
+#     - staticrypt dist/runbooks/05/full/index.html -o dist/runbooks/05/full/index.html -p "$RUNBOOK_PWD"
+#     - staticrypt dist/runbooks/06/full/index.html -o dist/runbooks/06/full/index.html -p "$RUNBOOK_PWD"
+#     - staticrypt dist/runbooks/07/full/index.html -o dist/runbooks/07/full/index.html -p "$RUNBOOK_PWD"
+#     - staticrypt dist/runbooks/08/full/index.html -o dist/runbooks/08/full/index.html -p "$RUNBOOK_PWD"
+#     - staticrypt dist/runbooks/09/full/index.html -o dist/runbooks/09/full/index.html -p "$RUNBOOK_PWD"
+#     - staticrypt dist/runbooks/09.5/full/index.html -o dist/runbooks/09.5/full/index.html -p "$RUNBOOK_PWD"
+#     - staticrypt dist/runbooks/14/full/index.html -o dist/runbooks/14/full/index.html -p "$RUNBOOK_PWD"
+#     - staticrypt dist/runbooks/15/full/index.html -o dist/runbooks/15/full/index.html -p "$RUNBOOK_PWD"
+#     - staticrypt dist/runbooks/16/full/index.html -o dist/runbooks/16/full/index.html -p "$RUNBOOK_PWD"
+#     - staticrypt dist/runbooks/17/full/index.html -o dist/runbooks/17/full/index.html -p "$RUNBOOK_PWD"
+
+#     # Publish dist as Pages artifact
+#     - rm -rf public
+#     - mkdir -p public
+#     - cp -R dist/* public/
+#   artifacts:
+#     paths:
+#       - public
+#   only:
+#     - master
+
+
 image: node:20
 
 pages:
@@ -5,12 +41,14 @@ pages:
   script:
     - npm ci
     - npm run build
-
-    # Fail fast if runbooks didn't land in dist
+    - npm i -g staticrypt
     - test -d dist/runbooks
-    - ls -la dist/runbooks
-
-    # Publish dist as Pages artifact
+    - |
+      for rb in 05 06 07 08 09 09.5 14 15 16 17; do
+        staticrypt "dist/runbooks/$rb/full/index.html" \
+          -o "dist/runbooks/$rb/full/index.html" \
+          -p "$RUNBOOK_PWD"
+      done
     - rm -rf public
     - mkdir -p public
     - cp -R dist/* public/
@@ -18,4 +56,4 @@ pages:
     paths:
       - public
   only:
-    - master
+    - master    

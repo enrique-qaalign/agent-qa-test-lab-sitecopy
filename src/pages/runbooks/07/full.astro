@@ -1,3 +1,24 @@
+---
+const specImports = `{ test, expect }`;
+const fixtureImports = `{ test, expect }`;  
+const example = ` editor, api`;
+
+const authChomium = ` name: 'auth-chromium', storageState: '.auth/storageState.json`;
+const unauthChromium = ` name: 'unauth-chromium', storageState: '.auth/emptyState.json'`;
+
+
+---
+
+<section class="runbook-gate">
+  <p><strong>🔒 Preview only</strong></p>
+  <p>
+    This page shows a high-level overview of the runbook.
+    The full implementation (commands, patterns, and enforcement rules)
+    is available upon request.
+  </p>
+  <a href="/contact" class="cta">Request full runbook</a>
+</section>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -108,8 +129,8 @@
         <div class="topbar-inner">
           <div class="brand">QA Test Lab • Runbook 07</div>
           <div>
-            <a class="pill" href="../index.html#runbooks">← Back to Runbooks</a>
-            <a class="pill" href="../index.html#sprints">Sprint Plan</a>
+            <a class="pill" href="/#runbooks">← Back to Runbooks</a>
+            <a class="pill" href="/#sprints">Sprint Plan</a>
           </div>
         </div>
       </div>
@@ -131,7 +152,7 @@
           <span class="tag">Fixture contract</span>
           <span class="tag">Single entrypoint</span>
           <p style="margin:8px 0 0;">
-            Requirement: all specs import <code>{ test, expect }</code> from <code>fixtures/rw</code>.
+            Requirement: all specs import <code>{specImports}</code> from <code>fixtures/rw</code>.
             Tests do not construct contexts, API clients, page objects, or auth state directly.
           </p>
         </div>
@@ -152,7 +173,7 @@
       <div class="card">
         <h2>Single entrypoint</h2>
 
-        <pre><code>const { test, expect } = require('../../fixtures/rw');</code></pre>
+        <pre><code>const {fixtureImports} = require('../../fixtures/rw');</code></pre>
 
         <div class="callout good">
           <span class="tag">AC1</span>
@@ -236,7 +257,7 @@
           </tbody>
         </table>
 
-        <pre><code>test('example', async ({ editor, api }) =&gt; {
+        <pre><code>test('example', async ({example}) =&gt; {
   // fixtures injected — no setup required
 });</code></pre>
 
@@ -253,9 +274,9 @@
 
         <h3>Projects</h3>
         <pre><code>projects: [
-  { name: 'auth-chromium', storageState: '.auth/storageState.json' },
-  { name: 'unauth-chromium', storageState: '.auth/emptyState.json' }
-]</code></pre>
+        {authChomium}
+        {unauthChromium}
+        ]</code></pre>
 
         <h3 style="margin-top:14px;">Tagging</h3>
         <ul>
@@ -420,6 +441,36 @@ export RW_USER_PASSWORD="password"</code></pre>
           <li>Sprint 14+ → machine-readable failure artifacts</li>
           <li>Sprint 17 → automated release decisions</li>
         </ul>
+      </div>
+      <div class="card">
+        <h2>System flow</h2>
+
+        <table class="table">
+          <tr>
+            <td>UPSTREAM</td>
+            <td>
+              Sprint 05 — Deterministic data (state correctness)<br/>
+              Sprint 06 — Release gates (decision model)
+            </td>
+          </tr>
+          <tr>
+            <td>DOWNSTREAM</td>
+            <td>
+              Sprint 08 — Page object structure at scale<br/>
+              Sprint 14 — Structured failure artifacts<br/>
+              Sprint 15 — Failure classification (triage)<br/>
+              Sprint 17 — Release gate automation
+            </td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <span class="tag">Why this matters</span>
+          <p style="margin:8px 0 0;">
+            Fixtures define the execution boundary of the system.
+            If this layer is not deterministic, all test results, classifications, and release decisions become unreliable.
+          </p>
+        </div>
       </div>
 
       <footer>

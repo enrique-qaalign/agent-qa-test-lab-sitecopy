@@ -1,6 +1,17 @@
 <!-- ========================= RUNBOOK 16 ========================= -->
 
-      <section id="done" class="card">
+<section class="runbook-gate card">
+  <h2>🔒 Preview only</h2>
+  <p>
+    This page shows a high-level overview of the runbook.
+    The full implementation (commands, scripts, and enforcement rules)
+    is available upon request.
+  </p>
+  <a href="/contact" class="cta-primary">Request full runbook</a>
+</section>      
+
+
+<section id="done" class="card">
         <h2>Definition of done</h2>
         <ul>
           <li><span class="ok">✔</span> One real page can be inventoried end-to-end.</li>
@@ -57,60 +68,46 @@
 
         <div class="callout">
           <span class="tag">Extraction</span>
-          <pre><code>const snapshot = await page.accessibility.snapshot({ interestingOnly: false });</code></pre>
+          <pre><code>const snapshot = await page.accessibility.snapshot(&#123; interestingOnly: false &#125;);</code></pre>
         </div>
 
         <h3 style="margin-top:14px;">Recommended output schema</h3>
-        <pre><code>{
+        <pre><code>&#123;
   "page": "/#/editor",
   "generatedAt": "2026-03-28T10:10:00Z",
   "elements": [
-    {
+    &#123;
       "role": "textbox",
       "name": "Article Title",
-      "locator": "page.getByRole('textbox', { name: 'Article Title' })",
+      "locator": "page.getByRole('textbox', &#123; name: 'Article Title' &#125;)",
       "priority": 1,
       "risk": "LOW",
       "reason": "Explicit role and accessible name are stable and user-facing."
-    },
-    {
+    &#125;,
+    &#123;
       "role": "button",
       "name": "Publish Article",
-      "locator": "page.getByRole('button', { name: 'Publish Article' })",
+      "locator": "page.getByRole('button',&#125; name: 'Publish Article' &#125;",
       "priority": 1,
       "risk": "LOW",
       "reason": "Action control with unique accessible name."
-    }
+    &#125;
   ],
   "risks": [
     "2 buttons share the name 'Save'",
     "1 input lacks an accessible label"
   ]
-}</code></pre>
+&#125;</code></pre>
       </section>
 
-      <section id="commands" class="card">
-        <h2>Commands</h2>
-        <pre><code>node scripts/locator-intelligence.js \
-  --url http://sut.testlab:3000/#/editor \
-  --project auth-chromium</code></pre>
-
-        <div class="callout">
-          <span class="tag">Do</span>
-          <ul style="margin:8px 0 0 18px;">
-            <li>Prefer accessibility-driven selectors.</li>
-            <li>Expose ambiguity explicitly.</li>
-            <li>Use the output as a locator inventory and as a product accessibility signal.</li>
-          </ul>
-          <div class="divider"></div>
-          <span class="tag">Don’t</span>
-          <ul style="margin:8px 0 0 18px;">
-            <li>Do not default to CSS because it is faster to type.</li>
-            <li>Do not hide missing labels or duplicate names.</li>
-            <li>Do not treat DOM depth as meaning.</li>
-          </ul>
-        </div>
-      </section>
+    <section id="commands" class="card">
+      <h2>Execution</h2>
+      <p>
+        The locator intelligence process is executed through a standardized script
+        integrated into the automation framework.
+      </p>
+      <p><em>Full command and setup available in the full runbook.</em></p>
+    </section>
 
       <section id="expected" class="card">
         <h2>Expected outputs</h2>
@@ -141,9 +138,23 @@
           <li>Better UI diagnosability when locator failures occur.</li>
         </ul>
       </section>
+      <section class="runbook-cta card">
+        <h2>Get the full implementation</h2>
+        <p>
+          Includes:
+        </p>
+        <ul>
+          <li>Full locator intelligence script</li>
+          <li>Framework integration patterns</li>
+          <li>CI execution and validation</li>
+          <li>Accessibility enforcement strategy</li>
+        </ul>
+
+        <a href="/contact" class="cta-primary">Request full runbook</a>
+      </section>
 
       <footer>
-        <div>Runbook 16 • QA Test Lab</div>
+        <div>Runbook 16 — Locator intelligence agent (Preview)</div>
       </footer>
     </div>
   </body>

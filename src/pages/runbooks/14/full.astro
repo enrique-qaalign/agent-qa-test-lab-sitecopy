@@ -1,3 +1,68 @@
+---
+const structureSnippet = `/test-results/
+  junit.xml
+  results.json
+  failures/
+    <test-id>.json
+  triage/
+    triage-report.json`;
+
+const failureSchemaSnippet = `{
+  "schemaVersion": "1.0",
+  "testId": "auth-chromium::specs/sprint5/article.publish.spec.js::user can publish article",
+  "title": "user can publish article",
+  "project": "auth-chromium",
+  "file": "specs/sprint5/article.publish.spec.js",
+  "line": 42,
+  "environment": "qa",
+  "status": "failed",
+  "startedAt": "2026-03-28T10:00:00Z",
+  "durationMs": 18432,
+  "errorType": "TimeoutError",
+  "errorMessage": "Timeout 10000ms exceeded while waiting for getByRole('button', { name: 'Publish Article' })",
+  "step": "Click Publish Article",
+  "evidence": {
+    "trace": "test-results/traces/publish-article-trace.zip",
+    "screenshot": "test-results/screenshots/publish-article.png",
+    "video": "test-results/videos/publish-article.webm",
+    "stdout": "test-results/logs/publish-article.stdout.log",
+    "stderr": "test-results/logs/publish-article.stderr.log"
+  },
+  "networkContext": {
+    "webBaseUrl": "http://sut.testlab:3000",
+    "apiBaseUrl": "http://sut.testlab:3001/api",
+    "ciNatMode": false
+  },
+  "classification": {
+    "primary": "LOCATOR",
+    "secondary": "TIMING",
+    "confidence": 0.86,
+    "ruleId": "locator_not_found_role_name"
+  }
+}`;
+
+const rulesSnippet = `const FAILURE_RULES = [
+  { id: 'dns_lookup_failed', match: /ENOTFOUND|getaddrinfo/i, primary: 'ENV' },
+  { id: 'connection_refused', match: /ECONNREFUSED/i, primary: 'ENV' },
+  { id: 'unauthorized_forbidden', match: /401|403|unauthorized|forbidden/i, primary: 'AUTH' },
+  { id: 'duplicate_or_exists', match: /duplicate|already exists|unique constraint/i, primary: 'DATA' },
+  { id: 'locator_not_found_role_name', match: /locator|getByRole|getByLabel|strict mode violation|not found/i, primary: 'LOCATOR' },
+  { id: 'timeout_waiting', match: /Timeout|waiting for/i, primary: 'TIMING' },
+  { id: 'assertion_failure', match: /expect\\(|toBe|toEqual|received|expected/i, primary: 'ASSERTION' }
+];`;
+
+const commandsSnippet = `find test-results -maxdepth 3 -type f | sort
+cat test-results/failures/sample-failure.json | jq .`;
+---
+<section class="runbook-gate">
+  <p><strong>🔒 Preview only</strong></p>
+  <p>
+    This page shows a high-level overview of the runbook.
+    The full implementation (commands, patterns, and enforcement rules)
+    is available upon request.
+  </p>
+  <a href="/contact" class="cta">Request full runbook</a>
+</section>
 <!-- ========================= RUNBOOK 14 ========================= -->
 <!doctype html>
 <html lang="en">
@@ -105,6 +170,8 @@
     }
       </style>
 </head>
+<body>
+  <div class="wrap">
       <section id="objective" class="card">
         <h2>Objective</h2>
         <ul>
@@ -155,49 +222,11 @@
 
         <div class="callout">
           <span class="tag">Recommended structure</span>
-          <pre><code>/test-results/
-  junit.xml
-  results.json
-  failures/
-    &lt;test-id&gt;.json
-  triage/
-    triage-report.json</code></pre>
+            <pre><code>{structureSnippet}</code></pre>
         </div>
 
 <h3 style="margin-top:14px;">Canonical failure schema</h3>
-<pre><code>{
-  "schemaVersion": "1.0",
-  "testId": "auth-chromium::specs/sprint5/article.publish.spec.js::user can publish article",
-  "title": "user can publish article",
-  "project": "auth-chromium",
-  "file": "specs/sprint5/article.publish.spec.js",
-  "line": 42,
-  "environment": "qa",
-  "status": "failed",
-  "startedAt": "2026-03-28T10:00:00Z",
-  "durationMs": 18432,
-  "errorType": "TimeoutError",
-  "errorMessage": "Timeout 10000ms exceeded while waiting for getByRole('button', { name: 'Publish Article' })",
-  "step": "Click Publish Article",
-  "evidence": {
-    "trace": "test-results/traces/publish-article-trace.zip",
-    "screenshot": "test-results/screenshots/publish-article.png",
-    "video": "test-results/videos/publish-article.webm",
-    "stdout": "test-results/logs/publish-article.stdout.log",
-    "stderr": "test-results/logs/publish-article.stderr.log"
-  },
-  "networkContext": {
-    "webBaseUrl": "http://sut.testlab:3000",
-    "apiBaseUrl": "http://sut.testlab:3001/api",
-    "ciNatMode": false
-  },
-  "classification": {
-    "primary": "LOCATOR",
-    "secondary": "TIMING",
-    "confidence": 0.86,
-    "ruleId": "locator_not_found_role_name"
-  }
-}</code></pre>
+<pre><code>{failureSchemaSnippet}</code></pre>
       </section>
 
       <section id="taxonomy" class="card">
@@ -215,15 +244,7 @@
 
         <div class="callout">
           <span class="tag">Deterministic rules first</span>
-          <pre><code>const FAILURE_RULES = [
-  { id: 'dns_lookup_failed', match: /ENOTFOUND|getaddrinfo/i, primary: 'ENV' },
-  { id: 'connection_refused', match: /ECONNREFUSED/i, primary: 'ENV' },
-  { id: 'unauthorized_forbidden', match: /401|403|unauthorized|forbidden/i, primary: 'AUTH' },
-  { id: 'duplicate_or_exists', match: /duplicate|already exists|unique constraint/i, primary: 'DATA' },
-  { id: 'locator_not_found_role_name', match: /locator|getByRole|getByLabel|strict mode violation|not found/i, primary: 'LOCATOR' },
-  { id: 'timeout_waiting', match: /Timeout|waiting for/i, primary: 'TIMING' },
-  { id: 'assertion_failure', match: /expect\\(|toBe|toEqual|received|expected/i, primary: 'ASSERTION' }
-];</code></pre>
+          <pre><code>{rulesSnippet}</code></pre>
         </div>
       </section>
 
