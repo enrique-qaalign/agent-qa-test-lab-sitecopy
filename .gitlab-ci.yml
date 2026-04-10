@@ -2,27 +2,29 @@ image: node:20
 
 pages:
   stage: deploy
-  script:
-    - npm ci
-    - npm run build
-    - npm i -g staticrypt
-    - test -d dist/runbooks
-    - find dist/runbooks -maxdepth 3 -type f | sort
-    - 'echo "RUNBOOK_PWD length: ${#RUNBOOK_PWD}"'
-    - |
-      for rb in 05 06 07 08 09 09.5 14 15 16 17; do
-        file="dist/runbooks/$rb/full/index.html"
-        if [ -f "$file" ]; then
-          echo "Encrypting $file"
-          staticrypt "$file" -p "$RUNBOOK_PWD" --short -o "$file"
-        else
-          echo "Missing $file"
-          exit 1
-        fi
-      done
-    - rm -rf public
-    - mkdir -p public
-    - cp -R dist/* public/
+  script: |
+    npm ci
+    npm run build
+    npm i -g staticrypt
+
+    echo "RUNBOOK_PWD length: ${#RUNBOOK_PWD}"
+
+    for rb in 05 06 07 08 09 09.5 14 15 16 17; do
+      file="dist/runbooks/$rb/full/index.html"
+      if [ -f "$file" ]; then
+        echo "Encrypting $file"
+        tmp="$file.encrypted"
+        staticrypt "$file" -p "$RUNBOOK_PWD" --short -o "$tmp"
+        mv "$tmp" "$file"
+      else
+        echo "Missing $file"
+        exit 1
+      fi
+    done
+
+    rm -rf public
+    mkdir -p public
+    cp -r dist/* public/
 
   artifacts:
     paths:
