@@ -5,25 +5,12 @@ pages:
   script:
     - npm ci
     - npm run build
-    - npm i -g staticrypt
 
+    # Fail fast if runbooks didn't land in dist
     - test -d dist/runbooks
-    - find dist/runbooks -maxdepth 3 -type f | sort
+    - ls -la dist/runbooks
 
-    - echo "RUNBOOK_PWD length: ${#RUNBOOK_PWD}"
-
-    - |
-      for rb in 05 06 07 08 09 09.5 14 15 16 17; do
-        file="dist/runbooks/$rb/full/index.html"
-        if [ -f "$file" ]; then
-          echo "Encrypting $file"
-          staticrypt "$file" -p "$RUNBOOK_PWD" -o "$file"
-        else
-          echo "Missing $file"
-          exit 1
-        fi
-      done
-
+    # Publish dist as Pages artifact
     - rm -rf public
     - mkdir -p public
     - cp -R dist/* public/
