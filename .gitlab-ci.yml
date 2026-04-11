@@ -26,7 +26,15 @@ pages:
           # darken staticrypt page safely
           sed -i 's/background: #ffffff;/background: #111827;/g' "$file"
           sed -i 's/color: #000;/color: #e6edf3;/g' "$file"
-          sed -i 's/#eee/#2a2f3a/g' "$file"
+          sed -i 's/background: #f2f2f2;/background: #0b0f17;/g' "$file"
+          sed -i 's/border: 0;/border: 1px solid #2a2f3a;/g' "$file"
+          sed -i 's/color: #666;/color: #e6edf3;/g' "$file"
+          sed -i 's/background: #4CAF50;/background: #2563eb;/g' "$file"
+
+
+
+
+          
 
           grep -q "staticrypt" "$file"
         done
