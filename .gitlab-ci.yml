@@ -9,14 +9,12 @@ pages:
     - test -n "$RUNBOOK_PWD"
 
     - |
-      find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
-        echo "Encrypting: $file"
-        tmp="${file}.encrypted"
-        staticrypt "$file" -p "$RUNBOOK_PWD" --short -o "$tmp"
-        test -f "$tmp"
-        mv "$tmp" "$file"
-        grep -q "staticrypt" "$file"
-      done
+        find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
+          echo "Encrypting: $file"
+          outdir="$(dirname "$file")"
+          staticrypt "$file" -p "$RUNBOOK_PWD" --short --config false -d "$outdir"
+          grep -q "staticrypt" "$file"
+        done
 
     - rm -rf public
     - mkdir -p public
