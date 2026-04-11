@@ -23,6 +23,11 @@ pages:
             --template-error "Incorrect password." \
             -d "$outdir"
 
+          # darken staticrypt page safely
+          sed -i 's/background: #ffffff;/background: #111827;/g' "$file"
+          sed -i 's/color: #000;/color: #e6edf3;/g' "$file"
+          sed -i 's/#eee/#2a2f3a/g' "$file"
+
           grep -q "staticrypt" "$file"
         done
 
