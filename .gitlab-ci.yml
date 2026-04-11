@@ -12,7 +12,7 @@ pages:
         find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
           echo "Encrypting: $file"
           outdir="$(dirname "$file")"
-          staticrypt "$file" -p "$RUNBOOK_PWD" --short --config false -d "$outdir"
+          staticrypt "$file" -p "$RUNBOOK_PWD" --config false --template staticrypt-template.html -d "$outdir"
           grep -q "staticrypt" "$file"
         done
 
