@@ -5,12 +5,19 @@ pages:
   script:
     - npm ci
     - npm run build
+    - npm i -g staticrypt
+    - test -n "$RUNBOOK_PWD"
 
-    # Fail fast if runbooks didn't land in dist
-    - test -d dist/runbooks
-    - ls -la dist/runbooks
+    - |
+      find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
+        echo "Encrypting: $file"
+        tmp="${file}.encrypted"
+        staticrypt "$file" -p "$RUNBOOK_PWD" --short -o "$tmp"
+        test -f "$tmp"
+        mv "$tmp" "$file"
+        grep -q "staticrypt" "$file"
+      done
 
-    # Publish dist as Pages artifact
     - rm -rf public
     - mkdir -p public
     - cp -R dist/* public/
