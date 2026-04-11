@@ -1,114 +1,23 @@
 ---
-const runbook = {
-  num: "16",
-  title: "Locator intelligence agent",
-  summary: "This preview explains what the runbook covers and why it matters in the system.",
-  covers: [
-    "Objective and scope",
-    "System contract",
-    "Expected outputs",
-    "Failure signals",
-    "Operational value"
-  ],
-  proof: "The full implementation is available on this site with password access."
-};
+import RunbookLayout from "../../../layouts/RunbookLayout.astro";
+import RunbookTeaser from "../../../layouts/RunbookTeaser.astro";
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>{`Runbook ${runbook.num} — ${runbook.title} (Preview)`}</title>
-    <meta
-      name="description"
-      content={`Preview of Runbook ${runbook.num} — ${runbook.title}. Full runbook available with password access.`}
-    />
-    <style>
-      :root {
-        --bg: #0b0e14;
-        --panel: #121827;
-        --text: #e6e9ef;
-        --muted: #aab2c5;
-        --link: #7aa2ff;
-        --border: #24304d;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-        background: var(--bg);
-        color: var(--text);
-      }
-      a { color: var(--link); text-decoration: none; }
-      a:hover { text-decoration: underline; }
-      .wrap { max-width: 900px; margin: 0 auto; padding: 20px 18px 54px; }
-      .topbar {
-        position: sticky; top: 0; z-index: 10;
-        backdrop-filter: blur(10px);
-        background: rgba(11, 14, 20, 0.78);
-        border-bottom: 1px solid var(--border);
-      }
-      .topbar-inner { display:flex; justify-content:space-between; gap:12px; padding: 12px 0; flex-wrap: wrap; }
-      .pill {
-        display:inline-block; border:1px solid var(--border);
-        background: rgba(255,255,255,.04);
-        padding: 7px 10px; border-radius: 999px; font-size: 13px;
-      }
-      .card {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 18px;
-        margin-top: 14px;
-      }
-      h1 { margin: 10px 0 0; font-size: 26px; }
-      h2 { margin: 0 0 10px; font-size: 18px; }
-      p, li { color: var(--muted); line-height: 1.6; }
-      .cta {
-        display:inline-block; margin-top: 10px;
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,.04);
-        padding: 10px 14px; border-radius: 12px;
-      }
-      footer { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 14px; color: var(--muted); font-size: 13px; }
-    </style>
-  </head>
-  <body>
-    <div class="topbar">
-      <div class="wrap">
-        <div class="topbar-inner">
-          <div>{`QA Test Lab • Runbook ${runbook.num}`}</div>
-          <div>
-            <a class="pill" href="/#runbooks">← Back to Runbooks</a>
-            <a class="pill" href="/#sprints">Sprint Plan</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="wrap">
-      <div class="card">
-        <h1>{`Runbook ${runbook.num} — ${runbook.title} (Preview)`}</h1>
-        <p><strong>🔒 Preview only.</strong> The full runbook is available on this site with password access.</p>
-        <a class="cta" href={`/runbooks/${runbook.num}/full`}>View full runbook (password required)</a>
-      </div>
-
-      <div class="card">
-        <h2>What this runbook covers</h2>
-        <p>{runbook.summary}</p>
-        <ul>
-          {runbook.covers.map((item) => <li>{item}</li>)}
-        </ul>
-      </div>
-
-      <div class="card">
-        <h2>What it proves</h2>
-        <p>{runbook.proof}</p>
-      </div>
-
-      <footer>
-        <div>{`Runbook ${runbook.num} • Preview`}</div>
-      </footer>
-    </div>
-  </body>
-</html>
+<RunbookLayout
+  title="Runbook 16 — Locator intelligence agent"
+  description="Preview of Runbook 16 — accessibility-first locator generation, ranking, and risk-aware enforcement."
+  runbookNum="16"
+>
+  <RunbookTeaser
+    num="16"
+    title="Locator intelligence agent"
+    intro="Locator instability is a primary cause of test flakiness and maintenance cost. This runbook defines a deterministic system for generating, ranking, and validating locators using accessibility semantics and explicit risk modeling."
+    bullets={[
+      "Locator recommendations are derived from the accessibility tree",
+      "Stability is enforced through a priority and risk model",
+      "Ambiguity is surfaced early instead of patched later",
+    ]}
+    proves="Locator strategy can be systematized—eliminating a major source of flakiness while improving consistency and scalability."
+    accessText="The full runbook includes the locator intelligence process, output schema, ranking model, and framework integration patterns for enforcing stable UI interaction."
+  />
+</RunbookLayout>

@@ -1,0 +1,45 @@
+---
+interface Props {
+  num: string;
+  title: string;
+  intro: string;
+  bullets: string[];
+  proves: string;
+  accessText?: string;
+}
+
+const {
+  num,
+  title,
+  intro,
+  bullets,
+  proves,
+  accessText = "The full runbook includes implementation detail, command patterns, and enforcement rules used in the system.",
+} = Astro.props;
+---
+
+<div class="card">
+  <h1>{`Runbook ${num} — ${title}`}</h1>
+  <p>
+    This preview outlines the capability introduced by this runbook and the role it plays in the larger automation system.
+  </p>
+</div>
+
+<div class="card">
+  <h2>What this runbook does</h2>
+  <p>{intro}</p>
+  <ul>
+    {bullets.map((item) => <li>{item}</li>)}
+  </ul>
+</div>
+
+<div class="card">
+  <h2>What it proves</h2>
+  <p>{proves}</p>
+</div>
+
+<div class="card">
+  <h2>Access</h2>
+  <p>{accessText}</p>
+  <a class="cta" href={`/contact?runbook=${encodeURIComponent(num)}`}>Request access</a>
+</div>
