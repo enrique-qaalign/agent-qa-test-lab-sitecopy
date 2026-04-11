@@ -24,12 +24,22 @@ pages:
             -d "$outdir"
 
           # darken staticrypt page safely
-          sed -i 's/background: #ffffff;/background: #111827;/g' "$file"
-          sed -i 's/color: #000;/color: #e6edf3;/g' "$file"
-          sed -i 's/background: #f2f2f2;/background: #0b0f17;/g' "$file"
-          sed -i 's/border: 0;/border: 1px solid #2a2f3a;/g' "$file"
-          sed -i 's/color: #666;/color: #e6edf3;/g' "$file"
-          sed -i 's/background: #4CAF50;/background: #2563eb;/g' "$file"
+          # page background
+          sed -i 's/background-color: #4CAF50;/background-color: #0b0f17 !important;/g' "$file"
+          sed -i 's/background: #4CAF50;/background: #0b0f17 !important;/g' "$file"
+          # card background
+          sed -i 's/background: #ffffff;/background: #111827 !important;/g' "$file"
+          # text colors
+          sed -i 's/color: #000;/color: #e6edf3 !important;/g' "$file"
+          sed -i 's/color: black;/color: #e6edf3 !important;/g' "$file"
+          # input styling
+          sed -i 's/background: #f2f2f2;/background: #0b0f17 !important;/g' "$file"
+          sed -i 's/border: 0;/border: 1px solid #2a2f3a !important;/g' "$file"
+          sed -i 's/color: #666;/color: #e6edf3 !important;/g' "$file"
+          # button styling
+          sed -i 's/background: #4CAF50;/background: #2563eb !important;/g' "$file"
+          # hide remember me row
+          sed -i 's/<label class="staticrypt-remember-label">/<label class="staticrypt-remember-label" style="display:none;">/g' "$file"
 
 
 
