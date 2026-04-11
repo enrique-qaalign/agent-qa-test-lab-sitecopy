@@ -23,7 +23,6 @@ pages:
             --template-error "Incorrect password." \
             -d "$outdir"
 
-   
           grep -q "staticrypt" "$file"
         done
 
