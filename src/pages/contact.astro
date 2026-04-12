@@ -1,0 +1,58 @@
+---
+const runbook = Astro.url.searchParams.get('runbook');
+---
+
+<html lang="en">
+  <head>
+    <title>Request Access — QA ALIGN</title>
+  </head>
+  <body style="background:#0b0f14;color:#e6edf3;font-family:system-ui;padding:40px;max-width:700px;margin:auto;">
+
+    <h1>Request Access</h1>
+
+    {runbook && (
+      <p style="color:#9fb3c8;">
+        You are requesting access to <strong>Runbook {runbook}</strong>
+      </p>
+    )}
+
+    <p style="margin-top:20px;">
+      These runbooks contain implementation-level patterns for deterministic automation systems.
+    </p>
+
+    <hr style="margin:30px 0;border-color:#1f2a36;" />
+
+    <h2>What happens next</h2>
+    <ul>
+      <li>We review your request</li>
+      <li>We align on your system and goals</li>
+      <li>You receive access + guidance on applying the patterns</li>
+    </ul>
+
+    <hr style="margin:30px 0;border-color:#1f2a36;" />
+
+    <h2>Request</h2>
+
+    <form action="https://formspree.io/f/mkopdare" method="POST">
+      
+      <input type="hidden" name="runbook" value={runbook || ''} />
+
+      <label>Name</label><br/>
+      <input name="name" required style="width:100%;margin-bottom:15px;" />
+
+      <label>Email</label><br/>
+      <input name="email" type="email" required style="width:100%;margin-bottom:15px;" />
+
+      <label>Company (optional)</label><br/>
+      <input name="company" style="width:100%;margin-bottom:15px;" />
+
+      <label>What are you trying to solve?</label><br/>
+      <textarea name="message" rows="4" style="width:100%;margin-bottom:20px;"></textarea>
+
+      <button type="submit" style="padding:10px 20px;background:#2563eb;color:white;border:none;">
+        Submit Request
+      </button>
+    </form>
+
+  </body>
+</html>
