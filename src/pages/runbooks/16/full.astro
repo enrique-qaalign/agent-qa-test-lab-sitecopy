@@ -3,157 +3,235 @@
 <section class="runbook-gate card">
   <h2>🔒 Preview only</h2>
   <p>
-    This page shows a high-level overview of the runbook.
-    The full implementation (commands, scripts, and enforcement rules)
-    is available upon request.
+    Locator Intelligence transforms how UI tests are built — from manual locator writing
+    to a system that derives, validates, and refines locators directly from the application.
   </p>
   <a href="/contact" class="cta-primary">Request full runbook</a>
-</section>      
+</section>
 
+
+<!-- ========================= SYSTEM DIAGRAM ========================= -->
+
+<section id="diagram" class="card">
+  <h2>System overview</h2>
+
+  <div class="diagram">
+    <pre><code>
+DISCOVERY → VALIDATION → REFINEMENT → ARTIFACTS → TESTS → RELEASE SIGNAL
+
+   DOM         pass/fail       scoped         JSON        Playwright     Gate
+ extraction     check         locators       outputs        usage        decision
+    </code></pre>
+  </div>
+
+  <div class="callout">
+    <span class="tag">Model</span>
+    Locators are not authored — they are derived from the system, validated against reality,
+    and refined until deterministic.
+  </div>
+</section>
+
+
+<!-- ========================= DEFINITION OF DONE ========================= -->
 
 <section id="done" class="card">
-        <h2>Definition of done</h2>
-        <ul>
-          <li><span class="ok">✔</span> One real page can be inventoried end-to-end.</li>
-          <li><span class="ok">✔</span> Output includes role, accessible name, locator, and risk.</li>
-          <li><span class="ok">✔</span> Ambiguous elements are flagged instead of forced into brittle selectors.</li>
-          <li><span class="ok">✔</span> Generated recommendations are usable in the framework with minimal editing.</li>
-        </ul>
-      </section>
+  <h2>Definition of done</h2>
+  <ul>
+    <li><span class="ok">✔</span> Real page inventory generated from live system.</li>
+    <li><span class="ok">✔</span> Locator candidates derived from accessibility semantics.</li>
+    <li><span class="ok">✔</span> All locators validated (pass/fail recorded).</li>
+    <li><span class="ok">✔</span> Ambiguity resolved via scoping or flagged.</li>
+    <li><span class="ok">✔</span> Outputs stored as reusable artifacts.</li>
+  </ul>
+</section>
 
-      <section id="priority" class="card">
-        <h2>Locator priority model</h2>
-        <table class="table">
-          <tr>
-            <td>Priority 1</td>
-            <td><code>getByRole(role, &#123; name &#125;)</code></td>
-          </tr>
-          <tr>
-            <td>Priority 2</td>
-            <td><code>getByLabel()</code></td>
-          </tr>
-          <tr>
-            <td>Priority 3</td>
-            <td><code>getByPlaceholder()</code></td>
-          </tr>
-          <tr>
-            <td>Priority 4</td>
-            <td><code>getByText()</code> only when stable and semantically anchored</td>
-          </tr>
-          <tr>
-            <td>Last resort</td>
-            <td>CSS/XPath, explicitly flagged as higher risk</td>
-          </tr>
-        </table>
 
-        <div class="callout">
-          <span class="tag">Risk model</span>
-          <ul style="margin:8px 0 0 18px;">
-            <li><strong>LOW:</strong> unique role + unique accessible name</li>
-            <li><strong>MEDIUM:</strong> stable semantics but repeated names or dynamic text dependence</li>
-            <li><strong>HIGH:</strong> index-based, CSS chain, or missing accessibility semantics</li>
-          </ul>
-        </div>
-      </section>
-      
-      <section id="mechanics" class="card">
-        <h2>Mechanics</h2>
-        <ul>
-          <li>Navigate to the target route in a known state.</li>
-          <li>Capture the accessibility tree.</li>
-          <li>Normalize nodes by role, name, and interactive value.</li>
-          <li>Generate ranked locator recommendations.</li>
-          <li>Attach ambiguity and accessibility risk flags.</li>
-        </ul>
+<!-- ========================= LOCATOR MODEL ========================= -->
 
-        <div class="callout">
-          <span class="tag">Extraction</span>
-          <pre><code>const snapshot = await page.accessibility.snapshot(&#123; interestingOnly: false &#125;);</code></pre>
-        </div>
+<section id="priority" class="card">
+  <h2>Locator priority model</h2>
 
-        <h3 style="margin-top:14px;">Recommended output schema</h3>
-        <pre><code>&#123;
-  "page": "/#/editor",
-  "generatedAt": "2026-03-28T10:10:00Z",
-  "elements": [
-    &#123;
-      "role": "textbox",
-      "name": "Article Title",
-      "locator": "page.getByRole('textbox', &#123; name: 'Article Title' &#125;)",
-      "priority": 1,
-      "risk": "LOW",
-      "reason": "Explicit role and accessible name are stable and user-facing."
-    &#125;,
-    &#123;
-      "role": "button",
-      "name": "Publish Article",
-      "locator": "page.getByRole('button', &#123; name: 'Publish Article' &#125;)"      "risk": "LOW",
-      "reason": "Action control with unique accessible name."
-    &#125;
-  ],
-  "risks": [
-    "2 buttons share the name 'Save'",
-    "1 input lacks an accessible label"
-  ]
-&#125;</code></pre>
-      </section>
+  <table class="table">
+    <tr>
+      <td>Priority 1</td>
+      <td><code>getByRole(role, { name })</code></td>
+    </tr>
+    <tr>
+      <td>Priority 2</td>
+      <td><code>getByLabel()</code></td>
+    </tr>
+    <tr>
+      <td>Priority 3</td>
+      <td><code>getByPlaceholder()</code></td>
+    </tr>
+    <tr>
+      <td>Priority 4</td>
+      <td><code>getByText()</code></td>
+    </tr>
+    <tr>
+      <td>Last resort</td>
+      <td>CSS / XPath (HIGH risk)</td>
+    </tr>
+  </table>
 
-    <section id="commands" class="card">
-      <h2>Execution</h2>
-      <p>
-        The locator intelligence process is executed through a standardized script
-        integrated into the automation framework.
-      </p>
-      <p><em>Full command and setup available in the full runbook.</em></p>
-    </section>
+  <div class="callout">
+    <span class="tag">Risk model</span>
+    <ul>
+      <li><strong>LOW:</strong> unique role + accessible name</li>
+      <li><strong>MEDIUM:</strong> repeated names or dynamic text</li>
+      <li><strong>HIGH:</strong> brittle selectors</li>
+    </ul>
+  </div>
+</section>
 
-      <section id="expected" class="card">
-        <h2>Expected outputs</h2>
-        <ul>
-          <li><span class="ok">✔</span> Page inventory of interactive controls.</li>
-          <li><span class="ok">✔</span> Ranked locator recommendations tied to accessibility semantics.</li>
-          <li><span class="ok">✔</span> Risk flags for duplicate names and missing labels.</li>
-          <li><span class="ok">✔</span> Reusable machine-readable locator catalog.</li>
-        </ul>
-      </section>
 
-      <section id="failures" class="card">
-        <h2>Failure modes</h2>
-        <ul>
-          <li><strong>Accessibility tree incomplete:</strong> action: ensure the page is in the right state before snapshot.</li>
-          <li><strong>Multiple elements share role/name:</strong> action: annotate ambiguity and suggest stronger semantic anchor.</li>
-          <li><strong>Team falls back to CSS anyway:</strong> action: preserve risk labels and policy note.</li>
-          <li><strong>Dynamic content makes text unstable:</strong> action: parameterize test data or favor role+label on controls.</li>
-        </ul>
-      </section>
+<!-- ========================= SYSTEM FLOW ========================= -->
 
-      <section id="ops" class="card">
-        <h2>Operational value</h2>
-        <ul>
-          <li>Faster authoring of stable Playwright locators.</li>
-          <li>Consistent accessibility-first locator policy.</li>
-          <li>Reusable page inventory for framework growth.</li>
-          <li>Better UI diagnosability when locator failures occur.</li>
-        </ul>
-      </section>
-      <section class="runbook-cta card">
-        <h2>Get the full implementation</h2>
-        <p>
-          Includes:
-        </p>
-        <ul>
-          <li>Full locator intelligence script</li>
-          <li>Framework integration patterns</li>
-          <li>CI execution and validation</li>
-          <li>Accessibility enforcement strategy</li>
-        </ul>
+<section id="flow" class="card">
+  <h2>System flow</h2>
 
-        <a href="/contact" class="cta-primary">Request full runbook</a>
-      </section>
+  <ul>
+    <li>Extract interactive elements from the DOM.</li>
+    <li>Generate locator candidates.</li>
+    <li>Validate each locator against the page.</li>
+    <li>Refine ambiguous results.</li>
+    <li>Persist outputs as artifacts.</li>
+  </ul>
 
-      <footer>
-        <div>Runbook 16 — Locator intelligence agent (Preview)</div>
-      </footer>
-    </div>
-  </body>
-</html>
+  <div class="callout">
+    <span class="tag">Key shift</span>
+    The system replaces manual locator authoring with a deterministic pipeline.
+  </div>
+</section>
+
+
+<!-- ========================= OPERATOR WORKFLOW ========================= -->
+
+<section id="operator" class="card">
+  <h2>Operator workflow</h2>
+
+  <pre><code># Discover
+node scripts/run-locator-extraction.js
+
+# Validate
+node scripts/validate-locators.js
+
+# Refine
+node scripts/generate-scoped-candidates.js</code></pre>
+
+  <ul>
+    <li><strong>Valid:</strong> use in test</li>
+    <li><strong>Invalid:</strong> apply scoped locator</li>
+    <li><strong>Still failing:</strong> fix accessibility</li>
+  </ul>
+</section>
+
+
+<!-- ========================= ARTIFACT CONTRACT ========================= -->
+
+<section id="artifacts" class="card">
+  <h2>Artifact contract</h2>
+
+  <ul>
+    <li><code>locator-map.json</code></li>
+    <li><code>locator-validation.json</code></li>
+    <li><code>locator-refinements.json</code></li>
+  </ul>
+
+  <div class="callout">
+    <span class="tag">Critical</span>
+    These artifacts allow debugging without reruns and power downstream intelligence.
+  </div>
+</section>
+
+
+<!-- ========================= INTELLIGENCE LAYER ========================= -->
+
+<section id="intelligence" class="card">
+  <h2>Connection to the intelligence layer</h2>
+
+  <ul>
+    <li><strong>Sprint 14:</strong> Locator failures become structured artifacts</li>
+    <li><strong>Sprint 15:</strong> Failures are classified (assertion vs locator vs env)</li>
+    <li><strong>Sprint 16:</strong> Locator system generates and improves candidates</li>
+    <li><strong>Sprint 17:</strong> Release decisions use validated signal</li>
+  </ul>
+
+  <div class="callout">
+    <span class="tag">Outcome</span>
+    Locator quality directly impacts release confidence.
+  </div>
+</section>
+
+
+<!-- ========================= EXPECTED OUTPUT ========================= -->
+
+<section id="expected" class="card">
+  <h2>Expected outputs</h2>
+  <ul>
+    <li><span class="ok">✔</span> Inventory of interactive elements</li>
+    <li><span class="ok">✔</span> Ranked locator candidates</li>
+    <li><span class="ok">✔</span> Validation results</li>
+    <li><span class="ok">✔</span> Scoped improvements</li>
+  </ul>
+</section>
+
+
+<!-- ========================= FAILURE MODES ========================= -->
+
+<section id="failures" class="card">
+  <h2>Failure modes</h2>
+  <ul>
+    <li>Multiple matching elements</li>
+    <li>Missing accessibility semantics</li>
+    <li>Dynamic or unstable text</li>
+    <li>Fallback to CSS selectors</li>
+  </ul>
+</section>
+
+
+<!-- ========================= VIDEO ALIGNMENT ========================= -->
+
+<section id="video" class="card">
+  <h2>Video walkthrough (30-second review)</h2>
+
+  <ul>
+    <li><strong>0–5s:</strong> Show system diagram</li>
+    <li><strong>5–10s:</strong> Run extraction script</li>
+    <li><strong>10–15s:</strong> Show locator-map.json</li>
+    <li><strong>15–20s:</strong> Run validation (pass/fail)</li>
+    <li><strong>20–25s:</strong> Show refinement output</li>
+    <li><strong>25–30s:</strong> Use locator in real test</li>
+  </ul>
+</section>
+
+
+<!-- ========================= OPERATIONAL VALUE ========================= -->
+
+<section id="ops" class="card">
+  <h2>Operational value</h2>
+  <ul>
+    <li>Removes brittle locator authoring</li>
+    <li>Standardizes accessibility-first testing</li>
+    <li>Creates reusable intelligence layer</li>
+    <li>Improves CI signal quality</li>
+  </ul>
+</section>
+
+
+<section class="runbook-cta card">
+  <h2>Get the full implementation</h2>
+  <ul>
+    <li>Locator agent CLI</li>
+    <li>Framework integration</li>
+    <li>CI enforcement</li>
+    <li>Accessibility strategy</li>
+  </ul>
+
+  <a href="/contact" class="cta-primary">Request full runbook</a>
+</section>
+
+
+<footer>
+  <div>Runbook 16 — Locator Intelligence Agent (Preview)</div>
+</footer>

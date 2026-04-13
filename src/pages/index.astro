@@ -16,12 +16,18 @@ const site = {
 };
 
 const sprintHighlights = [
-  {
-    num: 0,
+{
+    num: "0",
+    phase: "discover",
     status: "done",
-    title: "Golden VM baseline",
-    proof: "A clean baseline with deterministic access and a rollback snapshot.",
-    deliverable: "Ubuntu Server + updates + SSH keys + snapshot.",
+    searchTitle: "How Do I Create a Stable Test Environment Baseline?",
+    systemTitle: "Establish a Deterministic Environment Baseline",
+    bullets: [
+      "Environment can be recreated from scratch with identical results",
+      "Access (SSH/keys) is consistent across sessions",
+      "System can be reset to a known-good snapshot",
+      "Baseline eliminates configuration drift"
+    ],
     runbooks: [
       {
         label: "Runbook 00 — Golden VM baseline (Ubuntu Server + SSH keys + snapshot)",
@@ -31,112 +37,180 @@ const sprintHighlights = [
     video: { label: "Sprint 0 demo", youtubeId: "CuHtOT5lI_s" },
   },
   {
-    num: 1,
-    status: "done",
-    title: "Runner → SUT network boundary",
-    proof: "Automation crosses a real runner-to-SUT network boundary using hostname-based targeting. Localhost shortcuts are explicitly rejected.",
-    deliverable: "Boundary proof + runbook + working Compose SUT.",
-    runbooks: [
-      {
-        label: "Runbook 01 — Runner → SUT connectivity and naming",
-        href: "runbooks/runbook-01-runner-to-sut.html",
-      },
-    ],
-    video: { label: "Sprint 1 demo", youtubeId: "paM9Ds2hEqg" },
-  },
+  num: 1,
+  id: "1",
+  phase: "validate",
+  status: "done",
+  searchTitle: "Why Do My Tests Pass Locally but Fail in CI?",
+  systemTitle: "Enforce Real Runner-to-System Boundaries",
+  bullets: [
+    "Tests execute against a non-localhost system",
+    "Runner reaches system through a stable hostname",
+    "Localhost shortcuts are explicitly rejected",
+    "Execution path matches real CI conditions",
+  ],
+  title: "Runner → SUT network boundary",
+  proof:
+    "Automation crosses a real runner-to-system boundary using hostname-based targeting. Localhost shortcuts are explicitly rejected.",
+  deliverable: "Boundary proof + runbook + working Compose SUT.",
+  runbooks: [
+    {
+      label: "Runbook 01 — Runner → SUT connectivity and naming",
+      href: "runbooks/runbook-01-runner-to-sut.html",
+    },
+  ],
+  video: { label: "Sprint 1 demo", youtubeId: "paM9Ds2hEqg" },
+},
+{
+  num: 2,
+  id: "2",
+  phase: "validate",
+  status: "done",
+  searchTitle: "How Do I Prevent Tests from Running Against the Wrong Environment?",
+  systemTitle: "Enforce Explicit Environment Targeting",
+  bullets: [
+    "BASE_URL must be defined or execution fails",
+    "Environment selection is explicit and validated",
+    "Tests cannot run with implicit defaults",
+    "Incorrect targets are blocked before execution",
+  ],
+  title: "Environment discipline (explicit targeting)",
+  proof:
+    "Targets are explicit, validated at runtime, and enforced through WEB_BASE_URL and API_BASE_URL.",
+  deliverable:
+    "Fail-fast config proof + localhost rejection + remote HTTP validation.",
+  runbooks: [
+    {
+      label: "Runbook 02 — Compose deploy (dev) + health check",
+      href: "runbooks/runbook-02-compose-deploy.html",
+    },
+    {
+      label: "Runbook 02a — baseURL discipline and proof",
+      href: "runbooks/runbook-02a-base-url-discipline.html",
+    },
+  ],
+  video: { label: "Sprint 2 demo", youtubeId: "lLf5qU7P2s4" },
+},
+{
+  num: 3,
+  id: "3",
+  phase: "validate",
+  status: "done",
+  searchTitle: "How Can I Debug Test Failures Without Rerunning Them?",
+  systemTitle: "Make Failures Diagnosable from Artifacts",
+  bullets: [
+    "Failures include trace, screenshot, and logs",
+    "CI artifacts are sufficient for root cause analysis",
+    "No rerun is required to understand failures",
+    "Failure context is preserved deterministically",
+  ],
+  title: "CI diagnosability (artifacts-first)",
+  proof: "Every failure is explainable from artifacts alone.",
+  deliverable:
+    "GitLab pipeline publishes report, screenshots, videos, and traces.",
+  runbooks: [
+    {
+      label: "Runbook 03 — Diagnosability via Intentional Failure",
+      href: "runbooks/runbook-03-diagnosability-intentional-failure.html",
+    },
+  ],
+  video: { label: "Sprint 3 demo", youtubeId: "_JKkrztbaUE" },
+},
+{
+  num: 4,
+  id: "4",
+  phase: "stabilize",
+  status: "done",
+  searchTitle: "How Do I Systematically Eliminate Flaky Tests?",
+  systemTitle: "Classify and Eliminate Flake by Root Cause",
+  bullets: [
+    "Failures are categorized by flake type",
+    "Timing issues are replaced with deterministic waits",
+    "Flake patterns are documented and repeatable",
+  ],
+  title: "Flake taxonomy + guardrails",
+  proof: "Flakes get classified and eliminated with principled fixes.",
+  deliverable: "Taxonomy + at least one flake removed without timeouts.",
+  runbooks: [
+    {
+      label: "Runbook 04 — CI artifacts + debug without rerun",
+      href: "runbooks/runbook-04-ci-artifacts.html",
+    },
+    {
+      label: "Sprint 4 Runbook — NAT + Port Forwarding Mode",
+      href: "runbooks/runbook-04-nat-mode-explained.html",
+    },
+  ],
+  video: { label: "Sprint 4 demo", youtubeId: "FJFPw-ICkMc" },
+},
+{
+  num: 5,
+  id: "5",
+  phase: "stabilize",
+  status: "done",
+  searchTitle: "How Do I Make Tests Independent and Parallel-Safe?",
+  systemTitle: "Control Test Data and State Deterministically",
+  bullets: [
+    "Tests do not depend on shared state",
+    "Each test can run independently and in parallel",
+    "Data setup and cleanup are deterministic",
+    "Repeated runs produce identical outcomes",
+  ],
+  title: "Test data + state reset",
+  proof: "Runs are repeatable, idempotent, and parallel-friendly.",
+  deliverable: "Seed/reset strategy + independent tests.",
+  runbooks: [
+    {
+      label: "Runbook 05 — Test data + state reset",
+      href: "/runbooks/05/",
+    },
+  ],
+  video: { label: "Sprint 5 demo", youtubeId: "Jz2l-1l322Y" },
+},
+{
+  num: 6,
+  id: "6",
+  phase: "decide",
+  status: "done",
+  searchTitle: "How Do I Know If It’s Safe to Release?",
+  systemTitle: "Enforce Risk-Based Release Gates",
+  bullets: [
+    "Release decision is explicitly BLOCK or WARN",
+    "Each gate maps to a defined risk",
+    "Failures include capability and impact context",
+    "Time-to-signal is minimized for release confidence",
+  ],
+  title: "Time-to-signal + release gates",
+  proof: "Quality gates map to risk, not coverage vanity.",
+  deliverable:
+    "Smoke vs regression + explicit go/no-go criteria (BLOCK vs WARN).",
+  runbooks: [
+    {
+      label: "Runbook 06 — Time-to-signal + release gates",
+      href: "/runbooks/06/",
+    },
+  ],
+  video: { label: "Sprint 6 demo", youtubeId: "r1Rbbs53_hw" },
+  ac: [
+    "Smoke gate provides fast time-to-signal",
+    "Each gate declares capability/persona/impact/owner",
+    "Release decision is explicit (BLOCK or WARN) per gate",
+    "Failure prints the Release Gate Failure Contract without reruns",
+    "Artifacts + logs are sufficient to diagnose",
+  ],
+},
   {
-    num: 2,
+    num: "7",
+    phase: "stabilize",
     status: "done",
-    title: "Environment discipline (explicit targeting)",
-    proof: "Targets are explicit, validated at runtime, and enforced through WEB_BASE_URL and API_BASE_URL.",
-    deliverable: "Fail-fast config proof + localhost rejection + remote HTTP validation.",
-    runbooks: [
-      {
-        label: "Runbook 02 — Compose deploy (dev) + health check",
-        href: "runbooks/runbook-02-compose-deploy.html",
-      },
-      {
-        label: "Runbook 02a — baseURL discipline and proof",
-        href: "runbooks/runbook-02a-base-url-discipline.html",
-      },
+    searchTitle: "How Do I Make Tests Read Like Business Flows?",
+    systemTitle: "Compose Tests from Domain-Level Primitives",
+    bullets: [
+      "Tests use reusable UI and API fixtures",
+      "Auth and setup logic are centralized",
+      "Test steps reflect business actions",
+      "Execution is consistent across test suites"
     ],
-   video: { label: "Sprint 2 demo", youtubeId: "lLf5qU7P2s4" },
-  },
-  {
-    num: 3,
-    status: "done",
-    title: "CI diagnosability (artifacts-first)",
-    proof: "Every failure is explainable from artifacts alone.",
-    deliverable: "GitLab pipeline publishes report/screenshots/videos/traces.",
-    runbooks: [
-      {
-        label: "Runbook 03 — Diagnosability via Intentional Failure",
-        href: "runbooks/runbook-03-diagnosability-intentional-failure.html",
-      },
-    ],
-    video: { label: "Sprint 3 demo", youtubeId: "_JKkrztbaUE" },
-  },
-  {
-    num: 4,
-    status: "done",
-    title: "Flake taxonomy + guardrails",
-    proof: "Flakes get classified and eliminated with principled fixes.",
-    deliverable: "Taxonomy + at least one flake removed without timeouts.",
-    runbooks: [
-      {
-        label: "Runbook 04 — CI artifacts + debug without rerun",
-        href: "runbooks/runbook-04-ci-artifacts.html",
-      },
-      {
-        label: "Sprint 4 Runbook — NAT + Port Forwarding Mode",
-        href: "runbooks/runbook-04-nat-mode-explained.html",
-      },
-    ],
-    video: { label: "Sprint 4 demo", youtubeId: "FJFPw-ICkMc" },
-  },
-  {
-    num: 5,
-    status: "done",
-    title: "Test data + state reset",
-    proof: "Runs are repeatable, idempotent, and parallel-friendly.",
-    deliverable: "Seed/reset strategy + independent tests.",
-    runbooks: [
-      {
-        label: "Runbook 05 — Test data + state reset",
-        href: "/runbooks/05/",
-      },
-    ],
-    video: { label: "Sprint 5 demo", youtubeId: "Jz2l-1l322Y" },
-  },
-  {
-    num: 6,
-    status: "done",
-    title: "Time-to-signal + release gates",
-    proof: "Quality gates map to risk, not coverage vanity.",
-    deliverable: "Smoke vs regression + explicit go/no-go criteria (BLOCK vs WARN).",
-    runbooks: [
-      {
-        label: "Runbook 06 — Time-to-signal + release gates",
-        href: "/runbooks/06/",
-      },
-    ],
-    video: { label: "Sprint 6 demo", youtubeId: "r1Rbbs53_hw" },
-    ac: [
-      "Smoke gate provides fast time-to-signal",
-      "Each gate declares capability/persona/impact/owner",
-      "Release decision is explicit (BLOCK or WARN) per gate",
-      "Failure prints the Release Gate Failure Contract without reruns",
-      "Artifacts + logs are sufficient to diagnose",
-    ],
-  },
-  {
-    num: 7,
-    status: "done",
-    title: "Custom fixtures (domain primitives)",
-    proof:
-      "Tests read like business actions; auth, API helpers, and evidence are consistent and reusable.",
-    deliverable:
-      "Two custom fixtures (UI + API) + fixture composition guide (worker vs test scope).",
     runbooks: [
       {
         label: "Runbook 07 — Custom fixtures (UI + API)",
@@ -146,13 +220,17 @@ const sprintHighlights = [
     video: { label: "Sprint 7 demo", youtubeId: "acUBDbaNWQM" },
   },
   {
-    num: 8,
+    num: "8",
+    phase: "stabilize",
     status: "done",
-    title: "Page Objects at scale (POM + utilities)",
-    proof:
-      "UI automation stays maintainable at 50–200+ tests with stable locator strategy and flows.",
-    deliverable:
-      "Scaled POM structure (pages/components/flows) + standards + add-a-new-page recipe.",
+    searchTitle: "How Do I Scale UI Automation Without It Breaking?",
+    systemTitle: "Maintain UI Automation at Scale",
+    bullets: [
+      "Page objects support large test suites effciently",
+      "Locator strategy is consistent and maintainable",
+      "New pages follow a defined structure",
+      "UI changes require minimal refactoring"
+    ],
     runbooks: [
       {
         label: "Runbook 08 — Page Objects at scale",
@@ -162,35 +240,49 @@ const sprintHighlights = [
     video: { label: "Sprint 8 demo", youtubeId: "AYv-1HV5ZsE" },
   },  
   {
-    num: 9.5,
-    status: "done",
-    title: "URL → Test Plan Agent (discovery layer)",
-    proof:
-      "A system URL can be turned into a deterministic capability map, baseline test plan, and locator inventory.",
-    deliverable:
-      "URL-driven discovery script + structured test-plan.json + locator-map.json outputs.",
-    runbooks: [
-      {
-        label: "Runbook 09.5 — URL → Test Plan Agent",
-        href: "/runbooks/09.5/",
-      },
-    ],
-    video: { label: "Sprint 9.5 demo", youtubeId: null },
-    ac: [
-      "Same URL produces the same structured plan on repeat runs",
-      "At least one capability is identified from real navigation or page structure",
-      "At least one smoke candidate is identified",
-      "Locator map is generated alongside the test plan",
-      "Output is deterministic and avoids uncontrolled crawling",
-    ],
-  },
-  {
-    num: 9,
+  num: 9.5,
+  status: "done",
+  phase: "discover",
+  searchTitle: "Can I Generate a Test Plan Automatically from a Website?",
+  systemTitle: "Derive Test Coverage from Live Systems",
+  bullets: [
+    "Same URL produces identical test-plan output across runs",
+    "Navigation and capabilities are discovered automatically",
+    "At least one real user path is identified",
+    "Locator map is generated alongside the test plan",
+  ],
+  title: "URL → Test Plan Agent (discovery layer)",
+  proof:
+    "A system URL can be turned into a deterministic capability map, baseline test plan, and locator inventory.",
+  deliverable:
+    "URL-driven discovery script + structured test-plan.json + locator-map.json outputs.",
+  runbooks: [
+    {
+      label: "Runbook 09.5 — URL → Test Plan Agent",
+      href: "/runbooks/09.5/",
+    },
+  ],
+  video: { label: "Sprint 9.5 demo", youtubeId: null },
+  ac: [
+    "Same URL produces the same structured plan on repeat runs",
+    "At least one capability is identified from real navigation or page structure",
+    "At least one smoke candidate is identified",
+    "Locator map is generated alongside the test plan",
+    "Output is deterministic and avoids uncontrolled crawling",
+  ],
+},
+{
+    num: "9",
+    phase: "validate",
     status: "planned",
-    title: "Cypress API harness (Sprint 1 for Cypress track)",
-    proof: "API tests run deterministically by env contract (no hardcoded URLs).",
-    deliverable:
-      "Cypress configured + 3 API tests (GET + POST + Negative) with structure assertions.",
+    searchTitle: "How Do I Build Reliable API Tests That Match Real Usage?",
+    systemTitle: "Establish Deterministic API Test Foundations",
+    bullets: [
+      "API tests use environment-driven base URLs",
+      "Requests validate response structure, not just status",
+      "Test data is unique per execution",
+      "Negative scenarios validate error contracts"
+    ],
     runbooks: [
       {
         label: "Runbook 09 — Cypress API harness (setup + first 3 tests)",
@@ -207,12 +299,17 @@ const sprintHighlights = [
     ],
   },
   {
-    num: 10,
+    num: "",
+    phase: "stabilize",
     status: "planned",
-    title: "Cypress determinism (auth + data isolation)",
-    proof: "Tests are isolated, order-independent, and parallel-friendly.",
-    deliverable:
-      "API auth helper + data naming convention + optional cleanup strategy.",
+    searchTitle: "How Do I Keep API Tests Deterministic with Auth and Data?",
+    systemTitle: "Enforce Deterministic API Authentication and Data Control",
+    bullets: [
+      "Authentication is handled through reusable helpers",
+      "Each test owns its data lifecycle",
+      "Requests include consistent headers and logging",
+      "Failures expose request and response details"
+    ],
     runbooks: [
       {
         label: "Runbook 10 — Cypress auth + deterministic test data",
@@ -228,12 +325,17 @@ const sprintHighlights = [
     ],
   },
   {
-    num: 11,
+    num: "",
+    phase: "validate",
     status: "planned",
-    title: "Cypress CI signal (reports + artifacts-first)",
-    proof: "Automation becomes a trustworthy release signal, not a local demo.",
-    deliverable:
-      "CI job runs Cypress API suite + publishes JUnit/HTML evidence artifacts.",
+    searchTitle: "How Do I Turn API Tests into a Reliable CI Signal?",
+    systemTitle: "Promote API Tests to CI-Level Signal",
+    bullets: [
+      "CI produces structured test reports (JUnit/HTML)",
+      "Failures include sufficient diagnostic artifacts",
+      "Results are consistent across environments",
+      "Retry behavior is controlled and intentional"
+    ],
     runbooks: [
       {
         label: "Runbook 11 — Cypress CI integration + evidence bundle",
@@ -248,12 +350,17 @@ const sprintHighlights = [
     ],
   },
   {
-    num: 12,
+    num: "",
+    phase: "decide",
     status: "planned",
-    title: "JMeter baseline harness (non-GUI + HTML report)",
-    proof: "Performance tests are reproducible, versioned, and runnable in CI.",
-    deliverable:
-      "JMeter .jmx committed + CLI non-GUI run + HTML report artifact.",
+    searchTitle: "How Do I Establish a Performance Baseline?",
+    systemTitle: "Create Reproducible Performance Benchmarks",
+    bullets: [
+      "Performance tests run in non-GUI mode",
+      "Baseline metrics (p95, throughput) are captured",
+      "Test plans are version-controlled",
+      "Results are reproducible across runs"
+    ],
     runbooks: [
       {
         label: "Runbook 12 — JMeter baseline (CLI, reports, parameterization)",
@@ -269,13 +376,17 @@ const sprintHighlights = [
     ],
   },
   {
-    num: 13,
+    num: "",
+    phase: "decide",
     status: "planned",
-    title: "JMeter contention vs baseline (bottleneck modeling)",
-    proof:
-      "Separates raw capacity from data contention (hot rows, locks, pool saturation).",
-    deliverable:
-      "A/B test plans: unique-data baseline vs contention profile + knee-point analysis.",
+    searchTitle: "How Do I Identify System Bottlenecks Under Load?",
+    systemTitle: "Differentiate Capacity from Contention",
+    bullets: [
+      "Baseline and contention scenarios are compared",
+      "Performance degradation patterns are explainable",
+      "System constraints are identified (DB, app, pool)",
+      "Results produce actionable bottleneck insights"
+    ],
     runbooks: [
       {
         label: "Runbook 13 — JMeter concurrency bottleneck modeling (unique vs contention)",
@@ -290,11 +401,17 @@ const sprintHighlights = [
       "Produces a short executive summary chart/table",
     ],
     },{
-    num: 14,
+    num: "14",
+    phase: "decide",
     status: "done",
-    title: "Agent artifact contract + failure taxonomy",
-    proof: "Agent outputs are deterministic, structured, and auditable.",
-    deliverable: "JSON artifact schema + failure classification contract.",
+    searchTitle: "How Do I Standardize Test Failure Data for Analysis?",
+    systemTitle: "Create a Structured Failure Artifact Contract",
+    bullets: [
+      "Failures are stored as structured JSON artifacts",
+      "Schema is consistent across all test runs",
+      "Artifacts include environment and evidence links",
+      "Failure data is machine-readable and reusable"
+    ],
     runbooks: [
       {
         label: "Runbook 14 — Agent artifact contract + taxonomy",
@@ -303,11 +420,17 @@ const sprintHighlights = [
     ],
   },
   {
-    num: 15,
+    num: "15",
+    phase: "decide",
     status: "done",
-    title: "CI failure triage agent",
-    proof: "Failures are automatically classified with root cause and next action.",
-    deliverable: "Agent analyzes CI artifacts and produces triage report.",
+    searchTitle: "Can Failures Be Automatically Classified Without Manual Debugging?",
+    systemTitle: "Classify Failures Deterministically",
+    bullets: [
+      "Failures are categorized (assertion, env, data, etc.)",
+      "Root cause hints are generated automatically",
+      "Classification is consistent across runs",
+      "Triage output is structured and actionable"
+    ],
     runbooks: [
       {
         label: "Runbook 15 — CI failure triage agent",
@@ -316,11 +439,17 @@ const sprintHighlights = [
     ],
   },
   {
-    num: 16,
+    num: "16",
+    phase: "stabilize",
     status: "done",
-    title: "Locator intelligence agent",
-    proof: "UI locator strategy is derived from accessibility and validated automatically.",
-    deliverable: "Agent produces locator map + Playwright-ready selectors.",
+    searchTitle: "How Do I Ensure My UI Locators Stay Reliable Over Time?",
+    systemTitle: "Enforce Intelligent Locator Strategy",
+    bullets: [
+      "Locators are derived from accessibility roles",
+      "Locator strategies are validated automatically",
+      "Locator map is generated and reusable",
+      "Locator changes are detectable and traceable"
+    ],
     runbooks: [
       {
         label: "Runbook 16 — Locator intelligence agent",
@@ -329,11 +458,17 @@ const sprintHighlights = [
     ],
   },
   {
-    num: 17,
+    num: "17",
+    phase: "decide",
     status: "done",
-    title: "Release gate agent",
-    proof: "Release decisions are enforced automatically with risk-based reasoning.",
-    deliverable: "Agent evaluates signals and outputs BLOCK/WARN decision.",
+    searchTitle: "Can Release Decisions Be Made Automatically from Test Results?",
+    systemTitle: "Automate Risk-Based Release Decisions",
+    bullets: [
+      "Release decision is generated automatically",
+      "Decision is based on test signals and classification",
+      "Output includes BLOCK or WARN with rationale",
+      "Decision is reproducible from artifacts"
+    ],
     runbooks: [
       {
         label: "Runbook 17 — Release gate agent",
@@ -546,7 +681,7 @@ const plannedSprints = sprintHighlights.filter((s) => s.status !== "done");
     
     <div class="wrap">
       <section class="hero" id="start-here">
-        <div class="h1">A Living QA Test Lab</div>
+        <div class="h1">QA ALIGN Automation System</div>
         
         <p class="lead">
           {site.tagline}
@@ -957,16 +1092,15 @@ const plannedSprints = sprintHighlights.filter((s) => s.status !== "done");
           {completedSprints.map((s) => (
             <div class="card">
               <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
-                <h3 style="margin:0;">Sprint {s.num}: {s.title}</h3>
+                <h3 style="margin:0;">Sprint {s.num}: {s.searchTitle || s.title}</h3>
                 <span class="pill" style="font-size:12px; padding:6px 10px;">DONE</span>
               </div>
-              <p class="muted" style="margin-top:10px;"><strong>What it proves:</strong> {s.proof}</p>
-              <p class="muted"><strong>Deliverable:</strong> {s.deliverable}</p>
-              {s.runbooks?.length ? (
-                <ul style="margin:6px 0 0 18px;">
-                  {s.runbooks.map((rb) => <li><a href={rb.href}>{rb.label}</a></li>)}
-                </ul>
-              ) : null}
+              { s.systemTitle ? (<p class="muted" style="margin-top:10px;"><strong>System capability:</strong> {s.systemTitle}</p>) : null }
+              { s.bullets?.length ? (
+              <ul style="margin:8px 0 0 18px;"> {s.bullets.map((item) => <li>{item}</li>)}</ul>) : (<><p class="muted" style="margin-top:10px;"><strong>What it proves:</strong> {s.proof}</p>
+              <p class="muted"><strong>Deliverable:</strong> {s.deliverable}</p></>) }{ s.runbooks?.length ? (
+              <div style="margin-top:10px;">
+                {s.runbooks.map((rb) => (<div><a href={rb.href}>{rb.label}</a></div>))} </div>) : null}
 
               {s.video?.youtubeId ? (
                 <div class="video" style="margin-top:12px;">
