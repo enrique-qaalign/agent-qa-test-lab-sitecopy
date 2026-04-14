@@ -12,7 +12,7 @@ pages:
         find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
           echo "Encrypting: $file"
 
-          tmpfile="${file}.encrypted"
+          tmpfile="${file}.tmp"
 
           staticrypt "$file" \
             -p "$RUNBOOK_PWD" \
@@ -22,8 +22,9 @@ pages:
             --template-button "Access runbook" \
             --template-placeholder "Enter password" \
             --template-error "Incorrect password." \
-            -o "$tmpfile"
+            --output "$tmpfile"
 
+          test -f "$tmpfile"
           mv "$tmpfile" "$file"
           grep -q "staticrypt" "$file"
         done
