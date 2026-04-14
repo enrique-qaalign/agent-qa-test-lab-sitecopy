@@ -1,0 +1,569 @@
+---
+const pageTitle = "Turn Test Results Into Clear Release Decisions | QA ALIGN";
+const pageDescription =
+  "QA ALIGN helps engineering teams turn noisy test output into decision-ready release signal with structured artifacts, failure clarity, and GO / WARN / BLOCK release logic.";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <style>
+      :root {
+        --qa-bg: #0b0e14;
+        --qa-panel: #121827;
+        --qa-panel-2: #0f1522;
+        --qa-text: #e6e9ef;
+        --qa-muted: #aab2c5;
+        --qa-border: #24304d;
+        --qa-link: #7aa2ff;
+        --qa-accent: #7aa2ff;
+        --qa-accent-2: #9bb8ff;
+        --qa-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background: var(--qa-bg);
+        color: var(--qa-text);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; }
+
+      .site-shell { padding: 2rem 0 4rem; }
+      .qa-container { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+
+      .qa-section, .qa-hero, .qa-cta-band { margin: 0 0 2rem; }
+
+      .qa-hero, .qa-section, .qa-cta-band__content {
+        border: 1px solid var(--qa-border);
+        background: linear-gradient(180deg, rgba(18, 24, 39, 0.98), rgba(11, 14, 20, 0.98));
+        border-radius: 24px;
+        box-shadow: var(--qa-shadow);
+      }
+
+      .qa-hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 2rem;
+        padding: 2.25rem;
+        align-items: center;
+      }
+
+      .qa-section { padding: 2rem; }
+
+      .qa-section--alt {
+        background: linear-gradient(180deg, rgba(15, 21, 34, 0.98), rgba(11, 14, 20, 0.98));
+      }
+
+      .qa-section__header {
+        max-width: 860px;
+        margin-bottom: 1.25rem;
+      }
+
+      .qa-eyebrow {
+        margin: 0 0 0.6rem;
+        color: var(--qa-accent-2);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .qa-hero h1, .qa-section h2, .qa-cta-band h2 {
+        margin: 0;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+      }
+
+      .qa-hero h1 {
+        font-size: clamp(2.25rem, 5vw, 4rem);
+        max-width: 11ch;
+      }
+
+      .qa-section h2, .qa-cta-band h2 {
+        font-size: clamp(1.6rem, 3vw, 2.6rem);
+        max-width: 24ch;
+      }
+
+      .qa-lead, .qa-copy, .qa-card p, .qa-offer-card, .qa-cta-band p {
+        color: var(--qa-muted);
+        line-height: 1.7;
+        font-size: 1.02rem;
+      }
+
+      .qa-lead {
+        max-width: 62ch;
+        margin: 1rem 0 1.25rem;
+        font-size: 1.08rem;
+      }
+
+      .qa-copy p { margin: 0 0 1rem; }
+      .qa-copy p:last-child { margin-bottom: 0; }
+
+      .qa-proof-list, .qa-list, .qa-flow {
+        margin: 0;
+        padding-left: 1.15rem;
+        color: var(--qa-text);
+      }
+
+      .qa-proof-list {
+        display: grid;
+        gap: 0.5rem;
+        margin-bottom: 1.4rem;
+      }
+
+      .qa-list li, .qa-flow li, .qa-proof-list li { margin-bottom: 0.5rem; }
+
+      .qa-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 1.25rem;
+      }
+
+      .qa-actions--section { margin-top: 1.5rem; }
+
+      .qa-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0.82rem 1.15rem;
+        border-radius: 999px;
+        border: 1px solid var(--qa-border);
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      }
+
+      .qa-btn:hover {
+        transform: translateY(-1px);
+        border-color: var(--qa-accent);
+      }
+
+      .qa-btn--primary {
+        color: #08111f;
+        background: linear-gradient(180deg, var(--qa-accent-2), var(--qa-accent));
+        border-color: transparent;
+      }
+
+      .qa-btn--secondary {
+        color: var(--qa-text);
+        background: rgba(122, 162, 255, 0.08);
+      }
+
+      .qa-btn--full { width: 100%; }
+
+      .qa-diagram-card, .qa-offer-card, .qa-card {
+        border: 1px solid var(--qa-border);
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 20px;
+      }
+
+      .qa-diagram-card { padding: 1.4rem; }
+
+      .qa-diagram-card__eyebrow {
+        margin: 0 0 0.45rem;
+        color: var(--qa-accent-2);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .qa-diagram-card h2 {
+        margin: 0 0 1rem;
+        font-size: 1.4rem;
+        line-height: 1.2;
+      }
+
+      .qa-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .qa-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .qa-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+      .qa-card { padding: 1.2rem; }
+
+      .qa-card h3, .qa-offer-card h3 {
+        margin: 0 0 0.6rem;
+        font-size: 1.02rem;
+        line-height: 1.3;
+      }
+
+      .qa-card p { margin: 0; }
+
+      .qa-two-col {
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .qa-offer-card { padding: 1.35rem; }
+
+      .qa-not-fit {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .qa-not-fit span {
+        display: inline-flex;
+        padding: 0.7rem 0.95rem;
+        border-radius: 999px;
+        border: 1px solid var(--qa-border);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--qa-muted);
+      }
+
+      .qa-cta-band__content {
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .qa-cta-band__content h2 {
+        max-width: 22ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .qa-cta-band__content p {
+        max-width: 760px;
+        margin: 0.9rem auto 0;
+      }
+
+      .qa-cta-band .qa-actions { justify-content: center; }
+
+      @media (max-width: 980px) {
+        .qa-hero, .qa-two-col, .qa-grid--3, .qa-grid--4 {
+          grid-template-columns: 1fr;
+        }
+
+        .qa-hero h1, .qa-section h2, .qa-cta-band h2 {
+          max-width: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .site-shell { padding-top: 1rem; }
+        .qa-container { width: min(100% - 1rem, 1180px); }
+
+        .qa-hero, .qa-section, .qa-cta-band__content {
+          padding: 1.25rem;
+          border-radius: 18px;
+        }
+
+        .qa-actions { flex-direction: column; }
+        .qa-btn { width: 100%; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="site-shell">
+      <div class="qa-container">
+        <section class="qa-hero">
+          <div class="qa-hero__content">
+            <p class="qa-eyebrow">QA ALIGN</p>
+            <h1>Turn Test Results Into Clear Release Decisions</h1>
+            <p class="qa-lead">
+              QA ALIGN helps engineering teams move from noisy pass/fail output to
+              structured evidence, diagnosable failures, and clear GO / WARN / BLOCK
+              release decisions.
+            </p>
+
+            <ul class="qa-proof-list">
+              <li>Structured release gate decisioning</li>
+              <li>Decision-ready failure evidence</li>
+              <li>Artifact-driven release reasoning</li>
+              <li>CI-integrated signal quality</li>
+            </ul>
+
+            <div class="qa-actions">
+              <a class="qa-btn qa-btn--primary" href="#technical-review">Request a Technical Review</a>
+              <a class="qa-btn qa-btn--secondary" href="/runbooks/">See Sprint Proof</a>
+            </div>
+          </div>
+
+          <aside class="qa-hero__visual" aria-label="Release decision flow">
+            <div class="qa-diagram-card">
+              <p class="qa-diagram-card__eyebrow">Release Flow</p>
+              <h2>From test output to defensible go / no-go calls</h2>
+              <ol class="qa-flow">
+                <li>Execution produces structured evidence</li>
+                <li>Failures are diagnosable from artifacts</li>
+                <li>Risk is translated into decision logic</li>
+                <li>Release outcome becomes GO / WARN / BLOCK</li>
+              </ol>
+            </div>
+          </aside>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">The Core Problem</p>
+            <h2>Most teams do not lack test results. They lack decision-ready release signal.</h2>
+          </div>
+
+          <div class="qa-copy">
+            <p>
+              Automation often produces pass/fail output, but that does not automatically
+              translate into release confidence. Teams still end up debating whether a
+              failure is real, whether a rerun is needed, and whether shipping is safe.
+            </p>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Pass/fail is too shallow</h3>
+              <p>Raw status alone does not tell leadership whether the release should proceed.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Failure severity is unclear</h3>
+              <p>Teams cannot easily separate blocking regressions from warning-level issues.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Evidence is fragmented</h3>
+              <p>Logs, screenshots, and traces exist, but not in a structured decision model.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Release meetings become guesswork</h3>
+              <p>Confidence depends on opinion instead of diagnosable evidence.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">What QA ALIGN Changes</p>
+            <h2>Build a release signal that engineering leaders can actually defend.</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--3">
+            <article class="qa-card">
+              <h3>Failure Outputs With Structure</h3>
+              <p>Failures are captured in a consistent format that supports human and system interpretation.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Evidence That Supports Triage</h3>
+              <p>Artifacts are collected in a way that reduces ambiguity and rerun dependence.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Risk-Based Release Logic</h3>
+              <p>Test outcomes are mapped into GO, WARN, or BLOCK instead of vague “looks okay” judgments.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Signal at the CI Layer</h3>
+              <p>The release decision model lives where delivery actually happens, not in disconnected local narratives.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Capability-Aware Decisions</h3>
+              <p>Critical failures can be treated differently from lower-risk regressions.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Modernization With Governance</h3>
+              <p>As the system grows, release reasoning becomes more structured instead of more chaotic.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">What I Diagnose First</p>
+            <h2>The gaps that prevent reliable go / no-go decisions</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--3">
+            <article class="qa-card">
+              <h3>No Release Contract</h3>
+              <p>The system reports failures, but does not define what they mean for release.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Weak Failure Classification</h3>
+              <p>Teams cannot quickly distinguish assertion problems, state issues, and infrastructure noise.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Evidence Spread Across Tools</h3>
+              <p>The information exists, but not in a format that supports fast leadership decisions.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Rerun-Dependent Confidence</h3>
+              <p>Confidence is delayed because the system needs another run before anyone trusts the result.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>No Risk Layer</h3>
+              <p>All failures are treated the same, even when they do not carry the same release impact.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Decision Ownership Is Fuzzy</h3>
+              <p>There is no clear path from failure evidence to decision responsibility.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">The Real Goal</p>
+            <h2>Release confidence should come from evidence, not optimism.</h2>
+          </div>
+
+          <div class="qa-copy">
+            <p>
+              The point of automation is not merely to run tests. It is to help the team
+              understand whether the product is safe to ship, why a release should be
+              paused, and what evidence supports that decision.
+            </p>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Proof</p>
+            <h2>Real patterns for turning automation into release guidance</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Structured Failure Records</h3>
+              <p>Consistent failure outputs that make analysis easier to reason about.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Triage Outputs</h3>
+              <p>Failure patterns can be interpreted into a likely classification and risk narrative.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Release Gate Decisions</h3>
+              <p>Execution results are translated into a clearer release recommendation.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Sprint-Based Evidence</h3>
+              <p>Runbooks show how release confidence is built deliberately over time.</p>
+            </article>
+          </div>
+
+          <div class="qa-actions qa-actions--section">
+            <a class="qa-btn qa-btn--secondary" href="/runbooks/">View Runbooks</a>
+            <a class="qa-btn qa-btn--secondary" href="/offerings/">See System Paths</a>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt" id="technical-review">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Offer</p>
+            <h2>Start with a Technical Signal Review</h2>
+          </div>
+
+          <div class="qa-two-col">
+            <div class="qa-copy">
+              <p>
+                I review how your current automation results are being interpreted and where
+                your release confidence is breaking down.
+              </p>
+              <p>That includes:</p>
+              <ul class="qa-list">
+                <li>how failures are currently classified</li>
+                <li>whether your artifacts support fast decision-making</li>
+                <li>where confidence is delayed by ambiguity or reruns</li>
+                <li>what a stronger GO / WARN / BLOCK model should look like</li>
+              </ul>
+            </div>
+
+            <aside class="qa-offer-card">
+              <p class="qa-eyebrow">What you get</p>
+              <ul class="qa-list">
+                <li>Current signal assessment</li>
+                <li>Release decisioning gaps</li>
+                <li>Risk-layer recommendations</li>
+                <li>First correction path</li>
+              </ul>
+              <a class="qa-btn qa-btn--primary qa-btn--full" href="/contact/">Request a Technical Review</a>
+            </aside>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Best Fit</p>
+            <h2>Best fit for teams experiencing</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Weak release confidence</h3>
+              <p>Leaders still hesitate even after the suite finishes running.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>No clear go / no-go logic</h3>
+              <p>Release decisions depend too much on interpretation and not enough on structure.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Unclear failure severity</h3>
+              <p>The team cannot easily tell what should block a release.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Growing delivery pressure</h3>
+              <p>Faster delivery is increasing the cost of weak decision systems.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Not a Fit</p>
+            <h2>Not for teams looking for</h2>
+          </div>
+
+          <div class="qa-not-fit">
+            <span>Raw test execution only</span>
+            <span>Generic QA staffing</span>
+            <span>Surface-level dashboards without decision logic</span>
+            <span>Release optimism without evidence discipline</span>
+          </div>
+        </section>
+
+        <section class="qa-cta-band">
+          <div class="qa-cta-band__content">
+            <h2>If your release decision still depends on guesswork, that is the system to fix.</h2>
+            <p>
+              QA ALIGN helps turn noisy automation into evidence-backed release confidence.
+            </p>
+            <div class="qa-actions">
+              <a class="qa-btn qa-btn--primary" href="/contact/">Request a Technical Review</a>
+              <a class="qa-btn qa-btn--secondary" href="/runbooks/">Review QA ALIGN Proof</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

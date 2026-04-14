@@ -1,0 +1,568 @@
+---
+const pageTitle = "Modernize Automation Without Destabilizing Delivery | QA ALIGN";
+const pageDescription =
+  "QA ALIGN helps teams modernize test automation safely by improving determinism, diagnosability, and release confidence before scaling complexity.";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <style>
+      :root {
+        --qa-bg: #0b0e14;
+        --qa-panel: #121827;
+        --qa-panel-2: #0f1522;
+        --qa-text: #e6e9ef;
+        --qa-muted: #aab2c5;
+        --qa-border: #24304d;
+        --qa-link: #7aa2ff;
+        --qa-accent: #7aa2ff;
+        --qa-accent-2: #9bb8ff;
+        --qa-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background: var(--qa-bg);
+        color: var(--qa-text);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; }
+
+      .site-shell { padding: 2rem 0 4rem; }
+      .qa-container { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+
+      .qa-section, .qa-hero, .qa-cta-band { margin: 0 0 2rem; }
+
+      .qa-hero, .qa-section, .qa-cta-band__content {
+        border: 1px solid var(--qa-border);
+        background: linear-gradient(180deg, rgba(18, 24, 39, 0.98), rgba(11, 14, 20, 0.98));
+        border-radius: 24px;
+        box-shadow: var(--qa-shadow);
+      }
+
+      .qa-hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 2rem;
+        padding: 2.25rem;
+        align-items: center;
+      }
+
+      .qa-section { padding: 2rem; }
+
+      .qa-section--alt {
+        background: linear-gradient(180deg, rgba(15, 21, 34, 0.98), rgba(11, 14, 20, 0.98));
+      }
+
+      .qa-section__header {
+        max-width: 860px;
+        margin-bottom: 1.25rem;
+      }
+
+      .qa-eyebrow {
+        margin: 0 0 0.6rem;
+        color: var(--qa-accent-2);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .qa-hero h1, .qa-section h2, .qa-cta-band h2 {
+        margin: 0;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+      }
+
+      .qa-hero h1 {
+        font-size: clamp(2.25rem, 5vw, 4rem);
+        max-width: 12ch;
+      }
+
+      .qa-section h2, .qa-cta-band h2 {
+        font-size: clamp(1.6rem, 3vw, 2.6rem);
+        max-width: 24ch;
+      }
+
+      .qa-lead, .qa-copy, .qa-card p, .qa-offer-card, .qa-cta-band p {
+        color: var(--qa-muted);
+        line-height: 1.7;
+        font-size: 1.02rem;
+      }
+
+      .qa-lead {
+        max-width: 62ch;
+        margin: 1rem 0 1.25rem;
+        font-size: 1.08rem;
+      }
+
+      .qa-copy p { margin: 0 0 1rem; }
+      .qa-copy p:last-child { margin-bottom: 0; }
+
+      .qa-proof-list, .qa-list, .qa-flow {
+        margin: 0;
+        padding-left: 1.15rem;
+        color: var(--qa-text);
+      }
+
+      .qa-proof-list {
+        display: grid;
+        gap: 0.5rem;
+        margin-bottom: 1.4rem;
+      }
+
+      .qa-list li, .qa-flow li, .qa-proof-list li { margin-bottom: 0.5rem; }
+
+      .qa-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 1.25rem;
+      }
+
+      .qa-actions--section { margin-top: 1.5rem; }
+
+      .qa-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0.82rem 1.15rem;
+        border-radius: 999px;
+        border: 1px solid var(--qa-border);
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      }
+
+      .qa-btn:hover {
+        transform: translateY(-1px);
+        border-color: var(--qa-accent);
+      }
+
+      .qa-btn--primary {
+        color: #08111f;
+        background: linear-gradient(180deg, var(--qa-accent-2), var(--qa-accent));
+        border-color: transparent;
+      }
+
+      .qa-btn--secondary {
+        color: var(--qa-text);
+        background: rgba(122, 162, 255, 0.08);
+      }
+
+      .qa-btn--full { width: 100%; }
+
+      .qa-diagram-card, .qa-offer-card, .qa-card {
+        border: 1px solid var(--qa-border);
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 20px;
+      }
+
+      .qa-diagram-card { padding: 1.4rem; }
+
+      .qa-diagram-card__eyebrow {
+        margin: 0 0 0.45rem;
+        color: var(--qa-accent-2);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .qa-diagram-card h2 {
+        margin: 0 0 1rem;
+        font-size: 1.4rem;
+        line-height: 1.2;
+      }
+
+      .qa-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .qa-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .qa-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+      .qa-card { padding: 1.2rem; }
+
+      .qa-card h3, .qa-offer-card h3 {
+        margin: 0 0 0.6rem;
+        font-size: 1.02rem;
+        line-height: 1.3;
+      }
+
+      .qa-card p { margin: 0; }
+
+      .qa-two-col {
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .qa-offer-card { padding: 1.35rem; }
+
+      .qa-not-fit {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .qa-not-fit span {
+        display: inline-flex;
+        padding: 0.7rem 0.95rem;
+        border-radius: 999px;
+        border: 1px solid var(--qa-border);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--qa-muted);
+      }
+
+      .qa-cta-band__content {
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .qa-cta-band__content h2 {
+        max-width: 22ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .qa-cta-band__content p {
+        max-width: 760px;
+        margin: 0.9rem auto 0;
+      }
+
+      .qa-cta-band .qa-actions { justify-content: center; }
+
+      @media (max-width: 980px) {
+        .qa-hero, .qa-two-col, .qa-grid--3, .qa-grid--4 {
+          grid-template-columns: 1fr;
+        }
+
+        .qa-hero h1, .qa-section h2, .qa-cta-band h2 {
+          max-width: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .site-shell { padding-top: 1rem; }
+        .qa-container { width: min(100% - 1rem, 1180px); }
+
+        .qa-hero, .qa-section, .qa-cta-band__content {
+          padding: 1.25rem;
+          border-radius: 18px;
+        }
+
+        .qa-actions { flex-direction: column; }
+        .qa-btn { width: 100%; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="site-shell">
+      <div class="qa-container">
+        <section class="qa-hero">
+          <div class="qa-hero__content">
+            <p class="qa-eyebrow">QA ALIGN</p>
+            <h1>Modernize Automation Without Destabilizing Delivery</h1>
+            <p class="qa-lead">
+              QA ALIGN helps teams modernize brittle automation systems by fixing trust,
+              diagnosability, and state discipline before adding more complexity.
+            </p>
+
+            <ul class="qa-proof-list">
+              <li>No rewrite-first pressure</li>
+              <li>Trust restoration before scale</li>
+              <li>Diagnosability before expansion</li>
+              <li>Deterministic modernization path</li>
+            </ul>
+
+            <div class="qa-actions">
+              <a class="qa-btn qa-btn--primary" href="#technical-review">Request a Technical Review</a>
+              <a class="qa-btn qa-btn--secondary" href="/runbooks/">See Sprint Proof</a>
+            </div>
+          </div>
+
+          <aside class="qa-hero__visual" aria-label="Modernization flow">
+            <div class="qa-diagram-card">
+              <p class="qa-diagram-card__eyebrow">Modernization Flow</p>
+              <h2>Stabilize first, scale second</h2>
+              <ol class="qa-flow">
+                <li>Identify where trust is breaking down</li>
+                <li>Correct state, evidence, and CI signal</li>
+                <li>Rebuild confidence in the foundation</li>
+                <li>Modernize safely without delivery shock</li>
+              </ol>
+            </div>
+          </aside>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">The Core Problem</p>
+            <h2>Many automation modernization efforts fail because they try to scale before they stabilize.</h2>
+          </div>
+
+          <div class="qa-copy">
+            <p>
+              Teams know the current system is brittle, slow, or hard to trust. But a
+              full rewrite often creates more risk, not less. When the foundation is weak,
+              adding new tools and new layers can increase instability instead of fixing it.
+            </p>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Legacy pain is real</h3>
+              <p>Older suites often carry brittle state, weak contracts, and hard-to-explain failures.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Rewrite pressure is risky</h3>
+              <p>Replacing everything at once can destabilize delivery and delay confidence even further.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Tool changes alone do not solve trust</h3>
+              <p>Modern frameworks still fail if the underlying architecture remains weak.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Teams need a safer path</h3>
+              <p>Progress should improve signal quality, not just create more implementation churn.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">What QA ALIGN Changes</p>
+            <h2>Modernize through control, not disruption.</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--3">
+            <article class="qa-card">
+              <h3>Deterministic State Discipline</h3>
+              <p>Tests start from controlled conditions so the system becomes more predictable before it expands.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Artifact-First Diagnosability</h3>
+              <p>Failures become easier to understand, which restores confidence in the automation signal.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>CI Signal Improvement</h3>
+              <p>The system is corrected where delivery decisions actually happen, not just in local experiments.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Release Confidence Layer</h3>
+              <p>Modernization is tied to clear go / warn / block reasoning instead of surface-level progress reports.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Phased Adoption</h3>
+              <p>Changes can be introduced in a controlled sequence rather than through a disruptive all-at-once rewrite.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Architecture Before Hype</h3>
+              <p>The focus is on trustworthy systems first, not trend-chasing tools or AI claims.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">What I Diagnose First</p>
+            <h2>The failure patterns that make modernization unstable</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--3">
+            <article class="qa-card">
+              <h3>Shared State and Order Dependence</h3>
+              <p>The existing suite relies on execution order or leftover state to behave.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Weak Environment Contracts</h3>
+              <p>Tests drift across local, CI, and staging because targeting is not disciplined.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Low-Value Artifacts</h3>
+              <p>Failures are hard to explain, making each change more dangerous to introduce.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Framework Change Without System Change</h3>
+              <p>The team wants to switch tools, but the real instability lives underneath the framework layer.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>No Release Signal Layer</h3>
+              <p>The system runs, but does not give the team a cleaner way to make shipping decisions.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Modernization Scope Creep</h3>
+              <p>Too many changes are attempted at once, reducing confidence instead of improving it.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">The Real Goal</p>
+            <h2>Modernization should improve trust before it increases complexity.</h2>
+          </div>
+
+          <div class="qa-copy">
+            <p>
+              A good modernization path does not begin with “replace everything.”
+              It begins with restoring deterministic behavior, stronger evidence,
+              and a more trustworthy release signal.
+            </p>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Proof</p>
+            <h2>Practical modernization patterns, not rewrite theater</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Environment Discipline</h3>
+              <p>Clear targeting and network realism reduce false confidence and local shortcuts.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>State Strategy</h3>
+              <p>API-first and controlled setup patterns make scaling more realistic.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Failure Contracts</h3>
+              <p>Structured outputs make the growing system easier to reason about.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Release Gate Evolution</h3>
+              <p>Modernization becomes tied to better release clarity, not just new tooling.</p>
+            </article>
+          </div>
+
+          <div class="qa-actions qa-actions--section">
+            <a class="qa-btn qa-btn--secondary" href="/runbooks/">View Runbooks</a>
+            <a class="qa-btn qa-btn--secondary" href="/offerings/">See System Paths</a>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt" id="technical-review">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Offer</p>
+            <h2>Start with a Technical Signal Review</h2>
+          </div>
+
+          <div class="qa-two-col">
+            <div class="qa-copy">
+              <p>
+                I review where your current automation architecture is blocking safe
+                modernization and what should be corrected first.
+              </p>
+              <p>That includes:</p>
+              <ul class="qa-list">
+                <li>what is causing instability today</li>
+                <li>which modernization assumptions are risky</li>
+                <li>where trust should be restored before scaling</li>
+                <li>what the safest first correction path should be</li>
+              </ul>
+            </div>
+
+            <aside class="qa-offer-card">
+              <p class="qa-eyebrow">What you get</p>
+              <ul class="qa-list">
+                <li>Trust-level assessment</li>
+                <li>Modernization risk map</li>
+                <li>Priority correction path</li>
+                <li>Likely sprint entry point</li>
+              </ul>
+              <a class="qa-btn qa-btn--primary qa-btn--full" href="/contact/">Request a Technical Review</a>
+            </aside>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Best Fit</p>
+            <h2>Best fit for teams experiencing</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Legacy automation drag</h3>
+              <p>The current system feels fragile, slow, or hard to trust.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Modernization pressure</h3>
+              <p>The team knows change is needed, but cannot afford delivery disruption.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Framework transition decisions</h3>
+              <p>Tool migration is being discussed without a clear architectural path.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Release confidence gaps</h3>
+              <p>The system needs better signal quality before scaling effort.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Not a Fit</p>
+            <h2>Not for teams looking for</h2>
+          </div>
+
+          <div class="qa-not-fit">
+            <span>Rewrite-first consulting</span>
+            <span>Tool hype without architecture correction</span>
+            <span>More tests without more trust</span>
+            <span>Low-governance experimentation</span>
+          </div>
+        </section>
+
+        <section class="qa-cta-band">
+          <div class="qa-cta-band__content">
+            <h2>If modernization is increasing risk instead of confidence, that is the system to fix.</h2>
+            <p>
+              QA ALIGN helps teams modernize safely by restoring determinism and release trust first.
+            </p>
+            <div class="qa-actions">
+              <a class="qa-btn qa-btn--primary" href="/contact/">Request a Technical Review</a>
+              <a class="qa-btn qa-btn--secondary" href="/runbooks/">Review QA ALIGN Proof</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

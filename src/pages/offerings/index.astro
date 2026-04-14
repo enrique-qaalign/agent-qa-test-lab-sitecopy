@@ -20,6 +20,33 @@ const trustMatrix = [
   },
 ];
 
+const problemEntries = [
+  {
+    title: "Fix Flaky Tests at the System Level",
+    href: "/offerings/fix-flaky-tests/",
+    summary:
+      "For teams dealing with unstable automation, noisy CI, and low trust in results.",
+  },
+  {
+    title: "Turn Test Results Into Clear Release Decisions",
+    href: "/offerings/release-decisions/",
+    summary:
+      "For teams that need better GO / WARN / BLOCK clarity before release.",
+  },
+  {
+    title: "Modernize Automation Without Destabilizing Delivery",
+    href: "/offerings/modernize-without-disruption/",
+    summary:
+      "For teams that need progress without rewrite-first disruption.",
+  },
+  {
+    title: "Diagnose Failures Without Reruns",
+    href: "/offerings/diagnose-without-reruns/",
+    summary:
+      "For teams whose artifacts and debug flow are too weak to support first-run diagnosis.",
+  },
+];
+
 const paths = [
   {
     title: "No AI",
@@ -74,7 +101,7 @@ const paths = [
     <title>Offerings | QA Test Lab</title>
     <meta
       name="description"
-      content="Choose the right QA modernization path: deterministic, controlled AI, or AI-forward. Same goal: safe, trustworthy release decisions."
+      content="Start with the QA problem you need to solve first, then move into the right modernization path: deterministic, controlled AI, or AI-forward."
     />
     <style>
       :root {
@@ -147,6 +174,7 @@ const paths = [
         background: rgba(255, 255, 255, 0.04);
         padding: 7px 10px;
         border-radius: 999px;
+        color: var(--text);
       }
 
       .hero {
@@ -164,7 +192,7 @@ const paths = [
         color: var(--muted);
         font-size: 17px;
         line-height: 1.65;
-        max-width: 900px;
+        max-width: 920px;
         margin: 0;
       }
 
@@ -179,6 +207,10 @@ const paths = [
 
       .grid3 {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .card {
@@ -273,7 +305,7 @@ const paths = [
       }
 
       @media (max-width: 920px) {
-        .grid2, .grid3 {
+        .grid2, .grid3, .grid4 {
           grid-template-columns: 1fr;
         }
 
@@ -292,8 +324,8 @@ const paths = [
           <div class="navlinks">
             <a class="pill" href="/">Lab</a>
             <a class="pill" href="/offerings/">Offerings</a>
-            <a class="pill" href="/recommendations.html">Recommendations</a>
             <a class="pill" href="/#runbooks">Runbooks</a>
+            <a class="pill" href="/contact/">Contact</a>
           </div>
         </div>
       </div>
@@ -301,34 +333,61 @@ const paths = [
 
     <div class="wrap">
       <section class="hero">
-        <div class="h1">Modernize your QA system safely</div>
+        <div class="h1">Modernize QA Without Losing Release Confidence</div>
         <p class="lead">
-          Some teams need structure before speed. Others are already moving fast and need control.
-          This page helps route each team to the right system: no AI, some AI, or AI-forward.
-          Different path, same goal: trustworthy release decisions.
+          QA ALIGN is a deterministic automation system for teams dealing with flaky tests,
+          weak CI trust, poor failure diagnosability, and unclear release decisions.
+          Start with the problem you need to solve first, then move into the right modernization path.
         </p>
 
         <div class="cta-row">
-          <a class="button primary" href="#paths">Choose your path</a>
-          <a class="button" href="/#sprints">See sprint proof</a>
+          <a class="button primary" href="/contact/">Request a Technical Review</a>
+          <a class="button" href="/#sprints">See Sprint Proof</a>
         </div>
       </section>
 
-      <div class="card">
-        <h2>Two systems. Three entry paths. Same outcome.</h2>
-        <p>
-          Not every team should start in the same place. The right entry point depends on two things:
-          how much AI you want in the system, and how much trust you currently have in your automation.
-        </p>
-        <ul>
-          <li>No AI: fully deterministic, step-by-step buildout</li>
-          <li>Some AI: controlled acceleration with validation</li>
-          <li>AI Forward: fast generation with strict release-safe guardrails</li>
-        </ul>
-      </div>
+      <section class="section-title">
+        <h2>Start with the problem you need to solve first</h2>
+        <div class="grid grid4">
+          {problemEntries.map((item) => (
+            <div class="card">
+              <h3>{item.title}</h3>
+              <p>{item.summary}</p>
+              <div class="cta-row">
+                <a class="button primary" href={item.href}>Explore this page</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section>
+        <h2>What QA ALIGN changes</h2>
+        <div class="card">
+          <p>
+            QA ALIGN is not generic QA automation. It is a modernization system designed to improve
+            trust, diagnosability, and release decision clarity.
+          </p>
+          <ul>
+            <li>API-first state setup</li>
+            <li>Artifact-driven failure analysis</li>
+            <li>Structured failure outputs</li>
+            <li>CI-integrated diagnosability</li>
+            <li>Release gate decisioning</li>
+            <li>Phased modernization paths</li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="divider"></div>
 
       <section id="paths" class="section-title">
-        <h2>Choose your path</h2>
+        <h2>Choose the right modernization path</h2>
+        <p class="small">
+          Once the first problem is clear, the next step is choosing the right modernization style.
+        </p>
         <div class="grid grid3">
           {paths.map((path) => (
             <div class="card">
@@ -371,8 +430,8 @@ const paths = [
       <section>
         <h2>Every engagement starts with anti-pattern validation</h2>
         <p>
-          Before recommending a sprint path, I assess the current system for the failure patterns that
-          usually destroy trust first.
+          Before recommending a sprint path, I assess the current system for the failure patterns
+          that usually destroy trust first.
         </p>
         <div class="grid grid2">
           <div class="card">
@@ -426,22 +485,30 @@ const paths = [
         </div>
       </section>
 
-      <div class="card">
-        <h2>Start with the right system</h2>
-        <p>
-          I do not push teams into AI before their system is ready. I also do not force manual-only
-          execution when controlled acceleration makes sense. The right move depends on trust, risk,
-          and operational maturity.
-        </p>
-        <div class="cta-row">
-          <a class="button primary" href="/offerings/no-ai/">No AI path</a>
-          <a class="button" href="/offerings/some-ai/">Some AI path</a>
-          <a class="button" href="/offerings/ai-forward/">AI Forward path</a>
+      <div class="divider"></div>
+
+      <section>
+        <h2>Start with a Technical Signal Review</h2>
+        <div class="card">
+          <p>
+            A good first step is not a rewrite. It is a focused review of your current automation signal.
+          </p>
+          <ul>
+            <li>Current trust level</li>
+            <li>Key anti-patterns</li>
+            <li>Likely sprint entry point</li>
+            <li>Recommended modernization path</li>
+            <li>First correction priority</li>
+          </ul>
+          <div class="cta-row">
+            <a class="button primary" href="/contact/">Request a Technical Review</a>
+            <a class="button" href="/#runbooks">Review QA ALIGN Proof</a>
+          </div>
         </div>
-      </div>
+      </section>
 
       <footer>
-        QA Test Lab — offerings layer on top of the sprint-based proof system.
+        QA Test Lab — the offerings hub connecting pain-entry pages, modernization paths, and sprint-based proof.
       </footer>
     </div>
   </body>

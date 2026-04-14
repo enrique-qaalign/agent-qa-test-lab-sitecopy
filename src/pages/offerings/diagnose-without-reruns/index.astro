@@ -1,0 +1,568 @@
+---
+const pageTitle = "Diagnose Failures Without Reruns | QA ALIGN";
+const pageDescription =
+  "QA ALIGN helps engineering teams improve artifact quality and structured failure analysis so test failures can be diagnosed from one run instead of repeated reruns.";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <style>
+      :root {
+        --qa-bg: #0b0e14;
+        --qa-panel: #121827;
+        --qa-panel-2: #0f1522;
+        --qa-text: #e6e9ef;
+        --qa-muted: #aab2c5;
+        --qa-border: #24304d;
+        --qa-link: #7aa2ff;
+        --qa-accent: #7aa2ff;
+        --qa-accent-2: #9bb8ff;
+        --qa-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background: var(--qa-bg);
+        color: var(--qa-text);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; }
+
+      .site-shell { padding: 2rem 0 4rem; }
+      .qa-container { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+
+      .qa-section, .qa-hero, .qa-cta-band { margin: 0 0 2rem; }
+
+      .qa-hero, .qa-section, .qa-cta-band__content {
+        border: 1px solid var(--qa-border);
+        background: linear-gradient(180deg, rgba(18, 24, 39, 0.98), rgba(11, 14, 20, 0.98));
+        border-radius: 24px;
+        box-shadow: var(--qa-shadow);
+      }
+
+      .qa-hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 2rem;
+        padding: 2.25rem;
+        align-items: center;
+      }
+
+      .qa-section { padding: 2rem; }
+
+      .qa-section--alt {
+        background: linear-gradient(180deg, rgba(15, 21, 34, 0.98), rgba(11, 14, 20, 0.98));
+      }
+
+      .qa-section__header {
+        max-width: 860px;
+        margin-bottom: 1.25rem;
+      }
+
+      .qa-eyebrow {
+        margin: 0 0 0.6rem;
+        color: var(--qa-accent-2);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .qa-hero h1, .qa-section h2, .qa-cta-band h2 {
+        margin: 0;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+      }
+
+      .qa-hero h1 {
+        font-size: clamp(2.25rem, 5vw, 4rem);
+        max-width: 10ch;
+      }
+
+      .qa-section h2, .qa-cta-band h2 {
+        font-size: clamp(1.6rem, 3vw, 2.6rem);
+        max-width: 24ch;
+      }
+
+      .qa-lead, .qa-copy, .qa-card p, .qa-offer-card, .qa-cta-band p {
+        color: var(--qa-muted);
+        line-height: 1.7;
+        font-size: 1.02rem;
+      }
+
+      .qa-lead {
+        max-width: 62ch;
+        margin: 1rem 0 1.25rem;
+        font-size: 1.08rem;
+      }
+
+      .qa-copy p { margin: 0 0 1rem; }
+      .qa-copy p:last-child { margin-bottom: 0; }
+
+      .qa-proof-list, .qa-list, .qa-flow {
+        margin: 0;
+        padding-left: 1.15rem;
+        color: var(--qa-text);
+      }
+
+      .qa-proof-list {
+        display: grid;
+        gap: 0.5rem;
+        margin-bottom: 1.4rem;
+      }
+
+      .qa-list li, .qa-flow li, .qa-proof-list li { margin-bottom: 0.5rem; }
+
+      .qa-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 1.25rem;
+      }
+
+      .qa-actions--section { margin-top: 1.5rem; }
+
+      .qa-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0.82rem 1.15rem;
+        border-radius: 999px;
+        border: 1px solid var(--qa-border);
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      }
+
+      .qa-btn:hover {
+        transform: translateY(-1px);
+        border-color: var(--qa-accent);
+      }
+
+      .qa-btn--primary {
+        color: #08111f;
+        background: linear-gradient(180deg, var(--qa-accent-2), var(--qa-accent));
+        border-color: transparent;
+      }
+
+      .qa-btn--secondary {
+        color: var(--qa-text);
+        background: rgba(122, 162, 255, 0.08);
+      }
+
+      .qa-btn--full { width: 100%; }
+
+      .qa-diagram-card, .qa-offer-card, .qa-card {
+        border: 1px solid var(--qa-border);
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 20px;
+      }
+
+      .qa-diagram-card { padding: 1.4rem; }
+
+      .qa-diagram-card__eyebrow {
+        margin: 0 0 0.45rem;
+        color: var(--qa-accent-2);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .qa-diagram-card h2 {
+        margin: 0 0 1rem;
+        font-size: 1.4rem;
+        line-height: 1.2;
+      }
+
+      .qa-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .qa-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .qa-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+      .qa-card { padding: 1.2rem; }
+
+      .qa-card h3, .qa-offer-card h3 {
+        margin: 0 0 0.6rem;
+        font-size: 1.02rem;
+        line-height: 1.3;
+      }
+
+      .qa-card p { margin: 0; }
+
+      .qa-two-col {
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .qa-offer-card { padding: 1.35rem; }
+
+      .qa-not-fit {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .qa-not-fit span {
+        display: inline-flex;
+        padding: 0.7rem 0.95rem;
+        border-radius: 999px;
+        border: 1px solid var(--qa-border);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--qa-muted);
+      }
+
+      .qa-cta-band__content {
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .qa-cta-band__content h2 {
+        max-width: 22ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .qa-cta-band__content p {
+        max-width: 760px;
+        margin: 0.9rem auto 0;
+      }
+
+      .qa-cta-band .qa-actions { justify-content: center; }
+
+      @media (max-width: 980px) {
+        .qa-hero, .qa-two-col, .qa-grid--3, .qa-grid--4 {
+          grid-template-columns: 1fr;
+        }
+
+        .qa-hero h1, .qa-section h2, .qa-cta-band h2 {
+          max-width: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .site-shell { padding-top: 1rem; }
+        .qa-container { width: min(100% - 1rem, 1180px); }
+
+        .qa-hero, .qa-section, .qa-cta-band__content {
+          padding: 1.25rem;
+          border-radius: 18px;
+        }
+
+        .qa-actions { flex-direction: column; }
+        .qa-btn { width: 100%; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="site-shell">
+      <div class="qa-container">
+        <section class="qa-hero">
+          <div class="qa-hero__content">
+            <p class="qa-eyebrow">QA ALIGN</p>
+            <h1>Diagnose Failures Without Reruns</h1>
+            <p class="qa-lead">
+              QA ALIGN helps engineering teams improve artifact quality and structured
+              failure analysis so one run produces enough evidence to understand what broke.
+            </p>
+
+            <ul class="qa-proof-list">
+              <li>Artifact-driven failure analysis</li>
+              <li>Structured failure outputs</li>
+              <li>Better evidence from the first run</li>
+              <li>Less rerun-dependent debugging</li>
+            </ul>
+
+            <div class="qa-actions">
+              <a class="qa-btn qa-btn--primary" href="#technical-review">Request a Technical Review</a>
+              <a class="qa-btn qa-btn--secondary" href="/runbooks/">See Sprint Proof</a>
+            </div>
+          </div>
+
+          <aside class="qa-hero__visual" aria-label="Failure diagnosis flow">
+            <div class="qa-diagram-card">
+              <p class="qa-diagram-card__eyebrow">Diagnosis Flow</p>
+              <h2>From noisy failures to useful evidence</h2>
+              <ol class="qa-flow">
+                <li>Execution captures logs, traces, screenshots, outputs</li>
+                <li>Failure data is structured, not scattered</li>
+                <li>Triage can happen from the first run</li>
+                <li>The team stops rerunning just to understand the last failure</li>
+              </ol>
+            </div>
+          </aside>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">The Core Problem</p>
+            <h2>Reruns are often a symptom of weak diagnosability, not just flaky automation.</h2>
+          </div>
+
+          <div class="qa-copy">
+            <p>
+              When a failure occurs, the first run should tell a coherent story. But many
+              systems produce artifacts that are incomplete, scattered, or too shallow to
+              explain what actually happened.
+            </p>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Screenshots are not enough</h3>
+              <p>A single screenshot rarely explains the full state of the failure.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Logs lack structure</h3>
+              <p>Raw output may exist, but it does not support fast diagnosis or triage.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Failures need another run</h3>
+              <p>Teams rerun just to gather more context the first run should have captured.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Debugging becomes expensive</h3>
+              <p>Each unclear failure delays trust, triage, and release confidence.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">What QA ALIGN Changes</p>
+            <h2>Improve failure evidence so the first run carries more diagnostic value.</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--3">
+            <article class="qa-card">
+              <h3>Artifact Collection With Intent</h3>
+              <p>Evidence is gathered deliberately so the failure story is easier to reconstruct.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Structured Failure Records</h3>
+              <p>Failures are represented consistently, making triage faster and less subjective.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Evidence That Travels Through CI</h3>
+              <p>Artifacts are available where the team actually reviews failures, not trapped in local sessions.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Clearer Triage Inputs</h3>
+              <p>The team can reason about what failed and what likely category it belongs to.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Less Waste From Reruns</h3>
+              <p>Follow-up runs are no longer the default path just to explain the previous failure.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Better Release Signal</h3>
+              <p>Stronger evidence improves not just debugging, but release confidence as well.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">What I Diagnose First</p>
+            <h2>The evidence gaps that make failures expensive to understand</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--3">
+            <article class="qa-card">
+              <h3>Weak Screenshots and Traces</h3>
+              <p>The visual or trace evidence is too shallow or inconsistent to support fast understanding.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>No Canonical Failure Record</h3>
+              <p>Important failure details are spread across tools and not captured in one structured output.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Low-Value Logging</h3>
+              <p>The team collects output, but not in a way that makes the root issue clearer.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Rerun-Dependent Investigation</h3>
+              <p>Diagnosis begins with “run it again” instead of “review the evidence we already have.”</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Disconnected CI Artifacts</h3>
+              <p>Evidence exists, but it is not easy to consume in the delivery workflow.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>No Downstream Triage Layer</h3>
+              <p>Failures are recorded, but not shaped into a usable interpretation for the team.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">The Real Goal</p>
+            <h2>Good automation should reduce reruns, not depend on them.</h2>
+          </div>
+
+          <div class="qa-copy">
+            <p>
+              The objective is not just to capture more artifacts. It is to capture the
+              right evidence, in the right structure, so the team can diagnose failures
+              faster and trust the results more.
+            </p>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Proof</p>
+            <h2>Real patterns for artifact-first diagnosis</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Failure JSON Contracts</h3>
+              <p>Canonical failure records make evidence easier to consume and reason about.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Artifact Bundling</h3>
+              <p>Logs, traces, screenshots, and metadata can be tied together more coherently.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Triage-Oriented Outputs</h3>
+              <p>Failures become easier to classify and discuss without rerunning immediately.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Runbook-Based Maturity</h3>
+              <p>Diagnosability improves through deliberate system design, not accidental logging.</p>
+            </article>
+          </div>
+
+          <div class="qa-actions qa-actions--section">
+            <a class="qa-btn qa-btn--secondary" href="/runbooks/">View Runbooks</a>
+            <a class="qa-btn qa-btn--secondary" href="/offerings/">See System Paths</a>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt" id="technical-review">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Offer</p>
+            <h2>Start with a Technical Signal Review</h2>
+          </div>
+
+          <div class="qa-two-col">
+            <div class="qa-copy">
+              <p>
+                I review how your current system captures failure evidence and where
+                diagnosability is breaking down.
+              </p>
+              <p>That includes:</p>
+              <ul class="qa-list">
+                <li>whether artifacts are strong enough to support first-run diagnosis</li>
+                <li>what failure details are missing or fragmented</li>
+                <li>where rerun dependence is wasting time</li>
+                <li>how structured outputs could improve triage and release clarity</li>
+              </ul>
+            </div>
+
+            <aside class="qa-offer-card">
+              <p class="qa-eyebrow">What you get</p>
+              <ul class="qa-list">
+                <li>Artifact quality assessment</li>
+                <li>Diagnosability gap map</li>
+                <li>Failure output recommendations</li>
+                <li>First correction path</li>
+              </ul>
+              <a class="qa-btn qa-btn--primary qa-btn--full" href="/contact/">Request a Technical Review</a>
+            </aside>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Best Fit</p>
+            <h2>Best fit for teams experiencing</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Rerun-heavy debugging</h3>
+              <p>The first run rarely gives enough evidence to explain the failure.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Weak artifact quality</h3>
+              <p>Screenshots, logs, or traces exist but do not form a coherent diagnostic story.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Slow triage cycles</h3>
+              <p>Investigating failures consumes too much engineering time.</p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Unclear release evidence</h3>
+              <p>Poor diagnosability is undermining broader release confidence.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Not a Fit</p>
+            <h2>Not for teams looking for</h2>
+          </div>
+
+          <div class="qa-not-fit">
+            <span>More logging without structure</span>
+            <span>Reruns as the default debug strategy</span>
+            <span>Surface-level screenshots as “enough evidence”</span>
+            <span>Generic test execution without diagnosis improvement</span>
+          </div>
+        </section>
+
+        <section class="qa-cta-band">
+          <div class="qa-cta-band__content">
+            <h2>If your first run does not explain the failure, that is the system to fix.</h2>
+            <p>
+              QA ALIGN helps teams build stronger evidence so failures become easier to diagnose and easier to trust.
+            </p>
+            <div class="qa-actions">
+              <a class="qa-btn qa-btn--primary" href="/contact/">Request a Technical Review</a>
+              <a class="qa-btn qa-btn--secondary" href="/runbooks/">Review QA ALIGN Proof</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

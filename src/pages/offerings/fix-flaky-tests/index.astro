@@ -1,0 +1,666 @@
+---
+const pageTitle = "Fix Flaky Tests at the System Level | QA ALIGN";
+const pageDescription =
+  "QA ALIGN helps engineering teams turn unreliable automation and noisy CI into deterministic test signal, artifact-driven diagnosis, and clear release decisions.";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <style>
+      :root {
+        --qa-bg: #0b0e14;
+        --qa-panel: #121827;
+        --qa-panel-2: #0f1522;
+        --qa-text: #e6e9ef;
+        --qa-muted: #aab2c5;
+        --qa-border: #24304d;
+        --qa-link: #7aa2ff;
+        --qa-accent: #7aa2ff;
+        --qa-accent-2: #9bb8ff;
+        --qa-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background: var(--qa-bg);
+        color: var(--qa-text);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; }
+
+      .site-shell { padding: 2rem 0 4rem; }
+      .qa-container { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+
+      .qa-section, .qa-hero, .qa-cta-band { margin: 0 0 2rem; }
+
+      .qa-hero, .qa-section, .qa-cta-band__content {
+        border: 1px solid var(--qa-border);
+        background: linear-gradient(180deg, rgba(18, 24, 39, 0.98), rgba(11, 14, 20, 0.98));
+        border-radius: 24px;
+        box-shadow: var(--qa-shadow);
+      }
+
+      .qa-hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 2rem;
+        padding: 2.25rem;
+        align-items: center;
+      }
+
+      .qa-section { padding: 2rem; }
+
+      .qa-section--alt {
+        background: linear-gradient(180deg, rgba(15, 21, 34, 0.98), rgba(11, 14, 20, 0.98));
+      }
+
+      .qa-section__header {
+        max-width: 860px;
+        margin-bottom: 1.25rem;
+      }
+
+      .qa-eyebrow {
+        margin: 0 0 0.6rem;
+        color: var(--qa-accent-2);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .qa-hero h1, .qa-section h2, .qa-cta-band h2 {
+        margin: 0;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+      }
+
+      .qa-hero h1 {
+        font-size: clamp(2.25rem, 5vw, 4rem);
+        max-width: 12ch;
+      }
+
+      .qa-section h2, .qa-cta-band h2 {
+        font-size: clamp(1.6rem, 3vw, 2.6rem);
+        max-width: 24ch;
+      }
+
+      .qa-lead, .qa-copy, .qa-card p, .qa-offer-card, .qa-cta-band p {
+        color: var(--qa-muted);
+        line-height: 1.7;
+        font-size: 1.02rem;
+      }
+
+      .qa-lead {
+        max-width: 62ch;
+        margin: 1rem 0 1.25rem;
+        font-size: 1.08rem;
+      }
+
+      .qa-copy p { margin: 0 0 1rem; }
+      .qa-copy p:last-child { margin-bottom: 0; }
+
+      .qa-copy--narrow {
+        max-width: 760px;
+      }
+
+      .qa-proof-list, .qa-list, .qa-flow {
+        margin: 0;
+        padding-left: 1.15rem;
+        color: var(--qa-text);
+      }
+
+      .qa-proof-list {
+        display: grid;
+        gap: 0.5rem;
+        margin-bottom: 1.4rem;
+      }
+
+      .qa-list li, .qa-flow li, .qa-proof-list li { margin-bottom: 0.5rem; }
+
+      .qa-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        margin-top: 1.25rem;
+      }
+
+      .qa-actions--section { margin-top: 1.5rem; }
+
+      .qa-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0.82rem 1.15rem;
+        border-radius: 999px;
+        border: 1px solid var(--qa-border);
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      }
+
+      .qa-btn:hover {
+        transform: translateY(-1px);
+        border-color: var(--qa-accent);
+      }
+
+      .qa-btn--primary {
+        color: #08111f;
+        background: linear-gradient(180deg, var(--qa-accent-2), var(--qa-accent));
+        border-color: transparent;
+      }
+
+      .qa-btn--secondary {
+        color: var(--qa-text);
+        background: rgba(122, 162, 255, 0.08);
+      }
+
+      .qa-btn--full { width: 100%; }
+
+      .qa-diagram-card, .qa-offer-card, .qa-card {
+        border: 1px solid var(--qa-border);
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 20px;
+      }
+
+      .qa-diagram-card { padding: 1.4rem; }
+
+      .qa-diagram-card__eyebrow {
+        margin: 0 0 0.45rem;
+        color: var(--qa-accent-2);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .qa-diagram-card h2 {
+        margin: 0 0 1rem;
+        font-size: 1.4rem;
+        line-height: 1.2;
+      }
+
+      .qa-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .qa-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .qa-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+      .qa-card { padding: 1.2rem; }
+
+      .qa-card h3, .qa-offer-card h3 {
+        margin: 0 0 0.6rem;
+        font-size: 1.02rem;
+        line-height: 1.3;
+      }
+
+      .qa-card p { margin: 0; }
+
+      .qa-two-col {
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .qa-offer-card { padding: 1.35rem; }
+
+      .qa-not-fit {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .qa-not-fit span {
+        display: inline-flex;
+        padding: 0.7rem 0.95rem;
+        border-radius: 999px;
+        border: 1px solid var(--qa-border);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--qa-muted);
+      }
+
+      .qa-cta-band__content {
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .qa-cta-band__content h2 {
+        max-width: 22ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .qa-cta-band__content p {
+        max-width: 760px;
+        margin: 0.9rem auto 0;
+      }
+
+      .qa-cta-band .qa-actions { justify-content: center; }
+
+      @media (max-width: 980px) {
+        .qa-hero, .qa-two-col, .qa-grid--3, .qa-grid--4 {
+          grid-template-columns: 1fr;
+        }
+
+        .qa-hero h1, .qa-section h2, .qa-cta-band h2 {
+          max-width: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .site-shell { padding-top: 1rem; }
+        .qa-container { width: min(100% - 1rem, 1180px); }
+
+        .qa-hero, .qa-section, .qa-cta-band__content {
+          padding: 1.25rem;
+          border-radius: 18px;
+        }
+
+        .qa-actions { flex-direction: column; }
+        .qa-btn { width: 100%; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="site-shell">
+      <div class="qa-container">
+        <section class="qa-hero">
+          <div class="qa-hero__content">
+            <p class="qa-eyebrow">QA ALIGN</p>
+            <h1>Fix Flaky Tests at the System Level</h1>
+            <p class="qa-lead">
+              QA ALIGN helps engineering teams turn unreliable automation and noisy CI
+              into deterministic test signal, artifact-driven diagnosis, and clear
+              release decisions.
+            </p>
+
+            <ul class="qa-proof-list">
+              <li>API-first state setup</li>
+              <li>CI-integrated diagnosability</li>
+              <li>Structured failure outputs</li>
+              <li>GO / WARN / BLOCK release logic</li>
+            </ul>
+
+            <div class="qa-actions">
+              <a class="qa-btn qa-btn--primary" href="#technical-review">
+                Request a Technical Review
+              </a>
+              <a class="qa-btn qa-btn--secondary" href="/runbooks/">
+                See Sprint Proof
+              </a>
+            </div>
+          </div>
+
+          <aside class="qa-hero__visual" aria-label="QA ALIGN system flow">
+            <div class="qa-diagram-card">
+              <p class="qa-diagram-card__eyebrow">System Flow</p>
+              <h2>From noisy failures to release clarity</h2>
+              <ol class="qa-flow">
+                <li>Unstable tests and unreliable CI signal</li>
+                <li>Deterministic setup and controlled execution</li>
+                <li>Artifact capture and structured failure outputs</li>
+                <li>Clear release decision: GO / WARN / BLOCK</li>
+              </ol>
+            </div>
+          </aside>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">The Core Problem</p>
+            <h2>Flaky tests are usually not a test problem. They are a system problem.</h2>
+          </div>
+
+          <div class="qa-copy">
+            <p>
+              Most teams do not actually have a few flaky tests. They have a trust
+              problem caused by unstable state, weak artifact quality, brittle test
+              design, and CI pipelines that produce noise instead of signal.
+            </p>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Local pass, CI fail</h3>
+              <p>
+                The suite behaves differently across environments because the system
+                contract is weak.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Reruns become normal</h3>
+              <p>
+                The first failure does not tell a complete story, so reruns become part
+                of the workflow.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Release confidence drops</h3>
+              <p>
+                Automation exists, but engineering leaders still cannot trust the signal
+                during release decisions.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Modernization pressure rises</h3>
+              <p>
+                The team wants to move forward, but the current foundation is too unstable
+                to scale safely.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">What QA ALIGN Changes</p>
+            <h2>Not generic QA automation. A deterministic system for diagnosable release signal.</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--3">
+            <article class="qa-card">
+              <h3>API-First State Setup</h3>
+              <p>
+                Tests start from known conditions instead of depending on UI setup,
+                leftover state, or execution order.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Artifact-Driven Failure Analysis</h3>
+              <p>
+                Failures can be diagnosed from evidence without depending on another run
+                to explain the last run.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Structured Failure Outputs</h3>
+              <p>
+                Results are readable by humans and systems, making triage and release
+                reasoning more consistent.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>CI-Integrated Diagnosability</h3>
+              <p>
+                Evidence shows up where release decisions actually happen, not in
+                disconnected local debugging sessions.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Release Gate Decisioning</h3>
+              <p>
+                Test output becomes decision-ready guidance: GO, WARN, or BLOCK.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Modernization Without Disruption</h3>
+              <p>
+                Improve trust and diagnosability first, then expand intelligently without
+                destabilizing delivery.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">What I Diagnose First</p>
+            <h2>The anti-patterns that quietly break automation trust</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--3">
+            <article class="qa-card">
+              <h3>Shared State and Order Dependence</h3>
+              <p>
+                Tests only pass in a certain sequence or after prior runs have set up the
+                right conditions.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Local vs CI Drift</h3>
+              <p>
+                The suite behaves one way on a laptop and another way inside the actual
+                delivery pipeline.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Brittle UI Interaction Patterns</h3>
+              <p>
+                Locators, setup flow, or timing assumptions are too fragile to produce
+                stable signal.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Rerun-Based Debugging</h3>
+              <p>
+                The team needs another execution just to understand the previous failure.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Weak Artifacts</h3>
+              <p>
+                Screenshots, logs, traces, and outputs do not tell a coherent story when
+                something breaks.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>No Release Decision Layer</h3>
+              <p>
+                Automation produces pass/fail output, but not a defensible release
+                recommendation.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">The Real Goal</p>
+            <h2>The goal is not more automation. The goal is trustworthy release signal.</h2>
+          </div>
+
+          <div class="qa-copy qa-copy--narrow">
+            <p>
+              A larger suite does not solve instability. The real objective is a system
+              that gives engineering leaders confidence in what failed, why it failed,
+              what evidence supports it, and whether the release should proceed.
+            </p>
+            <p>
+              That is the difference between automation volume and automation trust.
+            </p>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Proof</p>
+            <h2>Built from real system patterns, not generic promises</h2>
+          </div>
+
+          <div class="qa-copy">
+            <p>
+              QA ALIGN includes live runbooks and sprint-based proof showing how
+              deterministic automation systems are designed, stabilized, and matured over
+              time.
+            </p>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Environment and Network Discipline</h3>
+              <p>
+                Clear runner-to-system boundaries, explicit environment targeting, and no
+                false local shortcuts.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Artifact-First Failure Diagnostics</h3>
+              <p>
+                Failures are captured with enough evidence to support debugging without a
+                rerun.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Parallel-Safe State Strategy</h3>
+              <p>
+                State is managed deliberately so tests remain independent and scalable.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Release Gate Decisioning</h3>
+              <p>
+                Automation output is translated into actionable release guidance instead
+                of raw noise.
+              </p>
+            </article>
+          </div>
+
+          <div class="qa-actions qa-actions--section">
+            <a class="qa-btn qa-btn--secondary" href="/runbooks/">View Runbooks</a>
+            <a class="qa-btn qa-btn--secondary" href="/offerings/">See System Paths</a>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt" id="technical-review">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Offer</p>
+            <h2>Start with a Technical Signal Review</h2>
+          </div>
+
+          <div class="qa-two-col">
+            <div class="qa-copy">
+              <p>
+                A good first step is not a rewrite. It is a focused review of your
+                current automation signal.
+              </p>
+              <p>In a Technical Signal Review, I look at:</p>
+              <ul class="qa-list">
+                <li>where trust is breaking down</li>
+                <li>which anti-patterns are driving flake</li>
+                <li>whether the suite is diagnosable from artifacts</li>
+                <li>how release decisions are currently being made</li>
+                <li>what the right first system correction should be</li>
+              </ul>
+            </div>
+
+            <aside class="qa-offer-card">
+              <p class="qa-eyebrow">What you get</p>
+              <ul class="qa-list">
+                <li>Trust-level assessment</li>
+                <li>Key anti-pattern findings</li>
+                <li>Likely sprint entry point</li>
+                <li>Recommended first correction path</li>
+              </ul>
+              <a class="qa-btn qa-btn--primary qa-btn--full" href="/contact/">
+                Request a Technical Review
+              </a>
+            </aside>
+          </div>
+        </section>
+
+        <section class="qa-section">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Best Fit</p>
+            <h2>Best fit for teams experiencing</h2>
+          </div>
+
+          <div class="qa-grid qa-grid--4">
+            <article class="qa-card">
+              <h3>Flaky test suites</h3>
+              <p>
+                Automation is running, but the team does not trust what it is saying.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Weak release confidence</h3>
+              <p>
+                There is no clean connection between test results and defensible release
+                decisions.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Modernization pressure</h3>
+              <p>
+                The team needs to improve the system without destabilizing delivery.
+              </p>
+            </article>
+
+            <article class="qa-card">
+              <h3>Growing automation complexity</h3>
+              <p>
+                Playwright, Selenium, API, and CI layers are expanding faster than system
+                discipline.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="qa-section qa-section--alt">
+          <div class="qa-section__header">
+            <p class="qa-eyebrow">Not a Fit</p>
+            <h2>Not for teams looking for</h2>
+          </div>
+
+          <div class="qa-not-fit">
+            <span>Low-cost generic QA execution</span>
+            <span>Manual test outsourcing</span>
+            <span>Test case volume without architecture change</span>
+            <span>AI hype without operational discipline</span>
+          </div>
+        </section>
+
+        <section class="qa-cta-band">
+          <div class="qa-cta-band__content">
+            <h2>
+              If your automation runs but your team still cannot trust the signal, that is
+              the system to fix.
+            </h2>
+            <p>
+              QA ALIGN is built to turn unreliable automation into diagnosable evidence and
+              clear release decisions.
+            </p>
+            <div class="qa-actions">
+              <a class="qa-btn qa-btn--primary" href="/contact/">
+                Request a Technical Review
+              </a>
+              <a class="qa-btn qa-btn--secondary" href="/runbooks/">
+                Review QA ALIGN Proof
+              </a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
