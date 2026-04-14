@@ -8,7 +8,7 @@ pages:
     - npm i -g staticrypt
     - test -n "$RUNBOOK_PWD"
 
-    - |
+    -  |
         find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
           echo "Encrypting: $file"
 
@@ -16,12 +16,6 @@ pages:
 
           staticrypt "$file" \
             -p "$RUNBOOK_PWD" \
-            --config false \
-            --template-title "QA Test Lab • Runbook Access" \
-            --template-instructions "This runbook contains implementation-level detail. Access is restricted to approved viewers." \
-            --template-button "Access runbook" \
-            --template-placeholder "Enter password" \
-            --template-error "Incorrect password." \
             --output "$tmpfile"
 
           test -f "$tmpfile"
