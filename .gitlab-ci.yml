@@ -12,13 +12,19 @@ pages:
         set -e
         find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
           echo "Encrypting: $file"
-          tmpfile="${file}.tmp"
 
-          staticrypt "$file" "$RUNBOOK_PWD" \
-            --output "$tmpfile"
+          outdir="$(dirname "$file")"
 
-          test -f "$tmpfile"
-          mv "$tmpfile" "$file"
+          staticrypt "$file" \
+            -p "$RUNBOOK_PWD" \
+            -c false \
+            -d "$outdir" \
+            --template-title "QA Test Lab • Runbook Access" \
+            --template-instructions "This runbook contains implementation-level detail. Access is restricted to approved viewers." \
+            --template-button "Access runbook" \
+            --template-placeholder "Enter password" \
+            --template-error "Incorrect password."
+
           grep -q "staticrypt" "$file"
         done
 
