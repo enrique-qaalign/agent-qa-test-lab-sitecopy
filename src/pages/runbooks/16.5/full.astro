@@ -1,0 +1,432 @@
+---
+const flowSnippet = `LOCATOR MAP → ELEMENT TYPING → ACTION METHODS → COMPOSITES → PAGE OBJECTS → TEST SKELETONS`;
+
+const typingRulesSnippet = `textbox + email/username label      -> auth.username
+textbox + password type/label      -> auth.password
+button + sign in / login / submit  -> auth.submit
+textbox + search/query             -> search.query
+button + save                      -> entity.save
+button + publish                   -> entity.publish
+button + delete                    -> entity.delete`;
+
+const commandsSnippet = `# Element typing
+node agents/element-typing/run.js test-results/locator-intelligence/sample-locator-map.json
+
+# Primitive action synthesis
+node agents/action-method-synthesis/run.js test-results/locator-intelligence/element-type-map.json
+
+# Composite action synthesis
+node agents/composite-action-synthesis/run.js test-results/locator-intelligence/action-method-candidates.json`;
+
+const artifactSnippet = `test-results/
+  locator-intelligence/
+    locator-map.json
+    element-type-map.json
+    action-method-candidates.json
+    composite-action-candidates.json`;
+
+const generatedCodeSnippet = `export class LoginPage {
+  constructor(page) {
+    this.page = page;
+    this.usernameField = page.getByLabel('Email');
+    this.passwordField = page.getByLabel('Password');
+    this.signInButton = page.getByRole('button', { name: 'Sign in' });
+  }
+
+  async fillUsername(value) {
+    await this.usernameField.fill(value);
+  }
+
+  async fillPassword(value) {
+    await this.passwordField.fill(value);
+  }
+
+  async submitLogin() {
+    await this.signInButton.click();
+  }
+
+  async loginAs(username, password) {
+    await this.fillUsername(username);
+    await this.fillPassword(password);
+    await this.submitLogin();
+  }
+}`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Runbook 16.5 — Action Method Synthesis</title>
+    <meta
+      name="description"
+      content="Runbook 16.5 — Action Method Synthesis. Convert validated locators into typed elements, primitive action methods, composite actions, and page-object-ready outputs."
+    />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+        --bad: #ff6b6b;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 20px 18px 54px; }
+      .topbar {
+        position: sticky; top: 0; z-index: 10;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 14, 20, 0.78);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar-inner {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 0;
+        flex-wrap: wrap;
+      }
+      .brand { font-weight: 750; }
+      .pill {
+        display: inline-block;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 14px;
+      }
+      h1 { margin: 10px 0 0; font-size: 24px; }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      h3 { margin: 0 0 10px; font-size: 16px; }
+      p { margin: 10px 0; color: var(--muted); line-height: 1.6; }
+      ul { margin: 10px 0 0 18px; color: var(--muted); }
+      li { margin: 6px 0; }
+      code { color: var(--text); }
+      section { scroll-margin-top: 90px; }
+      .callout {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        border-radius: 12px;
+        padding: 12px 12px;
+        margin-top: 12px;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        color: var(--muted);
+        margin-right: 6px;
+      }
+      pre {
+        margin: 10px 0 0;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        color: var(--muted);
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .ok { color: var(--good); }
+      .warn { color: var(--warn); }
+      .bad { color: var(--bad); }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .table td {
+        border-top: 1px solid var(--border);
+        padding: 10px 6px;
+        vertical-align: top;
+      }
+      .table td:first-child {
+        width: 220px;
+        color: var(--muted);
+      }
+      footer {
+        margin-top: 24px;
+        border-top: 1px solid var(--border);
+        padding-top: 14px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="wrap">
+        <div class="topbar-inner">
+          <div class="brand">QA Test Lab</div>
+          <div>
+            <a class="pill" href="/runbooks/16.5/">Back to Runbook 16.5 Preview</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <section class="card">
+        <h1>Runbook 16.5 — Action Method Synthesis</h1>
+        <p>
+          Convert validated locators into typed elements, primitive action methods,
+          composite actions, and page-object-ready outputs without jumping straight
+          to unsafe full-test generation.
+        </p>
+      </section>
+
+      <section id="objective" class="card">
+        <h2>Objective</h2>
+        <ul>
+          <li>Turn validated locator artifacts into normalized element types and semantic intents.</li>
+          <li>Generate predictable primitive action methods from typed UI elements.</li>
+          <li>Compose high-confidence primitive methods into reusable composite actions.</li>
+          <li>Create a deterministic bridge from locator intelligence to page-object and test skeleton generation.</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Key shift</span>
+          <p style="margin:8px 0 0;">
+            The system does not guess full tests from labels. It derives typed elements,
+            synthesizes bounded actions, and composes workflows only when confidence is strong enough.
+          </p>
+        </div>
+      </section>
+
+      <section id="done" class="card">
+        <h2>Definition of done</h2>
+        <ul>
+          <li><span class="ok">✔</span> Validated locator artifacts are transformed into <code>element-type-map.json</code>.</li>
+          <li><span class="ok">✔</span> Primitive method candidates are generated deterministically.</li>
+          <li><span class="ok">✔</span> Composite actions are produced only when confidence passes threshold.</li>
+          <li><span class="ok">✔</span> Outputs remain reviewable, structured, and reusable by downstream generators.</li>
+          <li><span class="ok">✔</span> A generated page-object layer can be derived from the action artifacts.</li>
+        </ul>
+      </section>
+
+      <section id="overview" class="card">
+        <h2>System overview</h2>
+
+        <div class="callout">
+          <span class="tag">Flow</span>
+          <pre><code>{flowSnippet}</code></pre>
+        </div>
+
+        <table class="table">
+          <tr>
+            <td>Locator map</td>
+            <td>Validated selectors and interactive element inventory from Sprint 16.</td>
+          </tr>
+          <tr>
+            <td>Element typing</td>
+            <td>Normalize role, HTML type, labels, placeholders, and semantic intent.</td>
+          </tr>
+          <tr>
+            <td>Action methods</td>
+            <td>Generate bounded primitive methods such as <code>fillUsername</code> and <code>submitLogin</code>.</td>
+          </tr>
+          <tr>
+            <td>Composite actions</td>
+            <td>Build higher-level workflows like <code>loginAs</code> when evidence is strong.</td>
+          </tr>
+          <tr>
+            <td>Page objects</td>
+            <td>Translate artifacts into maintainable action-oriented class methods.</td>
+          </tr>
+          <tr>
+            <td>Test skeletons</td>
+            <td>Use composites later as the safe input layer for generated test structure.</td>
+          </tr>
+        </table>
+      </section>
+
+      <section id="typing" class="card">
+        <h2>Element typing rules</h2>
+        <pre><code>{typingRulesSnippet}</code></pre>
+
+        <div class="callout">
+          <span class="tag">Rule</span>
+          <p style="margin:8px 0 0;">
+            Naming conventions matter, but naming alone is not enough. Intent inference should use weighted evidence:
+            role, HTML type, label, placeholder, nearby controls, and surrounding component context.
+          </p>
+        </div>
+      </section>
+
+      <section id="confidence" class="card">
+        <h2>Confidence model</h2>
+        <table class="table">
+          <tr>
+            <td>0.90 and above</td>
+            <td>Safe candidate. Can be used for primitive methods and high-confidence composition.</td>
+          </tr>
+          <tr>
+            <td>0.75 to 0.89</td>
+            <td>Review recommended. Keep primitive output, limit composition.</td>
+          </tr>
+          <tr>
+            <td>Below 0.75</td>
+            <td>Do not compose. Preserve as low-confidence candidate or generic interaction.</td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <span class="tag">Human override</span>
+          <p style="margin:8px 0 0;">
+            Composite generation is a convenience, not a license to hallucinate behavior.
+            If confidence is weak, keep the output primitive and reviewable.
+          </p>
+        </div>
+      </section>
+
+      <section id="contract" class="card">
+        <h2>Artifact contract</h2>
+        <table class="table">
+          <tr>
+            <td>Canonical location</td>
+            <td><code>test-results/locator-intelligence/</code></td>
+          </tr>
+          <tr>
+            <td>Typed elements</td>
+            <td><code>element-type-map.json</code></td>
+          </tr>
+          <tr>
+            <td>Primitive methods</td>
+            <td><code>action-method-candidates.json</code></td>
+          </tr>
+          <tr>
+            <td>Composite methods</td>
+            <td><code>composite-action-candidates.json</code></td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <span class="tag">Recommended structure</span>
+          <pre><code>{artifactSnippet}</code></pre>
+        </div>
+
+        <div class="callout">
+          <span class="tag">Critical</span>
+          <p style="margin:8px 0 0;">
+            These artifacts let the system evolve from locator intelligence into safe action synthesis
+            without skipping validation or collapsing into opaque generation.
+          </p>
+        </div>
+      </section>
+
+      <section id="commands" class="card">
+        <h2>Commands</h2>
+        <h3>Typing, methods, composites</h3>
+        <pre><code>{commandsSnippet}</code></pre>
+
+        <div class="callout">
+          <span class="tag">Operator rule</span>
+          <p style="margin:8px 0 0;">
+            Generate primitive methods freely from validated inputs. Generate composite actions only when
+            the surrounding component and intent evidence are strong enough to justify them.
+          </p>
+        </div>
+      </section>
+
+      <section id="outputs" class="card">
+        <h2>Expected outputs</h2>
+        <ul>
+          <li><span class="ok">✔</span> Typed elements with normalized intent and component assignment.</li>
+          <li><span class="ok">✔</span> Primitive action methods with args, returns, and confidence.</li>
+          <li><span class="ok">✔</span> Composite actions with ordered steps and post-condition candidates.</li>
+          <li><span class="ok">✔</span> Action-layer artifacts ready for page-object codegen.</li>
+        </ul>
+      </section>
+
+      <section id="failures" class="card">
+        <h2>Failure modes</h2>
+        <ul>
+          <li><strong>Over-assumed semantics:</strong> a field called “name” gets treated as username incorrectly. Action: reduce confidence, keep generic.</li>
+          <li><strong>Weak context:</strong> one field + one button is not enough to infer a login flow. Action: generate primitives only.</li>
+          <li><strong>Method sprawl:</strong> too many low-value generated methods. Action: dedupe and normalize naming.</li>
+          <li><strong>Unsafe post-conditions:</strong> system assumes successful auth without evidence. Action: preserve post-conditions as candidates, not truth.</li>
+        </ul>
+      </section>
+
+      <section id="generated" class="card">
+        <h2>Generated code target</h2>
+        <pre><code>{generatedCodeSnippet}</code></pre>
+
+        <div class="callout">
+          <span class="tag">Why this matters</span>
+          <p style="margin:8px 0 0;">
+            The real value is not raw code generation. The value is turning validated system understanding
+            into reusable methods that reduce boilerplate and improve consistency.
+          </p>
+        </div>
+      </section>
+
+      <section id="connection" class="card">
+        <h2>Connection to the intelligence layer</h2>
+        <ul>
+          <li><strong>Sprint 16:</strong> validated locator artifacts make this layer possible.</li>
+          <li><strong>Sprint 16.5:</strong> typed elements become primitive and composite actions.</li>
+          <li><strong>Sprint 19:</strong> test skeleton generation can consume bounded action artifacts safely.</li>
+          <li><strong>Sprint 22+:</strong> orchestration can chain discovery, actions, and reportable outputs.</li>
+        </ul>
+
+        <div class="callout">
+          <span class="tag">Outcome</span>
+          <p style="margin:8px 0 0;">
+            The system moves from “knowing what elements exist” to “knowing how to interact with them predictably.”
+          </p>
+        </div>
+      </section>
+
+      <!-- <section id="video" class="card">
+        <h2>Video walkthrough (30-second review)</h2>
+        <ul>
+          <li>0–5s: show locator map from Sprint 16</li>
+          <li>5–10s: run element typing and open <code>element-type-map.json</code></li>
+          <li>10–15s: generate primitive methods and show <code>action-method-candidates.json</code></li>
+          <li>15–20s: generate composites and show <code>composite-action-candidates.json</code></li>
+          <li>20–25s: highlight <code>loginAs</code> candidate</li>
+          <li>25–30s: show generated page-object method output</li>
+        </ul>
+      </section> -->
+
+      <section id="ops" class="card">
+        <h2>Operational value</h2>
+        <ul>
+          <li>Reduces boilerplate in page-object construction.</li>
+          <li>Builds a safer bridge between discovery and generation.</li>
+          <li>Preserves human review when confidence is weak.</li>
+          <li>Creates reusable artifacts for later test-skeleton generation.</li>
+          <li>Supports controlled intelligence instead of unbounded code synthesis.</li>
+        </ul>
+      </section>
+
+      <footer>
+        <div>Runbook 16.5 • QA Test Lab</div>
+      </footer>
+    </div>
+  </body>
+</html>

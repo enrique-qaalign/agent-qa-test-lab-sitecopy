@@ -1,0 +1,232 @@
+---
+const pageTitle = "Runbook 16.5 — Action Method Synthesis | QA Test Lab";
+const pageDescription =
+  "Preview Runbook 16.5 — Action Method Synthesis. Convert validated locators into typed elements, primitive actions, composite methods, and page-object-ready outputs.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --panel: #121827;
+        --text: #e6e9ef;
+        --muted: #aab2c5;
+        --link: #7aa2ff;
+        --border: #24304d;
+        --good: #44d19f;
+        --warn: #ffce6b;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 22px 18px 54px;
+      }
+
+      .pill {
+        display: inline-block;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+        margin-top: 16px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .grid2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      h1 {
+        font-size: 36px;
+        line-height: 1.1;
+        margin: 10px 0 12px;
+      }
+
+      h2 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+
+      h3 {
+        margin: 0 0 8px;
+        font-size: 17px;
+      }
+
+      p, li {
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      ul {
+        margin: 8px 0 0 18px;
+      }
+
+      .lede {
+        font-size: 17px;
+        max-width: 760px;
+      }
+
+      .cta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+
+      .tag {
+        display: inline-block;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.03);
+        color: var(--muted);
+        margin-right: 6px;
+      }
+
+      .ok { color: var(--good); }
+      .warn { color: var(--warn); }
+
+      footer {
+        margin-top: 28px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+      }
+
+      @media (max-width: 900px) {
+        .grid2 { grid-template-columns: 1fr; }
+        h1 { font-size: 30px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="pill" href="/#runbooks">← Back to runbooks</a>
+
+      <section class="card">
+        <span class="tag">Sprint 16.5</span>
+        <span class="tag">Controlled Intelligence</span>
+        <h1>Runbook 16.5 — Action Method Synthesis</h1>
+        <p class="lede">
+          Convert validated locators into typed elements, primitive action methods,
+          and high-confidence composite actions. This sprint creates the bridge
+          between locator intelligence and safe page-object / test-skeleton generation.
+        </p>
+
+        <div class="cta">
+          <a class="pill" href="/runbooks/16.5/full/">Request full runbook access</a>
+          <a class="pill" href="/runbooks/16/">See Runbook 16 first</a>
+        </div>
+      </section>
+
+      <section class="grid grid2">
+        <article class="card">
+          <h2>What this sprint proves</h2>
+          <ul>
+            <li>Validated locators can be typed into meaningful UI intents</li>
+            <li>Primitive methods can be generated deterministically</li>
+            <li>Composite workflows can be synthesized only when confidence is high</li>
+            <li>Bounded generation is safer than full test guessing</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>Core output chain</h2>
+          <ul>
+            <li><code>locator-map.json</code></li>
+            <li><code>element-type-map.json</code></li>
+            <li><code>action-method-candidates.json</code></li>
+            <li><code>composite-action-candidates.json</code></li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="card">
+        <h2>What gets generated</h2>
+        <div class="grid grid2">
+          <div>
+            <h3>Primitive actions</h3>
+            <ul>
+              <li><code>fillUsername(value)</code></li>
+              <li><code>fillPassword(value)</code></li>
+              <li><code>submitLogin()</code></li>
+              <li><code>clickPublish()</code></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Composite actions</h3>
+            <ul>
+              <li><code>loginAs(username, password)</code></li>
+              <li>Only when intent evidence is strong</li>
+              <li>Only when method confidence clears threshold</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Why this matters</h2>
+        <p>
+          Most automation systems either stop at locator discovery or jump too quickly
+          into unsafe full-test generation. This sprint takes the middle path:
+          turn validated system understanding into reusable methods without pretending
+          the system knows more than it actually does.
+        </p>
+        <ul>
+          <li><span class="ok">✔</span> less boilerplate page-object code</li>
+          <li><span class="ok">✔</span> stronger consistency in generated methods</li>
+          <li><span class="ok">✔</span> confidence-gated composition</li>
+          <li><span class="warn">⚠</span> uncertain flows remain reviewable instead of over-generated</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Who this is for</h2>
+        <ul>
+          <li>Teams exploring controlled AI in QA without surrendering determinism</li>
+          <li>Teams that already have validated locator artifacts</li>
+          <li>Teams that want a safer bridge into page-object and test generation</li>
+        </ul>
+
+        <div class="cta">
+          <a class="pill" href="/contact/">Talk through this sprint</a>
+          <a class="pill" href="/runbooks/16.5/full/">Request full runbook access</a>
+        </div>
+      </section>
+
+      <footer>Runbook 16.5 • QA Test Lab</footer>
+    </div>
+  </body>
+</html>

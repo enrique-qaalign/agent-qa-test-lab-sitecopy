@@ -457,6 +457,38 @@ const sprintHighlights = [
       },
     ],
   },
+    {
+    num: "16.5",
+    phase: "discover",
+    status: "done",
+    searchTitle: "How Do I Generate Reusable Page Actions from Validated Locators?",
+    systemTitle: "Synthesize Action Methods from Typed UI Elements",
+    bullets: [
+      "Validated locators are transformed into typed element intents",
+      "Primitive action methods are generated deterministically",
+      "Composite actions are created only when confidence is high",
+      "Artifacts become a safe bridge into page-object and test-skeleton generation"
+    ],
+    title: "Action Method Synthesis",
+    proof:
+      "A validated locator map can be turned into typed elements, primitive action methods, and high-confidence composite workflows without unsafe full-test generation.",
+    deliverable:
+      "element-type-map.json + action-method-candidates.json + composite-action-candidates.json + generated page-object-ready action layer.",
+    runbooks: [
+      {
+        label: "Runbook 16.5 — Action Method Synthesis",
+        href: "/runbooks/16.5/",
+      },
+    ],
+    video: { label: "Sprint 16.5 demo", youtubeId: null },
+    ac: [
+      "Validated locator artifacts are converted into typed element intents",
+      "Primitive method candidates are generated with args, returns, and confidence",
+      "Composite actions are created only when confidence threshold is met",
+      "Outputs are stored as structured artifacts for downstream generation",
+      "Generated actions remain reviewable and bounded by validated inputs"
+    ],
+  },
   {
     num: "17",
     phase: "decide",

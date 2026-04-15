@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = 'Internal Sprint 02 — Signal Normalization';
+---
+
+<BaseLayout title={title}>
+  <section class="runbook internal">
+    <div class="banner">Internal Use Only</div>
+
+    <h1>Assessment System Contract — v1</h1>
+
+    <h2>Purpose</h2>
+    <p>
+      This contract defines how QA automation frameworks are assessed,
+      scored, and routed into the sprint system. It ensures consistency,
+      repeatability, and client-aligned interpretation.
+    </p>
+
+    <h2>System Layers</h2>
+    <ul>
+      <li><strong>Execution Layer</strong> — produces raw validation output</li>
+      <li><strong>Interpretation Layer</strong> — converts signals into structured data</li>
+      <li><strong>Decision Layer</strong> — produces trust level and sprint routing</li>
+    </ul>
+
+    <h2>Input Model</h2>
+    <ul>
+      <li>Validation log (static scan + structure signals)</li>
+      <li>Runtime signals (failures, release gate, domain)</li>
+    </ul>
+
+    <h2>Strength Classification</h2>
+    <p>Strengths represent stable, repeatable system capabilities.</p>
+    <ul>
+      <li>Must be observable from code or execution</li>
+      <li>Must be reusable across multiple tests</li>
+      <li>Confidence: low / medium / high</li>
+    </ul>
+
+    <h2>Risk Classification</h2>
+    <p>Risks represent gaps that impact reliability or release confidence.</p>
+    <ul>
+      <li><strong>severity:</strong> low / medium / high</li>
+      <li><strong>scope:</strong> localized / suite_partial / framework_wide</li>
+      <li><strong>impact:</strong> flake / maintainability / release_blocking</li>
+    </ul>
+
+    <h2>Runtime Signal Rules</h2>
+    <ul>
+      <li>Runtime failures override static assumptions</li>
+      <li>Multiple failures in same domain = single grouped risk</li>
+      <li>Release gate BLOCK caps trust at medium</li>
+    </ul>
+
+    <h2>Trust Scoring Model</h2>
+    <pre>
+base_score =
+  (strength_count * 2)
+  - (high_risk * 2)
+  - (medium_risk * 1)
+  - (low_risk * 0.5)
+    </pre>
+
+    <h3>Trust Levels</h3>
+    <ul>
+      <li><strong>High:</strong> reliable, decision-ready system</li>
+      <li><strong>Medium:</strong> usable, but key gaps exist</li>
+      <li><strong>Low:</strong> unreliable or misleading signal</li>
+    </ul>
+
+    <h3>Caps</h3>
+    <ul>
+      <li>Release BLOCK → max trust = medium</li>
+      <li>≥ 4 strengths → cannot be low unless system is unstable</li>
+    </ul>
+
+    <h2>Sprint Routing Rules</h2>
+    <ul>
+      <li>State lifecycle issues → Sprint 5</li>
+      <li>Release gate ambiguity → Sprint 6</li>
+      <li>Maintainability / locator drift → Sprint 8</li>
+    </ul>
+
+    <h2>Client Narrative Rule</h2>
+    <p>
+      Output must describe the system as:
+      <br />
+      <strong>"Working but incomplete"</strong> when strengths exist but
+      release confidence is limited.
+    </p>
+
+    <h2>Non-Goals</h2>
+    <ul>
+      <li>No full AI capability modeling</li>
+      <li>No overfitting to tool-specific patterns</li>
+      <li>No punitive scoring for partial maturity</li>
+    </ul>
+
+    <h2>Version</h2>
+    <p>v1 — Initial calibrated contract</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .internal {
+    max-width: 900px;
+    margin: auto;
+  }
+
+  .banner {
+    background: #7f1d1d;
+    color: #fff;
+    padding: 10px 16px;
+    margin-bottom: 24px;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+
+  pre {
+    background: #111827;
+    padding: 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+</style>

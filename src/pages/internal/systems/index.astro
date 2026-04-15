@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = 'Internal Systems';
+---
+
+<BaseLayout title={title}>
+  <section class="internal-index">
+    <div class="banner">Internal Use Only</div>
+
+    <h1>Internal Systems</h1>
+    <p class="subtitle">
+      Internal operating documents for assessment, routing, validation, and system design.
+    </p>
+
+    <ul class="systems-list">
+      <li>
+        <a href="/internal/systems/assessment-sprint-01-signal-capture/">
+          Sprint 01 — Signal Capture
+        </a>
+        <p>Deterministic evidence collection from validation commands, logs, and runtime execution.</p>
+      </li>
+      <li>
+        <a href="/internal/systems/assessment-sprint-02-signal-normalization/">
+          Sprint 02 — Signal Normalization
+        </a>
+        <p>Convert raw signals into structured assessment input for scoring, routing, and advisory output.</p>
+      </li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .internal-index {
+    max-width: 900px;
+    margin: auto;
+  }
+
+  .banner {
+    background: #7f1d1d;
+    color: #fff;
+    padding: 10px 16px;
+    margin-bottom: 24px;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+
+  .subtitle {
+    margin-bottom: 24px;
+    color: #cbd5e1;
+  }
+
+  .systems-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .systems-list li {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+  }
+
+  .systems-list a {
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .systems-list p {
+    margin: 8px 0 0;
+    color: #cbd5e1;
+  }
+</style>

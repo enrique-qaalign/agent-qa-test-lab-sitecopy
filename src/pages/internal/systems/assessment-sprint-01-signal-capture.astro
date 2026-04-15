@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = 'Internal Sprint 02 — Signal Normalization';
+---
+
+<BaseLayout title={title}>
+  <h1>Internal Sprint 02 — Signal Normalization</h1>
+</BaseLayout>
+
+<section class="runbook">
+  <h1>Internal Sprint 01 — Signal Capture</h1>
+
+  <p class="subtitle">
+    Establish deterministic evidence collection across the framework.
+  </p>
+
+  <hr />
+
+  <h2>🎯 Objective</h2>
+  <p>
+    Capture raw, unopinionated signals from the system under test and the automation framework.
+    This layer does not interpret — it only observes.
+  </p>
+
+  <h2>🧩 System Diagram</h2>
+
+  <pre>
+Playwright Execution
+        ↓
+Validation Commands
+        ↓
+Validation Log (raw evidence)
+  </pre>
+
+  <h2>📦 Inputs</h2>
+  <ul>
+    <li>Playwright test execution</li>
+    <li>Framework configuration</li>
+    <li>Locator usage patterns</li>
+    <li>Artifact generation (trace, video, screenshots)</li>
+  </ul>
+
+  <h2>📤 Outputs</h2>
+  <pre>
+validation-output/
+  run_all_validation_commands_*.log
+  </pre>
+
+  <h2>📏 Acceptance Criteria</h2>
+  <ul>
+    <li>Validation log is always generated</li>
+    <li>No silent execution (all commands logged)</li>
+    <li>Locator patterns are detectable from logs</li>
+    <li>Artifact generation is observable</li>
+    <li>Runtime failures are captured</li>
+  </ul>
+
+  <h2>⚠️ Failure Modes</h2>
+  <ul>
+    <li>No log file generated → system blind</li>
+    <li>Partial logs → incomplete signal</li>
+    <li>Execution succeeds but produces no artifacts</li>
+  </ul>
+
+  <h2>🧠 Principles</h2>
+  <ul>
+    <li>Evidence over interpretation</li>
+    <li>No assumptions about system health</li>
+    <li>Everything must be traceable to raw output</li>
+  </ul>
+
+  <h2>🧪 Verification</h2>
+  <pre>
+ls validation-output/
+cat validation-output/run_all_validation_commands_*.log
+  </pre>
+
+</section>

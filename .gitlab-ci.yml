@@ -3,30 +3,36 @@ image: node:20
 pages:
   stage: deploy
   script:
-    - npm ci
-    - npm run build
+    - set -e
     - npm i -g staticrypt
     - test -n "$RUNBOOK_PWD"
+    - test -n "$INTERNAL_PWD"
 
     - |
-        set -e
-        find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
-          echo "Encrypting: $file"
+      find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
+        echo "Encrypting runbook: $file"
+        staticrypt "$file" \
+          -p "$RUNBOOK_PWD" \
+          -d "$(dirname "$file")" \
+          --template-title "QA Test Lab • Runbook Access" \
+          --template-instructions "This runbook contains implementation-level detail. Access is restricted to approved viewers." \
+          --template-button "Access runbook" \
+          --template-placeholder "Enter password" \
+          --template-error "Incorrect password."
+      done
 
-          outdir="$(dirname "$file")"
-
-          staticrypt "$file" \
-            -p "$RUNBOOK_PWD" \
-            -c false \
-            -d "$outdir" \
-            --template-title "QA Test Lab • Runbook Access" \
-            --template-instructions "This runbook contains implementation-level detail. Access is restricted to approved viewers." \
-            --template-button "Access runbook" \
-            --template-placeholder "Enter password" \
-            --template-error "Incorrect password."
-
-          grep -q "staticrypt" "$file"
-        done
+    - |
+      find dist/internal -type f -name 'index.html' | while read -r file; do
+        echo "Encrypting internal: $file"
+        staticrypt "$file" \
+          -p "$INTERNAL_PWD" \
+          -d "$(dirname "$file")" \
+          --template-title "Internal Access Required" \
+          --template-instructions "This page is for internal use only." \
+          --template-button "Access internal page" \
+          --template-placeholder "Enter password" \
+          --template-error "Incorrect password."
+      done
 
     - rm -rf public
     - mkdir -p public
