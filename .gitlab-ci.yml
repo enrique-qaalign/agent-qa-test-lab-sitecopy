@@ -4,15 +4,31 @@ pages:
   stage: deploy
   script:
     - set -e
+
+    # install app deps
+    - npm ci
+
+    # build site
+    - npm run build
+
+    # install staticrypt
     - npm i -g staticrypt
+
+    # validate secrets
     - test -n "$RUNBOOK_PWD"
     - test -n "$INTERNAL_PWD"
 
+    # optional sanity check
+    - test -d dist/runbooks
+    - test -d dist/internal
+
+    # protect runbooks
     - |
       find dist/runbooks -type f -path '*/full/index.html' | while read -r file; do
         echo "Encrypting runbook: $file"
         staticrypt "$file" \
           -p "$RUNBOOK_PWD" \
+          -c false \
           -d "$(dirname "$file")" \
           --template-title "QA Test Lab • Runbook Access" \
           --template-instructions "This runbook contains implementation-level detail. Access is restricted to approved viewers." \
@@ -21,11 +37,13 @@ pages:
           --template-error "Incorrect password."
       done
 
+    # protect internal
     - |
       find dist/internal -type f -name 'index.html' | while read -r file; do
         echo "Encrypting internal: $file"
         staticrypt "$file" \
           -p "$INTERNAL_PWD" \
+          -c false \
           -d "$(dirname "$file")" \
           --template-title "Internal Access Required" \
           --template-instructions "This page is for internal use only." \
@@ -34,6 +52,11 @@ pages:
           --template-error "Incorrect password."
       done
 
+    # verify encryption
+    - grep -R "staticrypt" dist/internal > /dev/null || { echo "❌ Internal not encrypted"; exit 1; }
+    - grep -R "staticrypt" dist/runbooks > /dev/null || { echo "❌ Runbooks not encrypted"; exit 1; }
+
+    # publish pages
     - rm -rf public
     - mkdir -p public
     - cp -R dist/* public/
