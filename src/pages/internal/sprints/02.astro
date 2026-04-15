@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = 'Internal Sprint 02 — Signal Normalization';
+---
+
+<BaseLayout title={title}>
+  <section class="runbook">
+    <h1>Internal Sprint 02 — Signal Normalization</h1>
+
+    <p class="subtitle">
+      Convert raw execution signals into structured, decision-grade JSON.
+    </p>
+
+    <hr />
+
+    <h2>🎯 Objective</h2>
+    <p>
+      Transform raw logs and runtime signals into a normalized structure
+      that supports assessment, routing, and advisory generation.
+    </p>
+
+    <h2>🧩 System Flow</h2>
+    <pre>
+Raw Logs + Signals
+        ↓
+Parser (parse-validation-log.js)
+        ↓
+Structured Assessment Input
+        ↓
+out/framework-assessment-input.generated.json
+    </pre>
+
+    <h2>📦 Inputs</h2>
+    <ul>
+      <li><code>validation-output/run_all_validation_commands.log</code></li>
+      <li><code>out/framework-assessment.json</code></li>
+    </ul>
+
+    <h2>⚙️ Processor</h2>
+    <pre>
+scripts/parse-validation-log.js
+    </pre>
+
+    <h2>📤 Outputs</h2>
+    <ul>
+      <li><code>out/framework-assessment-input.generated.json</code></li>
+    </ul>
+
+    <h2>📏 Acceptance Criteria</h2>
+    <ul>
+      <li>Output JSON is always generated</li>
+      <li>Each signal includes evidence reference</li>
+      <li>No empty arrays for critical sections</li>
+      <li>Schema is consistent across runs</li>
+    </ul>
+
+    <h2>⚠️ Failure Modes</h2>
+    <ul>
+      <li>Malformed JSON output</li>
+      <li>Missing required fields (signals, risks, strengths)</li>
+      <li>Parser produces empty structure</li>
+      <li>Signal duplication or loss</li>
+    </ul>
+
+    <h2>🧠 Principles</h2>
+    <ul>
+      <li>Normalization over interpretation</li>
+      <li>Every signal must map to evidence</li>
+      <li>Output must be machine-consumable</li>
+    </ul>
+
+    <h2>🧪 Verification</h2>
+    <pre>
+cat out/framework-assessment-input.generated.json
+jq '.' out/framework-assessment-input.generated.json
+    </pre>
+  </section>
+</BaseLayout>
+
+<style>
+.runbook { max-width: 900px; margin: auto; }
+.subtitle { color: #cbd5e1; }
+pre { background: #111827; padding: 16px; border-radius: 6px; }
+</style>

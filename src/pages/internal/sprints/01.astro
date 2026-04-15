@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = 'Internal Sprint 01 — Signal Capture';
+---
+
+<BaseLayout title={title}>
+  <section class="runbook">
+    <h1>Internal Sprint 01 — Signal Capture</h1>
+
+    <p class="subtitle">
+      Capture deterministic, evidence-backed signals from a framework execution environment.
+    </p>
+
+    <hr />
+
+    <h2>🎯 Objective</h2>
+    <p>
+      Establish a reliable signal layer by executing validation commands and capturing
+      their raw outputs without interpretation.
+    </p>
+
+    <h2>🧩 System Flow</h2>
+    <pre>
+Framework Under Test
+        ↓
+Validation Commands
+        ↓
+Raw Logs + Runtime Signals
+        ↓
+validation-output/
+    </pre>
+
+    <h2>📦 Inputs</h2>
+    <ul>
+      <li>Framework repository (Playwright, Cypress, etc.)</li>
+      <li>Validation command definitions</li>
+      <li>Execution environment (local or CI)</li>
+    </ul>
+
+    <h2>⚙️ Execution</h2>
+    <pre>
+node agents/run-assessment-agents.js out/current-playwright-framework-input.json
+    </pre>
+
+    <h2>📤 Outputs</h2>
+    <ul>
+      <li><code>validation-output/run_all_validation_commands.log</code></li>
+      <li><code>out/framework-assessment.json</code></li>
+      <li><code>out/framework-assessment-wrapper.json</code></li>
+    </ul>
+
+    <h2>📏 Acceptance Criteria</h2>
+    <ul>
+      <li>All validation commands execute without silent failure</li>
+      <li>Log file is non-empty</li>
+      <li>Signals include timestamps and command context</li>
+      <li>No inferred or derived values at this stage</li>
+    </ul>
+
+    <h2>⚠️ Failure Modes</h2>
+    <ul>
+      <li>Empty log file (no signal captured)</li>
+      <li>Partial execution (commands skipped)</li>
+      <li>Runtime crash without log output</li>
+      <li>Environment misconfiguration (missing BASE_URL, etc.)</li>
+    </ul>
+
+    <h2>🧠 Principles</h2>
+    <ul>
+      <li>Capture first, interpret later</li>
+      <li>All signals must be reproducible</li>
+      <li>No transformation at this stage</li>
+    </ul>
+
+    <h2>🧪 Verification</h2>
+    <pre>
+wc -l validation-output/run_all_validation_commands.log
+cat validation-output/run_all_validation_commands.log | head
+    </pre>
+  </section>
+</BaseLayout>
+
+<style>
+.runbook { max-width: 900px; margin: auto; }
+.subtitle { color: #cbd5e1; }
+pre { background: #111827; padding: 16px; border-radius: 6px; }
+</style>
