@@ -1,5 +1,6 @@
 # build output
 dist/
+public/
 
 # generated types
 .astro/
@@ -23,3 +24,26 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+# runtime artifacts
+out/
+test-results/
+
+# build artifacts / generated content
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# local environment
+.env
+.env.production
+.venv/
+.DS_Store
+.idea/
+
+# node
+node_modules/
+
+# mac
+.DS_Store
