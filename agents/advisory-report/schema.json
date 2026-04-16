@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AdvisoryReportOutput",
+  "type": "object",
+  "required": [
+    "agent",
+    "title",
+    "executiveSummary",
+    "topRisks",
+    "technicalFindings",
+    "roadmap",
+    "nextSteps"
+  ],
+  "properties": {
+    "agent": {
+      "type": "string",
+      "const": "advisory_report"
+    },
+    "title": {
+      "type": "string"
+    },
+    "executiveSummary": {
+      "type": "object",
+      "required": [
+        "framework",
+        "trustLevel",
+        "pathRecommendation",
+        "recommendedStartSprint",
+        "summary"
+      ],
+      "properties": {
+        "framework": { "type": "string" },
+        "trustLevel": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "pathRecommendation": {
+          "type": "string",
+          "enum": ["no_ai", "some_ai", "ai_forward"]
+        },
+        "recommendedStartSprint": { "type": "string" },
+        "summary": { "type": "string" }
+      }
+    },
+    "topRisks": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "technicalFindings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "roadmap": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "nextSteps": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

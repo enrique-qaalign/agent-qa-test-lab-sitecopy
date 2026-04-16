@@ -1,0 +1,35 @@
+{
+  "agent": "framework_assessment",
+  "framework": "playwright",
+  "trustScore": 31,
+  "trustLevel": "low",
+  "summary": "This Playwright system shows low trust due to systemic locator instability, weak diagnosability, and shared-state risk. The current signal is not strong enough for safe acceleration.",
+  "dominantRisks": ["LOCATOR", "DIAGNOSABILITY", "STATE"],
+  "topFindings": [
+    {
+      "title": "Brittle locator strategy",
+      "severity": "high",
+      "scope": "systemic",
+      "layer": "ui",
+      "releaseImpact": "weakens_release_confidence",
+      "reason": "Selectors are fragile and likely to cause recurring false failures."
+    },
+    {
+      "title": "Rerun-dependent debugging",
+      "severity": "high",
+      "scope": "recurring",
+      "layer": "ci",
+      "releaseImpact": "slows_diagnosis",
+      "reason": "Evidence quality is not sufficient for first-pass diagnosis."
+    },
+    {
+      "title": "Shared mutable state",
+      "severity": "high",
+      "scope": "systemic",
+      "layer": "data",
+      "releaseImpact": "causes_false_green_risk",
+      "reason": "Execution order and state leakage reduce result trustworthiness."
+    }
+  ],
+  "pathRecommendation": "no_ai"
+}

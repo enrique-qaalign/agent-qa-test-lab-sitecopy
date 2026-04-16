@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ActionMethodCandidates",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "pageObject", "methods"],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "pageObject": { "type": "string" },
+    "methods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "methodName",
+          "intent",
+          "elementId",
+          "kind",
+          "action",
+          "args",
+          "returns",
+          "confidence"
+        ],
+        "properties": {
+          "methodName": { "type": "string" },
+          "intent": { "type": "string" },
+          "elementId": { "type": "string" },
+          "kind": { "type": "string" },
+          "action": { "type": "string" },
+          "args": { "type": "array" },
+          "returns": { "type": "string" },
+          "confidence": { "type": "number" }
+        }
+      }
+    }
+  }
+}

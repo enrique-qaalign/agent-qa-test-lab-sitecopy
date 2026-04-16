@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ElementTypeMap",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "page", "elements"],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "page": {
+      "type": "object",
+      "required": ["url", "title"],
+      "properties": {
+        "url": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "elements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "elementId",
+          "locator",
+          "role",
+          "intent",
+          "component",
+          "confidence"
+        ],
+        "properties": {
+          "elementId": { "type": "string" },
+          "locator": { "type": "object" },
+          "role": { "type": "string" },
+          "htmlType": { "type": "string" },
+          "accessibleName": { "type": "string" },
+          "placeholder": { "type": "string" },
+          "nameAttr": { "type": "string" },
+          "intent": { "type": "string" },
+          "component": { "type": "string" },
+          "confidence": { "type": "number" }
+        }
+      }
+    }
+  }
+}

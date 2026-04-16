@@ -1,0 +1,32 @@
+{
+  "agent": "advisory_report",
+  "title": "QA ALIGN Assessment Report",
+  "executiveSummary": {
+    "framework": "playwright",
+    "trustLevel": "low",
+    "pathRecommendation": "no_ai",
+    "recommendedStartSprint": "3",
+    "summary": "This Playwright system is currently low trust. The recommended starting point is Sprint 3, with modernization following the no_ai path."
+  },
+  "topRisks": [
+    "STATE risk",
+    "LOCATOR risk",
+    "DIAGNOSABILITY risk"
+  ],
+  "technicalFindings": [
+    "Brittle locator strategy: Heavy use of weak text selectors and fallback CSS.",
+    "Rerun-dependent debugging: Artifacts are incomplete, failures often rerun to understand.",
+    "Shared mutable state: Tests depend on prior execution order."
+  ],
+  "roadmap": [
+    "Start with Sprint 3 for artifact-first diagnosability.",
+    "Move to Sprint 4 to classify and reduce flake patterns.",
+    "Use Sprint 5 to restore state and data control.",
+    "Adopt Sprint 6 once the signal is stable enough to support clearer release decisions."
+  ],
+  "nextSteps": [
+    "Run a technical signal review against the current framework implementation.",
+    "Validate trust level with real anti-pattern evidence.",
+    "Confirm the no_ai path as the appropriate first modernization route."
+  ]
+}

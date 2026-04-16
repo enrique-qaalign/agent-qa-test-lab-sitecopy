@@ -1,0 +1,46 @@
+{
+  "playwright": {
+    "LOCATOR": [
+      "Replace brittle CSS chains with role, label, or test-id selectors.",
+      "Use Sprint 16 locator validation artifacts before large-scale selector refactors."
+    ],
+    "DIAGNOSABILITY": [
+      "Require trace, screenshot, and structured failure outputs in CI.",
+      "Treat rerun-dependent debugging as a Sprint 3 correction item."
+    ],
+    "STATE": [
+      "Own state per test and remove order dependence.",
+      "Push shared setup into controlled fixtures and API-first state creation."
+    ]
+  },
+  "cypress": {
+    "STATE": [
+      "Remove hidden state coupling between specs and commands.",
+      "Use deterministic data ownership and clear reset rules before parallelization."
+    ],
+    "MOCK_REALISM": [
+      "Limit over-mocking that hides real network behavior.",
+      "Prefer contract-aware stubs and production-realistic API paths."
+    ]
+  },
+  "selenium": {
+    "TIMING": [
+      "Replace arbitrary sleeps with explicit waits tied to application readiness.",
+      "Treat timeout inflation as a stability smell, not a fix."
+    ],
+    "STRUCTURE": [
+      "Reduce page-object sprawl and duplicate helper logic.",
+      "Standardize conventions before adding more test volume."
+    ]
+  },
+  "pytest": {
+    "STATE": [
+      "Eliminate fixture leakage and shared mutable state across tests.",
+      "Use narrow fixture scope and explicit ownership of test data."
+    ],
+    "ASSERTION": [
+      "Strengthen assertions beyond status-only checks.",
+      "Prefer business-meaningful validation tied to contracts and persisted state."
+    ]
+  }
+}

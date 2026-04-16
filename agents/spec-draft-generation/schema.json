@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SpecDrafts",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "framework", "specs"],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "framework": { "type": "string" },
+    "specs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fileName", "testName", "code", "confidence"],
+        "properties": {
+          "fileName": { "type": "string" },
+          "testName": { "type": "string" },
+          "code": { "type": "string" },
+          "confidence": { "type": "number" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SprintRoutingOutput",
+  "type": "object",
+  "required": [
+    "agent",
+    "trustLevel",
+    "recommendedStartSprint",
+    "recommendedSequence",
+    "pathRecommendation",
+    "reasoning",
+    "doNotStartWith"
+  ],
+  "properties": {
+    "agent": {
+      "type": "string",
+      "const": "sprint_router"
+    },
+    "trustLevel": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "recommendedStartSprint": {
+      "type": "string"
+    },
+    "recommendedSequence": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "pathRecommendation": {
+      "type": "string",
+      "enum": ["no_ai", "some_ai", "ai_forward"]
+    },
+    "reasoning": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "doNotStartWith": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

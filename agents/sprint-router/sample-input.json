@@ -1,0 +1,8 @@
+{
+  "frameworkAssessment": {
+    "framework": "playwright",
+    "trustLevel": "low",
+    "dominantRisks": ["LOCATOR", "DIAGNOSABILITY", "STATE"],
+    "pathRecommendation": "no_ai"
+  }
+}

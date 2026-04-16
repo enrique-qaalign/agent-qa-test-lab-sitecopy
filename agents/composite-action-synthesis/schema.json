@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CompositeActionCandidates",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "pageObject", "composites"],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "pageObject": { "type": "string" },
+    "composites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "methodName",
+          "kind",
+          "component",
+          "args",
+          "steps",
+          "postConditions",
+          "confidence"
+        ],
+        "properties": {
+          "methodName": { "type": "string" },
+          "kind": { "type": "string" },
+          "component": { "type": "string" },
+          "args": { "type": "array" },
+          "steps": { "type": "array" },
+          "postConditions": { "type": "array" },
+          "confidence": { "type": "number" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "framework": "playwright",
+  "antiPatterns": [
+    {
+      "title": "Brittle locator strategy",
+      "family": "LOCATOR",
+      "severity": "high",
+      "scope": "systemic",
+      "layer": "ui",
+      "releaseImpact": "weakens_release_confidence",
+      "notes": "Heavy use of weak text selectors and fallback CSS"
+    },
+    {
+      "title": "Rerun-dependent debugging",
+      "family": "DIAGNOSABILITY",
+      "severity": "high",
+      "scope": "recurring",
+      "layer": "ci",
+      "releaseImpact": "slows_diagnosis",
+      "notes": "Artifacts are incomplete, failures often rerun to understand"
+    },
+    {
+      "title": "Shared mutable state",
+      "family": "STATE",
+      "severity": "high",
+      "scope": "systemic",
+      "layer": "data",
+      "releaseImpact": "causes_false_green_risk",
+      "notes": "Tests depend on prior execution order"
+    }
+  ]
+}

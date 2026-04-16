@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>QA ALIGN Assessment Report</title>
+<style>
+body{font-family:Arial,sans-serif;background:#0b0e14;color:#e6e9ef;margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 18px 48px}
+.card{border:1px solid #24304d;border-radius:18px;background:#121827;padding:20px;margin-top:16px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}
+.stat{border:1px solid #24304d;border-radius:14px;padding:14px;background:rgba(255,255,255,.02)}
+.eyebrow{color:#aab2c5;font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.muted{color:#aab2c5;line-height:1.65}
+h1{margin:0 0 10px;font-size:30px}
+h2{margin:0 0 10px;font-size:18px}
+ul{margin:8px 0 0 18px;color:#aab2c5}
+li{margin:6px 0}
+</style></head><body><div class="wrap">
+<section class="card"><div class="eyebrow">QA ALIGN</div><h1>QA ALIGN Assessment Report</h1>
+<p class="muted">This Playwright system is currently low trust. The recommended starting point is Sprint 3, with modernization following the no_ai path.</p>
+<div class="grid">
+<div class="stat"><div class="eyebrow">Framework</div><div>playwright</div></div>
+<div class="stat"><div class="eyebrow">Trust Level</div><div>low</div></div>
+<div class="stat"><div class="eyebrow">Path</div><div>no_ai</div></div>
+<div class="stat"><div class="eyebrow">Start Sprint</div><div>3</div></div>
+</div></section>
+<section class="card"><h2>Top Risks</h2><ul><li>STATE risk</li><li>LOCATOR risk</li><li>DIAGNOSABILITY risk</li></ul></section>
+<section class="card"><h2>Technical Findings</h2><ul><li>Brittle locator strategy: Heavy use of weak text selectors and fallback CSS.</li><li>Rerun-dependent debugging: Artifacts are incomplete, failures often rerun to understand.</li><li>Shared mutable state: Tests depend on prior execution order.</li></ul></section>
+<section class="card"><h2>Recommended Roadmap</h2><ul><li>Start with Sprint 3 for artifact-first diagnosability.</li><li>Move to Sprint 4 to classify and reduce flake patterns.</li><li>Use Sprint 5 to restore state and data control.</li><li>Adopt Sprint 6 once the signal is stable enough to support clearer release decisions.</li></ul></section>
+<section class="card"><h2>Immediate Next Steps</h2><ul><li>Run a technical signal review against the current framework implementation.</li><li>Validate trust level with real anti-pattern evidence.</li><li>Confirm the no_ai path as the appropriate first modernization route.</li></ul></section>
+</div></body></html>

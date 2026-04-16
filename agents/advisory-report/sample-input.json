@@ -1,0 +1,25 @@
+{
+  "frameworkAssessment": {
+    "framework": "playwright",
+    "trustLevel": "low",
+    "dominantRisks": ["LOCATOR", "DIAGNOSABILITY", "STATE"],
+    "topFindings": [
+      {
+        "title": "Brittle locator strategy",
+        "severity": "high",
+        "scope": "systemic",
+        "layer": "ui",
+        "releaseImpact": "weakens_release_confidence",
+        "reason": "Selectors are fragile."
+      }
+    ],
+    "pathRecommendation": "no_ai"
+  },
+  "sprintRouting": {
+    "recommendedStartSprint": "3",
+    "recommendedSequence": ["3", "4", "5", "6"],
+    "reasoning": [
+      "Diagnosability weakness requires artifact-first correction."
+    ]
+  }
+}

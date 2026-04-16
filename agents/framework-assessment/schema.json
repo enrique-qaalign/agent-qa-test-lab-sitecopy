@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FrameworkAssessmentOutput",
+  "type": "object",
+  "required": [
+    "agent",
+    "framework",
+    "trustScore",
+    "trustLevel",
+    "summary",
+    "dominantRisks",
+    "topFindings",
+    "pathRecommendation"
+  ],
+  "properties": {
+    "agent": {
+      "type": "string",
+      "const": "framework_assessment"
+    },
+    "framework": {
+      "type": "string",
+      "enum": ["playwright", "pytest", "cypress", "selenium"]
+    },
+    "trustScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "trustLevel": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "dominantRisks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "LOCATOR",
+          "STATE",
+          "DATA",
+          "AUTH",
+          "ENV",
+          "TIMING",
+          "DIAGNOSABILITY",
+          "ASSERTION",
+          "CI_SIGNAL",
+          "MOCK_REALISM",
+          "STRUCTURE"
+        ]
+      }
+    },
+    "topFindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "severity",
+          "scope",
+          "layer",
+          "releaseImpact",
+          "reason"
+        ],
+        "properties": {
+          "title": { "type": "string" },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "scope": {
+            "type": "string",
+            "enum": ["isolated", "recurring", "systemic"]
+          },
+          "layer": {
+            "type": "string",
+            "enum": ["ui", "api", "ci", "data", "release"]
+          },
+          "releaseImpact": {
+            "type": "string",
+            "enum": [
+              "blocks_trust",
+              "causes_false_green_risk",
+              "slows_diagnosis",
+              "weakens_release_confidence",
+              "scalability_risk_only"
+            ]
+          },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "pathRecommendation": {
+      "type": "string",
+      "enum": ["no_ai", "some_ai", "ai_forward"]
+    }
+  }
+}

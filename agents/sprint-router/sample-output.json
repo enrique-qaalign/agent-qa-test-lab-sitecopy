@@ -1,0 +1,13 @@
+{
+  "agent": "sprint_router",
+  "trustLevel": "low",
+  "recommendedStartSprint": "3",
+  "recommendedSequence": ["3", "4", "5", "6"],
+  "pathRecommendation": "no_ai",
+  "reasoning": [
+    "Diagnosability weakness requires artifact-first correction.",
+    "Locator instability should be classified before optimization.",
+    "State risk makes parallel-safe trust impossible without reset discipline."
+  ],
+  "doNotStartWith": ["16", "17", "ai_forward"]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AssertionCandidates",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "assertions"],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "kind", "confidence"],
+        "properties": {
+          "name": { "type": "string" },
+          "kind": { "type": "string" },
+          "locatorHint": { "type": "string" },
+          "confidence": { "type": "number" }
+        }
+      }
+    }
+  }
+}

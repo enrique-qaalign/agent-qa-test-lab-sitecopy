@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TestSkeletonCandidates",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "pageObject", "tests"],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "pageObject": { "type": "string" },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "testName",
+          "kind",
+          "uses",
+          "steps",
+          "confidence",
+          "reviewRequired"
+        ],
+        "properties": {
+          "testName": { "type": "string" },
+          "kind": { "type": "string" },
+          "uses": { "type": "array" },
+          "steps": { "type": "array" },
+          "confidence": { "type": "number" },
+          "reviewRequired": { "type": "boolean" },
+          "suggestedAssertions": { "type": "array" }
+        }
+      }
+    }
+  }
+}

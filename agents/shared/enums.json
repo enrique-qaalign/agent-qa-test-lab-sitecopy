@@ -1,0 +1,28 @@
+{
+  "framework": ["playwright", "pytest", "cypress", "selenium"],
+  "trustLevel": ["low", "medium", "high"],
+  "severity": ["low", "medium", "high"],
+  "scope": ["isolated", "recurring", "systemic"],
+  "layer": ["ui", "api", "ci", "data", "release"],
+  "pathRecommendation": ["no_ai", "some_ai", "ai_forward"],
+  "releaseImpact": [
+    "blocks_trust",
+    "causes_false_green_risk",
+    "slows_diagnosis",
+    "weakens_release_confidence",
+    "scalability_risk_only"
+  ],
+  "dominantRisk": [
+    "LOCATOR",
+    "STATE",
+    "DATA",
+    "AUTH",
+    "ENV",
+    "TIMING",
+    "DIAGNOSABILITY",
+    "ASSERTION",
+    "CI_SIGNAL",
+    "MOCK_REALISM",
+    "STRUCTURE"
+  ]
+}
