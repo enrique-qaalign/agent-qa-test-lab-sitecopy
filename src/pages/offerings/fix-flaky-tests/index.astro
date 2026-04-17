@@ -2,6 +2,8 @@
 const pageTitle = "Fix Flaky Tests at the System Level | QA ALIGN";
 const pageDescription =
   "QA ALIGN helps engineering teams turn unreliable automation and noisy CI into deterministic test signal, artifact-driven diagnosis, and clear release decisions.";
+import ProofArtifact from '../../../components/ProofArtifact.astro';
+import '../../../styles/components.css';
 ---
 
 <html lang="en">
@@ -295,10 +297,10 @@ const pageDescription =
             </ul>
 
             <div class="qa-actions">
-              <a class="qa-btn qa-btn--primary" href="#technical-review">
-                Request a Technical Review
+              <a class="qa-btn qa-btn--primary qa-btn--full" href="https://buy.stripe.com/eVqcN74vpe5O1Eg86GdAk01">
+                Run Assessment — $149
               </a>
-              <a class="qa-btn qa-btn--secondary" href="/#runbooks">
+              <a class="qa-btn qa-btn--secondary" href="/#sprint-5">
                 See Sprint Proof
               </a>
             </div>
@@ -496,6 +498,16 @@ const pageDescription =
             </p>
           </div>
         </section>
+        <section class="qa-section qa-section--alt">
+          <div class="report-preview">
+            <div class="report-preview__frame">
+              <img
+                src="/images/assessment-report.png"
+                alt="QA Automation Assessment Report preview"
+              />
+            </div>
+          </div>
+        </section>
 
         <section class="qa-section">
           <div class="qa-section__header">
@@ -544,10 +556,14 @@ const pageDescription =
             </article>
           </div>
 
-          <div class="qa-actions qa-actions--section">
-            <a class="qa-btn qa-btn--secondary" href="/#runbooks">View Runbooks</a>
-            <a class="qa-btn qa-btn--secondary" href="/offerings/">See System Paths</a>
-          </div>
+        <div class="qa-actions">
+          <a class="qa-btn qa-btn--primary" href="/offerings/diagnose-without-reruns/">
+            Run Your Automation Assessment
+          </a>
+          <a class="qa-btn qa-btn--secondary" href="/#sprint-5">
+            See Sprint Proof
+          </a>
+        </div>
         </section>
 
         <section class="qa-section qa-section--alt" id="technical-review">
@@ -580,8 +596,8 @@ const pageDescription =
                 <li>Likely sprint entry point</li>
                 <li>Recommended first correction path</li>
               </ul>
-              <a class="qa-btn qa-btn--primary qa-btn--full" href="/contact/">
-                Request a Technical Review
+              <a class="qa-btn qa-btn--primary qa-btn--full" href="https://buy.stripe.com/eVqcN74vpe5O1Eg86GdAk01">
+                Run Assessment — $149
               </a>
             </aside>
           </div>
@@ -651,10 +667,10 @@ const pageDescription =
               clear release decisions.
             </p>
             <div class="qa-actions">
-              <a class="qa-btn qa-btn--primary" href="/contact/">
-                Request a Technical Review
+              <a class="qa-btn qa-btn--primary qa-btn--full" href="https://buy.stripe.com/eVqcN74vpe5O1Eg86GdAk01">
+                Run Assessment — $149
               </a>
-              <a class="qa-btn qa-btn--secondary" href="/#runbooks">
+              <a class="qa-btn qa-btn--secondary" href="/#sprint-5">
                 Review QA ALIGN Proof
               </a>
             </div>

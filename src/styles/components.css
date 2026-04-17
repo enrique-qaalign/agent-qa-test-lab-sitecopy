@@ -1,0 +1,72 @@
+.qa-report-sell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.qa-report-sell .qa-section__header,
+.qa-report-sell .report-preview,
+.qa-report-sell .report-points,
+.qa-report-sell .qa-grid,
+.qa-report-sell .qa-actions {
+  width: 100%;
+  max-width: 920px;
+}
+
+.qa-report-sell .qa-section__header {
+  margin: 0 auto 1.5rem;
+}
+
+.report-preview {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2.5rem auto;
+}
+
+.report-preview::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(
+    circle at center,
+    rgba(80, 120, 255, 0.12),
+    transparent 70%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+.report-preview__frame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(10, 14, 24, 0.6);
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.75),
+    0 0 60px rgba(80,120,255,0.12);
+}
+
+.report-preview__frame img {
+  width: 100%;
+  display: block;
+  border-radius: 16px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(80, 120, 255, 0.12);
+  transform: translateX(2%);
+}
+
+.report-preview__label {
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(200, 210, 230, 0.72);
+  margin: 0 0 1rem;
+}

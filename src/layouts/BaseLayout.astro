@@ -1,5 +1,10 @@
 ---
 const { title = 'QA Test Lab' } = Astro.props;
+
+import '../styles/components.css';
+
+
+
 ---
 
 <html lang="en">
@@ -9,9 +14,13 @@ const { title = 'QA Test Lab' } = Astro.props;
     <meta name="robots" content="noindex, nofollow" />
     <title>{title}</title>
   </head>
-  <body style="background:#0b0f14;color:#e6e9ef;font-family:system-ui,sans-serif;padding:40px;line-height:1.6;">
-    <main>
-      <slot />
+  <body>
+    <main class="site-shell">
+      <div class="qa-container">
+        <slot />
+      </div>
     </main>
   </body>
 </html>
+
+
