@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "report:new": "node scripts/create-report-scaffold.mjs"
   },
   "dependencies": {
     "astro": "^5.16.6",

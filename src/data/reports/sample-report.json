@@ -1,0 +1,59 @@
+{
+  "slug": "sample-report",
+  "client_name": "QA ALIGN Demo",
+  "framework": "Playwright",
+  "repo_url": "https://gitlab.com/qaalign/qa-test-lab-site.git",
+  "site_url": "https://www.qaalign.io/",
+  "trust_level": "MEDIUM",
+  "path": "no_ai",
+  "start_sprint": 4,
+  "summary": {
+    "total_issues": 26,
+    "high_impact": 12,
+    "medium_impact": 9,
+    "low_impact": 5
+  },
+  "issues": [
+    {
+      "type": "STATE instability",
+      "occurrences": 12,
+      "impact": "HIGH",
+      "detail": "State setup is not fully deterministic across flows."
+    },
+    {
+      "type": "TIMING instability",
+      "occurrences": 9,
+      "impact": "HIGH",
+      "detail": "Execution depends on timing-sensitive UI behavior."
+    },
+    {
+      "type": "DATA realism gap",
+      "occurrences": 5,
+      "impact": "MEDIUM",
+      "detail": "Test data does not fully reflect release-like conditions."
+    }
+  ],
+  "cost_estimation": [
+    {
+      "target": "Stabilize",
+      "cost_usd": 1200,
+      "note": "Remove highest-risk instability first."
+    },
+    {
+      "target": "Reliable",
+      "cost_usd": 2800,
+      "note": "Improve diagnostics and reduce repeat failure classes."
+    },
+    {
+      "target": "Production-ready",
+      "cost_usd": 5200,
+      "note": "Add stronger release gating and confidence controls."
+    }
+  ],
+  "recommended_path": [
+    "Sprint 4 — isolate instability patterns",
+    "Sprint 5 — improve state and data control",
+    "Sprint 6 — enforce release confidence layer"
+  ],
+  "next_step_cta": "Want help implementing this? Reply to your delivery email to schedule a call."
+}

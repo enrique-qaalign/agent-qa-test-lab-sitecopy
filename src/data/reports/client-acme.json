@@ -1,0 +1,70 @@
+{
+  "slug": "client-acme",
+  "framework": "Playwright",
+  "client_name": "Acme Corp",
+  "repo_url": "https://gitlab.com/acme/test-automation",
+  "site_url": "https://app.acme.com",
+  "trust_level": "MEDIUM",
+  "path": "no_ai",
+  "start_sprint": 4,
+  "summary": {
+    "total_issues": 26,
+    "high_impact": 12,
+    "medium_impact": 9,
+    "low_impact": 5
+  },
+  "trust_explanation": {
+    "summary": "Your automation system is currently producing signals that are not safe for release decision-making.",
+    "drivers": [
+      "State behavior is inconsistent across executions, reducing reliability of outcomes",
+      "Timing-sensitive failures are introducing false positives and false negatives in CI",
+      "Test data does not reflect production conditions, weakening release confidence"
+    ]
+  },
+  "issues": [
+    {
+      "type": "STATE instability",
+      "occurrences": 12,
+      "impact": "HIGH",
+      "detail": "State setup is not fully deterministic across flows.",
+      "risk": "Test results can pass or fail depending on execution order, creating false release confidence."
+    },
+    {
+      "type": "TIMING instability",
+      "occurrences": 9,
+      "impact": "HIGH",
+      "detail": "Execution depends on timing-sensitive UI behavior.",
+      "risk": "Timing-sensitive failures make CI signal inconsistent and reduce trust in failures and passes."
+    },
+    {
+      "type": "DATA realism gap",
+      "occurrences": 5,
+      "impact": "MEDIUM",
+      "detail": "Test data does not fully reflect release-like conditions.",
+      "risk": "Coverage may look healthy while production-critical states remain untested."
+    }
+  ],
+  "cost_estimation": [
+    {
+      "target": "Stabilize",
+      "cost_usd": 1200,
+      "note": "Fix state and timing instability across core flows (~6–10 engineering hours)."
+    },
+    {
+      "target": "Reliable",
+      "cost_usd": 2800,
+      "note": "Improve diagnosability, reduce repeat failure classes, and tighten data control (~14–20 hours)."
+    },
+    {
+      "target": "Production-ready",
+      "cost_usd": 5200,
+      "note": "Add release gating, stronger confidence controls, and structured failure triage (~28–36 hours)."
+    }
+  ],
+  "recommended_path": [
+    "Stabilize state setup across test flows (Sprint 5)",
+    "Remove timing dependencies and improve determinism (Sprint 6)",
+    "Introduce release gating and failure classification (Sprint 6–7)"
+  ],
+  "next_step_cta": "We can implement these fixes and move your framework to production-ready within 2–3 sprints. Reply to your report email to get started."
+}

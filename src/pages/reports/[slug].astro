@@ -1,0 +1,409 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+type Impact = 'HIGH' | 'MEDIUM' | 'LOW';
+
+type Summary = {
+  total_issues: number;
+  high_impact: number;
+  medium_impact: number;
+  low_impact: number;
+};
+
+type TrustExplanation = {
+  summary: string;
+  drivers: string[];
+};
+
+type Issue = {
+  type: string;
+  occurrences: number;
+  impact: Impact;
+  detail: string;
+  risk: string;
+};
+
+type CostEstimate = {
+  target: string;
+  cost_usd: number;
+  note: string;
+};
+
+type Report = {
+  slug: string;
+  client_name: string;
+  framework: string;
+  repo_url: string;
+  site_url: string;
+  trust_level: string;
+  path: string;
+  start_sprint: number;
+  summary: Summary;
+  trust_explanation: TrustExplanation;
+  issues: Issue[];
+  cost_estimation: CostEstimate[];
+  recommended_path: string[];
+  next_step_cta: string;
+};
+
+export async function getStaticPaths() {
+  const reportsDir = path.join(process.cwd(), 'src', 'data', 'reports');
+
+  if (!fs.existsSync(reportsDir)) {
+    return [];
+  }
+
+  const files = fs.readdirSync(reportsDir).filter((name) => name.endsWith('.json'));
+
+  return files.map((file) => {
+    const fullPath = path.join(reportsDir, file);
+    const report = JSON.parse(fs.readFileSync(fullPath, 'utf-8')) as Report;
+
+    return {
+      params: { slug: report.slug },
+      props: { report },
+    };
+  });
+}
+
+const { report } = Astro.props as { report: Report };
+
+const pageTitle = `${report.client_name} — Automation Assessment Report`;
+const money = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content="Automation assessment report" />
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel-border: rgba(255, 255, 255, 0.12);
+        --text: #f5f7fb;
+        --muted: #b8c0d4;
+        --accent: #5b5cf0;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        background:
+          radial-gradient(circle at top left, rgba(91, 92, 240, 0.22), transparent 30%),
+          linear-gradient(180deg, #0b1020 0%, #11182d 100%);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        min-height: 100%;
+      }
+
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 48px 20px 80px;
+      }
+
+      .header {
+        margin-bottom: 28px;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(91, 92, 240, 0.14);
+        color: #d9dcff;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        margin-bottom: 16px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(34px, 5vw, 52px);
+        line-height: 1.05;
+      }
+
+      .subtext {
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 840px;
+      }
+
+      .top-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 28px 0 24px;
+      }
+
+      .card, .panel {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 18px;
+        padding: 22px;
+      }
+
+      .kicker {
+        color: #aab4d0;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      .value {
+        font-size: 28px;
+        font-weight: 800;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1.1fr 0.9fr;
+        gap: 18px;
+      }
+
+      h2 {
+        margin: 0 0 16px;
+        font-size: 24px;
+      }
+
+      .metric {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+
+      .metric:last-child {
+        border-bottom: 0;
+      }
+
+      .issues {
+        display: grid;
+        gap: 14px;
+      }
+
+      .issue {
+        padding: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        background: rgba(255,255,255,0.025);
+      }
+
+      .issue-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+
+      .impact {
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
+
+      .impact.HIGH {
+        background: rgba(245, 158, 11, 0.14);
+        color: #fcd34d;
+      }
+
+      .impact.MEDIUM {
+        background: rgba(251, 113, 133, 0.14);
+        color: #fda4af;
+      }
+
+      .impact.LOW {
+        background: rgba(96, 165, 250, 0.14);
+        color: #93c5fd;
+      }
+
+      .detail {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .costs {
+        display: grid;
+        gap: 14px;
+      }
+
+      .cost {
+        padding: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        background: rgba(255,255,255,0.025);
+      }
+
+      .cost strong {
+        display: block;
+        font-size: 18px;
+        margin-bottom: 6px;
+      }
+
+      .cost .amount {
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+
+      .muted {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .path-list {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      .cta {
+        margin-top: 24px;
+        padding: 18px 20px;
+        border-radius: 16px;
+        background: rgba(91, 92, 240, 0.14);
+        border: 1px solid rgba(91, 92, 240, 0.24);
+        color: #e3e7ff;
+        font-weight: 600;
+      }
+
+      a {
+        color: #cdd6ff;
+      }
+
+      @media (max-width: 980px) {
+        .top-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .top-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="header">
+        <div class="eyebrow">QA ALIGN Automation Assessment Report</div>
+        <h1>{report.client_name}</h1>
+        <p class="subtext">
+          Framework: <strong>{report.framework}</strong> ·
+          Repo: <a href={report.repo_url} target="_blank" rel="noreferrer">{report.repo_url}</a> ·
+          Site: <a href={report.site_url} target="_blank" rel="noreferrer">{report.site_url}</a>
+        </p>
+      </section>
+
+      <section class="top-grid">
+        <div class="card">
+          <div class="kicker">Framework</div>
+          <div class="value">{report.framework}</div>
+        </div>
+        <div class="card">
+          <div class="kicker">Trust Level</div>
+          <div class="value">{report.trust_level}</div>
+        </div>
+        <div class="card">
+          <div class="kicker">Path</div>
+          <div class="value">{report.path}</div>
+        </div>
+        <div class="card">
+          <div class="kicker">Start Sprint</div>
+          <div class="value">{report.start_sprint}</div>
+        </div>
+      </section>
+
+      <section class="panel" style="margin-bottom: 18px;">
+        <h2>Release Decision Risk</h2>
+        <p class="muted">{report.trust_explanation.summary}</p>
+        <ol class="path-list">
+          {report.trust_explanation.drivers.map((driver: string) => (
+            <li>{driver}</li>
+          ))}
+        </ol>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>System Risk Summary</h2>
+          <div class="metric"><span>Total issues detected</span><strong>{report.summary.total_issues}</strong></div>
+          <div class="metric"><span>High impact count</span><strong>{report.summary.high_impact}</strong></div>
+          <div class="metric"><span>Medium impact count</span><strong>{report.summary.medium_impact}</strong></div>
+          <div class="metric"><span>Low impact count</span><strong>{report.summary.low_impact}</strong></div>
+        </div>
+
+        <div class="panel">
+          <h2>Issue Breakdown</h2>
+          <div class="issues">
+            {report.issues.map((issue: Issue) => (
+              <div class="issue">
+                <div class="issue-top">
+                  <span>
+                {issue.occurrences > 0
+                    ? `${issue.type} — ${issue.occurrences} occurrences`
+                    : issue.type}
+                </span>
+                  <span class={`impact ${issue.impact}`}>{issue.impact}</span>
+                </div>
+                <div class="detail">{issue.detail}</div>
+                <div class="muted" style="margin-top: 8px;">
+                  {issue.risk}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Cost Estimation</h2>
+          <div class="costs">
+            {report.cost_estimation.map((cost: CostEstimate) => (
+              <div class="cost">
+                <strong>{cost.target}</strong>
+                <div class="amount">{cost.cost_usd > 0 ? money.format(cost.cost_usd) : '—'}</div>
+                <div class="muted">{cost.note}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" style="margin-top: 18px;">
+        <h2>Recommended Path</h2>
+        <ol class="path-list">
+          {report.recommended_path.map((step: string) => (
+            <li>{step}</li>
+          ))}
+        </ol>
+
+        <div class="cta">
+          {report.next_step_cta}
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

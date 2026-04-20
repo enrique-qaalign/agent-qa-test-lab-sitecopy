@@ -1,0 +1,56 @@
+{
+  "slug": "beta-systems",
+  "framework": "Playwright",
+  "client_name": "Beta Systems",
+  "repo_url": "https://gitlab.com/beta/automation",
+  "site_url": "https://app.beta.com",
+  "trust_level": "Trust level [MEDIUM]:",
+  "path": "no_ai",
+  "start_sprint": 4,
+  "summary": {
+    "total_issues": 0,
+    "high_impact": 0,
+    "medium_impact": 0,
+    "low_impact": 0
+  },
+  "trust_explanation": {
+    "summary": "Your automation system is currently producing signals that require review before they can be relied on for release decisions.",
+    "drivers": [
+      "Initial analysis pending",
+      "Issue classification pending",
+      "Release confidence assessment pending"
+    ]
+  },
+  "issues": [
+    {
+      "type": "INITIAL analysis pending",
+      "occurrences": 0,
+      "impact": "MEDIUM",
+      "detail": "Detailed issue findings have not yet been added.",
+      "risk": "Release confidence cannot be accurately determined until analysis is complete."
+    }
+  ],
+  "cost_estimation": [
+    {
+      "target": "Stabilize",
+      "cost_usd": 0,
+      "note": "Estimate pending analysis."
+    },
+    {
+      "target": "Reliable",
+      "cost_usd": 0,
+      "note": "Estimate pending analysis."
+    },
+    {
+      "target": "Production-ready",
+      "cost_usd": 0,
+      "note": "Estimate pending analysis."
+    }
+  ],
+  "recommended_path": [
+    "Run initial framework analysis",
+    "Classify highest-impact instability patterns",
+    "Define implementation path to release confidence"
+  ],
+  "next_step_cta": "Reply to your report email if you want help implementing the recommended fixes."
+}
