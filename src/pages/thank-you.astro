@@ -1,5 +1,5 @@
 ---
-const pageTitle = 'Submit Your Automation for Assessment';
+const pageTitle = 'Submit Your Framework for Analysis';
 const pageDescription =
   'Your payment is confirmed. Submit your framework or repository below to begin your assessment.';
 ---
@@ -21,6 +21,11 @@ const pageDescription =
         --accent-hover: #4b4ce0;
         --input-bg: rgba(255, 255, 255, 0.04);
         --success-bg: rgba(91, 92, 240, 0.14);
+        --success-border: rgba(110, 231, 183, 0.25);
+        --success-panel: rgba(110, 231, 183, 0.08);
+        --error-bg: rgba(239, 68, 68, 0.12);
+        --error-border: rgba(239, 68, 68, 0.22);
+        --error-text: #fecaca;
       }
 
       * {
@@ -175,18 +180,16 @@ const pageDescription =
         font-weight: 700;
         padding: 15px 18px;
         cursor: pointer;
-        transition: background 0.2s ease;
+        transition: background 0.2s ease, opacity 0.2s ease;
       }
 
       .button:hover {
         background: var(--accent-hover);
       }
 
-      .note {
-        margin-top: 12px;
-        color: var(--muted);
-        font-size: 13px;
-        line-height: 1.5;
+      .button:disabled {
+        opacity: 0.7;
+        cursor: wait;
       }
 
       .small {
@@ -199,6 +202,59 @@ const pageDescription =
         height: 1px;
         background: rgba(255, 255, 255, 0.08);
         margin: 26px 0;
+      }
+
+      .status {
+        display: none;
+        margin-top: 4px;
+        border-radius: 14px;
+        padding: 16px 18px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .status.show {
+        display: block;
+      }
+
+      .status.success {
+        background: var(--success-panel);
+        border: 1px solid var(--success-border);
+        color: #d1fae5;
+      }
+
+      .status.error {
+        background: var(--error-bg);
+        border: 1px solid var(--error-border);
+        color: var(--error-text);
+      }
+
+      .success-card {
+        display: none;
+        margin-top: 8px;
+        background: var(--success-panel);
+        border: 1px solid var(--success-border);
+        border-radius: 16px;
+        padding: 20px;
+      }
+
+      .success-card.show {
+        display: block;
+      }
+
+      .success-card h3 {
+        margin: 0 0 10px;
+        font-size: 20px;
+      }
+
+      .success-card p {
+        margin: 0;
+        color: #d1fae5;
+        line-height: 1.7;
+      }
+
+      .hidden-on-success.hide {
+        display: none;
       }
 
       @media (max-width: 840px) {
@@ -215,85 +271,92 @@ const pageDescription =
   <body>
     <main class="wrap">
       <section class="card">
-        <div class="eyebrow">Payment confirmed</div>
+        <div class="eyebrow">You're in</div>
         <h1>{pageTitle}</h1>
         <p class="subtext">
-          {pageDescription} You’ll receive your report within 24–48 hours after
-          submission.
+          {pageDescription} You’ll receive your report within 24 hours.
         </p>
 
         <div class="grid">
           <div class="panel">
             <h2>Assessment Intake</h2>
 
-            <!-- Replace the form action with your Formspree / Basin / webhook URL -->
             <form
+              id="intake-form"
               action="https://formspree.io/f/mlgajonk"
               method="POST"
             >
-              <div>
-                <label for="email">Email <span class="required">*</span></label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  autocomplete="email"
-                  placeholder="you@company.com"
-                />
-              </div>
-
-              <div>
-                <label for="repoUrl">Repository URL <span class="required">*</span></label>
-                <input
-                  id="repoUrl"
-                  name="repoUrl"
-                  type="url"
-                  required
-                  placeholder="https://github.com/your-org/your-repo"
-                />
-                <div class="helper">
-                  GitHub, GitLab, Bitbucket, or other repository link.
+              <div class="hidden-on-success" id="form-fields">
+                <div>
+                  <label for="email">Email <span class="required">*</span></label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    autocomplete="email"
+                    placeholder="you@company.com"
+                  />
                 </div>
+
+                <div>
+                  <label for="repoUrl">Repository URL <span class="required">*</span></label>
+                  <input
+                    id="repoUrl"
+                    name="repoUrl"
+                    type="url"
+                    required
+                    placeholder="https://github.com/your-org/your-repo"
+                  />
+                  <div class="helper">
+                    GitHub, GitLab, Bitbucket, or other repository link.
+                  </div>
+                </div>
+
+                <div>
+                  <label for="siteUrl">Site URL</label>
+                  <input
+                    id="siteUrl"
+                    name="siteUrl"
+                    type="url"
+                    placeholder="https://app.yourcompany.com"
+                  />
+                </div>
+
+                <div>
+                  <label for="notes">Notes</label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    placeholder="Anything we should know before reviewing your framework?"
+                  ></textarea>
+                </div>
+
+                <input type="hidden" name="source" value="stripe-thank-you-page" />
+
+                <button class="button" id="submit-button" type="submit">Submit Framework</button>
+
+                <div id="form-status" class="status" aria-live="polite"></div>
               </div>
 
-              <div>
-                <label for="siteUrl">Site URL</label>
-                <input
-                  id="siteUrl"
-                  name="siteUrl"
-                  type="url"
-                  placeholder="https://app.yourcompany.com"
-                />
+              <div id="success-card" class="success-card" aria-live="polite">
+                <h3>Submission received. Analysis started.</h3>
+                <p>
+                  We’ve received your framework details and queued your assessment.
+                  You’ll get your report within 24 hours. If we need anything else,
+                  we’ll reach out by email.
+                </p>
               </div>
-
-              <div>
-                <label for="notes">Notes</label>
-                <textarea
-                  id="notes"
-                  name="notes"
-                  placeholder="Anything we should know before reviewing your framework?"
-                ></textarea>
-              </div>
-
-              <input type="hidden" name="source" value="stripe-thank-you-page" />
-
-              <button class="button" type="submit">Submit for Analysis</button>
-
-              <p class="note">
-                This form should send to your email or webhook. Replace the
-                placeholder action URL before deploying.
-              </p>
             </form>
           </div>
 
           <aside class="panel">
             <h2>What happens next</h2>
             <ol class="steps">
-              <li>We review your framework or repository.</li>
-              <li>We identify the top reliability and diagnosability issues.</li>
-              <li>We estimate the effort and cost to fix them.</li>
-              <li>We deliver your assessment report by email.</li>
+              <li>We analyze your framework (no reruns required).</li>
+              <li>Identify top reliability risks.</li>
+              <li>Calculate cost to reach stable / reliable / production-ready.</li>
+              <li>Deliver report within 24 hours.</li>
             </ol>
 
             <div class="divider"></div>
@@ -306,5 +369,61 @@ const pageDescription =
         </div>
       </section>
     </main>
+
+    <script>
+      const form = document.getElementById('intake-form');
+      const submitButton = document.getElementById('submit-button');
+      const formStatus = document.getElementById('form-status');
+      const formFields = document.getElementById('form-fields');
+      const successCard = document.getElementById('success-card');
+
+      function showStatus(message, type) {
+        formStatus.textContent = message;
+        formStatus.className = `status show ${type}`;
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+        formStatus.className = 'status';
+        formStatus.textContent = '';
+
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+              Accept: 'application/json',
+            },
+          });
+
+          if (response.ok) {
+            formFields.classList.add('hide');
+            successCard.classList.add('show');
+            form.reset();
+            return;
+          }
+
+          let errorMessage = 'Submission failed. Please try again.';
+          try {
+            const data = await response.json();
+            if (data && data.errors && data.errors.length > 0 && data.errors[0].message) {
+              errorMessage = data.errors[0].message;
+            }
+          } catch (_) {
+            // keep fallback message
+          }
+
+          showStatus(errorMessage, 'error');
+        } catch (_) {
+          showStatus('Network error. Please try again.', 'error');
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Submit Framework';
+        }
+      });
+    </script>
   </body>
 </html>
