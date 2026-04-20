@@ -1,0 +1,223 @@
+---
+const title = "Fixture Detection → Trace Planning → Evidence Capture";
+const description =
+  "Turn repeated setup into deterministic, API-backed fixtures with evidence.";
+
+const login = `await request.post("/api/users", {...})
+await page.goto("/login")
+await page.fill(...)`;
+
+const body = `method: "POST"
+url: "/api/users"
+requestBody: {...}
+response: {...}`;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <main>
+      <h1>{title}</h1>
+      <p>{description}</p>
+
+      <section>
+        <h2>🎯 Objective</h2>
+        <p>
+          Convert repeated UI + API setup into reusable, deterministic fixtures
+          backed by real system evidence.
+        </p>
+
+        <pre><code>
+await request.post("/api/users", ...)
+await page.goto("/login")
+await page.fill(...)
+        </code></pre>
+
+        <p>Becomes:</p>
+
+        <pre><code>
+await authenticatedSeededUser()
+        </code></pre>
+      </section>
+
+      <section>
+        <h2>🧠 System Overview</h2>
+        <ul>
+          <li><strong>Fixture Extraction</strong> — detect duplication</li>
+          <li><strong>Setup Trace Planning</strong> — define trace window</li>
+          <li><strong>Runtime Capture (next)</strong> — capture real evidence</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>🧩 Stage 1 — Fixture Extraction</h2>
+
+        <pre><code>
+node agents/fixture-extraction-agent.cjs \
+  --repo /path/to/playwright-framework \
+  --outDir test-results/fixture-extraction \
+  --minOccurrences 2
+        </code></pre>
+
+        <h3>Output</h3>
+        <pre><code>
+test-results/fixture-extraction/
+├── fixture-extraction-report.json
+└── fixture-extraction-report.md
+        </code></pre>
+
+        <h3>What to Look For</h3>
+        <pre><code>
+setup.authenticated_seeded_user.fbb7ba
+fixture=authenticatedSeededUser
+occurrences=2
+confidence=0.72
+        </code></pre>
+      </section>
+
+      <section>
+        <h2>🧩 Stage 2 — Setup Trace Planning</h2>
+
+        <pre><code>
+node agents/setup-trace-agent.cjs \
+  --patternId setup.authenticated_seeded_user.fbb7ba \
+  --fixtureReport test-results/fixture-extraction/fixture-extraction-report.json \
+  --repo /path/to/playwright-framework \
+  --outDir test-results/setup-trace
+        </code></pre>
+
+        <h3>Output</h3>
+        <pre><code>
+test-results/setup-trace/
+├── setup-trace-report.json
+├── setup-trace-report.md
+└── trace-runtime-helper.cjs
+        </code></pre>
+
+        <h3>Expected Signal</h3>
+        <pre><code>
+POST /api/users (confidence 0.95)
+        </code></pre>
+      </section>
+
+      <section>
+        <h2>🔍 Report Review</h2>
+
+        <ul>
+          <li>Pattern ID matches selected fixture</li>
+          <li>Representative occurrences show repeated setup</li>
+          <li>Code snippets are correct</li>
+          <li>API routes are inferred correctly</li>
+        </ul>
+
+        <pre><code>{login}</code></pre>
+      </section>
+
+      <section>
+        <h2>🧠 Interpretation Rules</h2>
+
+        <h3>High Confidence (≥ 0.8)</h3>
+        <ul>
+          <li>Contains request.post</li>
+          <li>Contains /api/ route</li>
+          <li>Domain entity detected</li>
+        </ul>
+
+        <p><strong>→ Ready for fixture extraction</strong></p>
+
+        <h3>Medium Confidence (0.5–0.79)</h3>
+        <p>→ Requires runtime trace validation</p>
+
+        <h3>Low Confidence (&lt; 0.5)</h3>
+        <p>→ Likely not a fixture (helper logic)</p>
+      </section>
+
+      <section>
+        <h2>🧩 Stage 3 — Runtime Trace Capture (Next)</h2>
+
+        <p>
+          Convert inferred API behavior into real captured request/response evidence.
+        </p>
+
+        <pre><code>
+trace-runtime-helper.cjs
+        </code></pre>
+
+        <h3>Expected Output</h3>
+        <pre><code>{body}</code></pre>
+      </section>
+
+      <section>
+
+      <!-- MENTAL MODEL -->
+      <section>
+        <h2>🧠 Mental Model</h2>
+
+        <table>
+          <tr>
+            <th>Before</th>
+            <th>After</th>
+          </tr>
+          <tr>
+            <td>UI setup</td>
+            <td>API state creation</td>
+          </tr>
+          <tr>
+            <td>Duplicate code</td>
+            <td>Reusable fixture</td>
+          </tr>
+          <tr>
+            <td>Guessing</td>
+            <td>Evidence-based</td>
+          </tr>
+        </table>
+
+      </section>
+
+      <!-- MISTAKES -->
+      <section>
+        <h2>⚠️ Common Mistakes</h2>
+
+        <ul>
+          <li>Running JS in terminal instead of file</li>
+          <li>Broken template strings</li>
+          <li>Escaped \n instead of real newlines</li>
+          <li>Unescaped backticks inside template strings</li>
+        </ul>
+
+      </section>
+
+      <!-- DONE -->
+      <section>
+        <h2>✅ Definition of Done</h2>
+
+        <ul>
+          <li>Fixture detected</li>
+          <li>Trace plan generated</li>
+          <li>API inferred correctly</li>
+          <li>Report readable</li>
+        </ul>
+
+      </section>
+
+      <!-- NEXT -->
+      <section>
+        <h2>🚀 Next Step</h2>
+
+        <pre><code>
+agents/setup-trace-runner.cjs
+        </code></pre>
+
+        <p>
+          This executes the trace plan and captures real system behavior.
+        </p>
+
+      </section>
+
+    </main>
+
+  </body>
+</html>
