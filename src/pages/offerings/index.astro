@@ -1,4 +1,7 @@
 ---
+import ProblemCard from "../../components/ProblemCard.astro";
+
+
 const trustMatrix = [
   {
     level: "Low Trust",
@@ -26,24 +29,28 @@ const problemEntries = [
     href: "/offerings/fix-flaky-tests/",
     summary:
       "For teams dealing with unstable automation, noisy CI, and low trust in results.",
+    image: "/images/problem-unstable-ci.png",
   },
   {
     title: "Turn Test Results Into Clear Release Decisions",
     href: "/offerings/release-decisions/",
     summary:
       "For teams that need better GO / WARN / BLOCK clarity before release.",
+    image: "/images/problem-unclear-release.png",
   },
   {
     title: "Modernize Automation Without Destabilizing Delivery",
     href: "/offerings/modernize-without-disruption/",
     summary:
       "For teams that need progress without rewrite-first disruption.",
+    image: "/images/problem-modernization-fear.png",
   },
   {
     title: "Diagnose Failures Without Reruns",
     href: "/offerings/diagnose-without-reruns/",
     summary:
       "For teams whose artifacts and debug flow are too weak to support first-run diagnosis.",
+    image: "/images/problem-weak-artifacts.png",
   },
 ];
 
@@ -101,6 +108,12 @@ import Hero from "../../components/Hero.astro";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Offerings | QA Test Lab</title>
+    <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <meta name="theme-color" content="#0b0e14" />
     <meta
       name="description"
       content="Start with the QA problem you need to solve first, then move into the right modernization path: deterministic, controlled AI, or AI-forward."
@@ -133,6 +146,39 @@ import Hero from "../../components/Hero.astro";
       a:hover {
         text-decoration: underline;
       }
+      .video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .video-logo {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      z-index: 2;
+      pointer-events: none;
+
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(11, 14, 20, 0.55);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(6px);
+    }
+
+    .video-logo img {
+      height: 24px;
+    }
 
       .wrap {
         max-width: 1160px;
@@ -179,8 +225,31 @@ import Hero from "../../components/Hero.astro";
         color: var(--text);
       }
 
+      /* .problem-card__image {
+        width: 100%;
+        height: 140px;
+        overflow: hidden;
+        border-bottom: 1px solid var(--border);
+      }
+      .problem-card__image img {
+        transition: transform 0.4s ease;
+      }
+
+      .problem-card:hover .problem-card__image img {
+        transform: scale(1.04);
+      }
+
+      .problem-card {
+        padding: 0;              /* 🔥 critical */
+        overflow: hidden;        /* keeps image clipped to rounded corners */
+        border-radius: 18px;     /* match your system */
+      } */
+
       .hero {
         padding: 28px 0 12px;
+      }
+      .problem-card__body {
+        padding: 18px;
       }
 
       .h1 {
@@ -344,19 +413,33 @@ import Hero from "../../components/Hero.astro";
       imageSrc="/images/assessment-report.png"
       imageAlt="QA automation assessment report"
     />
+    <section class="report-preview" aria-labelledby="video-demo-title">
+      <p id="video-demo-title" class="report-preview__label">
+        See QA ALIGN in Action
+      </p>
+    
+      <div class="report-preview__frame">
+        <div class="video-frame">
+          <iframe
+            src="https://www.youtube.com/embed/Rpl2zjYRGAY?rel=0&modestbranding=1"
+            title="QA ALIGN Demo"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </section>
 
       <section class="section-title">
         <h2>Start with the problem you need to solve first</h2>
         <div class="grid grid4">
+
           {problemEntries.map((item) => (
-            <div class="card">
-              <h3>{item.title}</h3>
-              <p>{item.summary}</p>
-              <div class="cta-row">
-                <a class="button primary" href={item.href}>Explore this page</a>
-              </div>
-            </div>
+            <ProblemCard {...item} />
           ))}
+          
+
         </div>
       </section>
 
