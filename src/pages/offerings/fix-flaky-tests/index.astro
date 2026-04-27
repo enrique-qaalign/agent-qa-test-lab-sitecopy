@@ -223,6 +223,59 @@ import '../../../styles/components.css';
         flex-wrap: wrap;
         gap: 0.75rem;
       }
+      .report-preview {
+  padding: 56px 0 34px;
+}
+
+.report-preview__shell {
+  max-width: 980px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.report-preview__eyebrow {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #7aa2ff;
+}
+
+.report-preview__title {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.08;
+  color: #e6e9ef;
+}
+
+.report-preview__desc {
+  margin: 14px auto 26px;
+  max-width: 760px;
+  color: #aab2c5;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.report-preview__frame {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #24304d;
+  box-shadow:
+    0 30px 90px rgba(0,0,0,.55),
+    0 0 40px rgba(80,120,255,.10);
+}
+
+.video-frame {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: #000;
+}
+
+.video-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
 
       .qa-not-fit span {
         display: inline-flex;
@@ -424,7 +477,38 @@ import '../../../styles/components.css';
             </article>
           </div>
         </section>
-
+        <section class="report-preview" aria-labelledby="video-demo-title">
+          <div class="wrap">
+            <div class="report-preview__shell">
+        
+              <p id="video-demo-title" class="report-preview__eyebrow">
+                LIVE DIAGNOSTIC EXPLAINER
+              </p>
+        
+              <h2 class="report-preview__title">
+                See How Flaky Systems Get Diagnosed
+              </h2>
+        
+              <p class="report-preview__desc">
+                A short walkthrough showing how hidden anti-patterns create instability,
+                false failures, and low trust in automation.
+              </p>
+        
+              <div class="report-preview__frame">
+                <div class="video-frame">
+                  <iframe
+                    src="https://www.youtube.com/embed/LNqhtPH8bvY?rel=0&modestbranding=1"
+                    title="QA ALIGN Flake Diagnosis Demo"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+        
+            </div>
+          </div>
+        </section>
         <section class="qa-section">
           <div class="qa-section__header">
             <p class="qa-eyebrow">What I Diagnose First</p>

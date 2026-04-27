@@ -1,0 +1,19 @@
+---
+const {
+  primaryHref = "/start/",
+  primaryText = "Run Your Automation Assessment",
+  secondaryHref = "/#sprints",
+  secondaryText = "See Sprint Proof",
+  className = "",
+} = Astro.props;
+---
+
+<div class={`qa-cta-row ${className}`}>
+  <a class="qa-btn qa-btn--primary" href={primaryHref}>
+    {primaryText}
+  </a>
+
+  <a class="qa-btn qa-btn--secondary" href={secondaryHref}>
+    {secondaryText}
+  </a>
+</div>

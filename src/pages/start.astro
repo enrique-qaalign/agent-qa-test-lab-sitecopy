@@ -1,0 +1,73 @@
+---
+import RunbookLayout from "../layouts/RunbookLayout.astro";
+
+// This is your Live Mode Stripe link for the $149 product
+const STRIPE_CHECKOUT_URL = "YOUR_STRIPE_LIVE_LINK_HERE";
+
+const pageTitle = "Start Your Automation Assessment";
+const pageDescription = "Provide your system details to begin a deterministic analysis of your automation framework.";
+---
+
+<RunbookLayout title={pageTitle} description={pageDescription}>
+  <div class="wrap">
+    <section class="card">
+      <h1>Automation Assessment Intake</h1>
+      <p>Enter your details below. After submission, you will be redirected to our secure payment partner to complete the $149 assessment fee.</p>
+
+      <!-- Using Formspree or your direct API intake as discussed -->
+      <form action="https://formspree.io/f/your-id" method="POST" class="intake-form">
+        
+        <div class="field-group">
+          <label for="email">Work Email</label>
+          <input type="email" id="email" name="email" required placeholder="you@company.com" />
+        </div>
+
+        <div class="field-group">
+          <label for="target_url">Repository or Site URL</label>
+          <input type="url" id="target_url" name="target_url" required placeholder="https://github.com/org/repo" />
+          <p class="mini">We will analyze this URL or repository for technical anti-patterns.</p>
+        </div>
+
+        <div class="field-group">
+          <label for="framework">Automation Framework</label>
+          <select id="framework" name="framework">
+            <option value="playwright">Playwright (Enabled)</option>
+            <option value="cypress" disabled>Cypress (Waitlisted)</option>
+            <option value="selenium" disabled>Selenium (Waitlisted)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="notes">Primary Pain Points (Optional)</label>
+          <textarea id="notes" name="notes" placeholder="e.g., flakiness in CI, slow execution, unclear failures"></textarea>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="nda" name="nda" required />
+          <label for="nda">I agree to the Mutual NDA and Terms of Service</label>
+        </div>
+
+        <button type="submit" class="cta-primary" style="width: 100%; margin-top: 20px;">
+          Proceed to Secure Checkout ($149)
+        </button>
+      </form>
+    </section>
+  </div>
+</RunbookLayout>
+
+<style>
+  .intake-form { display: flex; flex-direction: column; gap: 20px; margin-top: 24px; }
+  .field-group { display: flex; flex-direction: column; gap: 8px; }
+  label { font-weight: 600; font-size: 14px; color: var(--text); }
+  input, select, textarea { 
+    padding: 12px; 
+    border-radius: 8px; 
+    border: 1px solid var(--border); 
+    background: var(--bg); 
+    color: var(--text); 
+    font-size: 16px;
+  }
+  .checkbox-group { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+  .checkbox-group input { margin-top: 4px; }
+  .mini { font-size: 12px; color: var(--muted); margin-top: 4px; }
+</style>

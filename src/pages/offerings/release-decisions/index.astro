@@ -179,6 +179,60 @@ const pageDescription =
         letter-spacing: 0.12em;
       }
 
+            .video-proof {
+        padding: 28px 0 28px;
+      }
+
+      .video-proof__shell {
+        max-width: 980px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .video-proof__eyebrow {
+        margin: 0 0 10px;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: .18em;
+        color: #7aa2ff;
+      }
+
+      .video-proof__title {
+        margin: 0;
+        font-size: 40px;
+        line-height: 1.08;
+        color: #e6e9ef;
+      }
+
+      .video-proof__desc {
+        margin: 14px auto 24px;
+        max-width: 760px;
+        color: #aab2c5;
+        font-size: 18px;
+        line-height: 1.6;
+      }
+
+      .video-proof__frame {
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid #24304d;
+        box-shadow:
+          0 30px 90px rgba(0,0,0,.55),
+          0 0 40px rgba(80,120,255,.10);
+      }
+
+      .video-frame {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #000;
+      }
+
+      .video-frame iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+
       .qa-diagram-card h2 {
         margin: 0 0 1rem;
         font-size: 1.4rem;
@@ -443,6 +497,41 @@ const pageDescription =
             </p>
           </div>
         </section>
+        <section class="video-proof" aria-labelledby="release-video-title">
+          <div class="wrap">
+            <div class="video-proof__shell">
+
+              <p id="release-video-title" class="video-proof__eyebrow">
+                LIVE EXPLAINER
+              </p>
+
+              <h2 class="video-proof__title">
+                See How Test Results Become Release Decisions
+              </h2>
+
+              <p class="video-proof__desc">
+                A short walkthrough of how structured evidence turns noisy automation
+                into GO / WARN / BLOCK guidance.
+              </p>
+
+              <div class="video-proof__frame">
+                <div class="video-frame">
+                  <iframe
+                    src="https://www.youtube.com/embed/B9od8LkC17s?rel=0&modestbranding=1"
+                    title="QA ALIGN Release Decisions Demo"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+
+
 
         <section class="qa-section">
           <div class="qa-section__header">
@@ -511,7 +600,7 @@ const pageDescription =
                 <li>Risk-layer recommendations</li>
                 <li>First correction path</li>
               </ul>
-              <a class="qa-btn qa-btn--primary qa-btn--full" href="/contact/">Request a Technical Review</a>
+              <a class="qa-btn qa-btn--primary qa-btn--full" href="https://buy.stripe.com/eVqcN74vpe5O1Eg86GdAk01">Run Your Automation Assessment</a>
             </aside>
           </div>
         </section>
