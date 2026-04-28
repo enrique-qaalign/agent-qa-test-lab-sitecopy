@@ -3,6 +3,11 @@ const pageTitle = 'Submit Your Framework for Analysis';
 const pageDescription =
   'Your payment is confirmed. Submit your framework or repository below to begin your assessment.';
 
+const paid = Astro.url.searchParams.get("paid");
+
+if (paid !== "true") {
+  return Astro.redirect("/");
+}
 ---
 
 <html lang="en">
