@@ -70,3 +70,27 @@
   color: rgba(200, 210, 230, 0.72);
   margin: 0 0 1rem;
 }
+/* Branded Hero Logo Card */
+.qa-logo-card {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  border: 1px solid var(--qa-border);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at center, rgba(122,162,255,.26), transparent 58%),
+    rgba(15,21,34,.86);
+  box-shadow: var(--qa-shadow);
+  margin-bottom: 18px;
+}
+
+.qa-logo-card img {
+  width: 118%;
+  max-width: 620px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  transform: translateY(-6px);
+}
