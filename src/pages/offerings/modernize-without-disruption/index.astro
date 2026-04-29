@@ -206,6 +206,28 @@ import '../../../styles/components.css';
 
       .qa-diagram-card { padding: 1.4rem; }
 
+      .qa-logo-card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 132px;
+        padding: 22px;
+        border: 1px solid var(--qa-border);
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at center, rgba(122, 162, 255, 0.26), transparent 58%),
+          rgba(15, 21, 34, 0.86);
+        box-shadow: var(--qa-shadow);
+        margin-bottom: 18px;
+      }
+
+      .qa-logo-card img {
+        max-width: 340px;
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
       .qa-diagram-card__eyebrow {
         margin: 0 0 0.45rem;
         color: var(--qa-accent-2);
@@ -389,6 +411,10 @@ import '../../../styles/components.css';
           </div>
 
           <aside class="qa-hero__visual" aria-label="Modernization flow">
+            <div class="qa-logo-card">
+              <img src="/qa-align-logo.png" alt="QA ALIGN" />
+            </div>
+
             <div class="qa-diagram-card">
               <p class="qa-diagram-card__eyebrow">Modernization Flow</p>
               <h2>Stabilize first, scale second</h2>
