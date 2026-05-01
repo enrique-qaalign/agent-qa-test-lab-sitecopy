@@ -269,6 +269,18 @@ const paid = Astro.url.searchParams.get("paid") === "true";
         }
       }
     </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18107787011"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag(){
+        window.dataLayer.push(arguments);
+      }
+
+      gtag('js', new Date());
+      gtag('config', 'AW-18107787011');
+    </script>
   </head>
   <body>
     <main class="wrap">
