@@ -439,13 +439,19 @@ const paid = Astro.url.searchParams.get("paid") === "true";
         });
       }
     </script>
-    {paid && (
+    {paid && (                                                                                                                                      
     <script is:inline>
-      gtag('event', 'conversion', {
-        'send_to': 'AW-18107787011/PxTyCOWX9qUcEIPOu7pD',
-        'value': 149.0,
-        'currency': 'USD'
-      });
+      if (window.location.search.includes("paid=true")) {
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag(){dataLayer.push(arguments);}
+
+        gtag('event', 'conversion', {
+          'send_to': 'AW-18107787011/PxTyCOWX9qUcEIPOu7pD',
+          'value': 149.0,
+          'currency': 'USD'
+        });
+      }
     </script>
   )}
      

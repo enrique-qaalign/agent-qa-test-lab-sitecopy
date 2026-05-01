@@ -3,31 +3,12 @@ const { title = 'QA ALIGN' } = Astro.props;
 
 import '../styles/components.css';
 
-
-
 ---
 
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QHBTSD452X"></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){window.dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-QHBTSD452X');
-    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Google tag (GA4 + Ads) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QHBTSD452X"></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){window.dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-QHBTSD452X');
-      gtag('config', 'AW-18107787011');
-    </script>
     <title>{title}</title>
     <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
@@ -35,6 +16,17 @@ import '../styles/components.css';
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
     <link rel="manifest" href="/favicon/site.webmanifest" />
     <meta name="theme-color" content="#0b0e14" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18107787011"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag(){
+        window.dataLayer.push(arguments);
+      }
+
+      gtag('js', new Date());
+      gtag('config', 'AW-18107787011');
+    </script>
   </head>
   <body>
     <main class="site-shell">
