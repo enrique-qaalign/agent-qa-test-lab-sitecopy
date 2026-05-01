@@ -269,18 +269,7 @@ const paid = Astro.url.searchParams.get("paid") === "true";
         }
       }
     </style>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18107787011"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
 
-      function gtag(){
-        window.dataLayer.push(arguments);
-      }
-
-      gtag('js', new Date());
-      gtag('config', 'AW-18107787011');
-    </script>
   </head>
   <body>
     <main class="wrap">
@@ -451,19 +440,18 @@ const paid = Astro.url.searchParams.get("paid") === "true";
         });
       }
     </script>
-    {paid && (                                                                                                                                      
-    <script is:inline>
-      if (window.location.search.includes("paid=true")) {
-        window.dataLayer = window.dataLayer || [];
+   <script>
+      window.addEventListener('load', function () {
+        if (window.location.search.includes("paid=true")) {
+          gtag('event', 'conversion', {
+            send_to: 'AW-18107787011/PxTyCOWX9qUcEIPOu7pD',
+            value: 149.0,
+            currency: 'USD'
+          });
 
-        function gtag(){dataLayer.push(arguments);}
-
-        gtag('event', 'conversion', {
-          'send_to': 'AW-18107787011/PxTyCOWX9qUcEIPOu7pD',
-          'value': 149.0,
-          'currency': 'USD'
-        });
-      }
+          console.log("🔥 QA ALIGN conversion fired");
+        }
+      });
     </script>
   )}
      
