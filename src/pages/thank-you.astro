@@ -1,465 +1,109 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
 const pageTitle = 'Submit Your Framework for Analysis';
 const pageDescription =
   'Your payment is confirmed. Submit your framework or repository below to begin your assessment.';
 const paid = Astro.url.searchParams.get("paid") === "true";
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{pageTitle}</title>
-    <meta name="description" content={pageDescription} />
-    <style>
+<BaseLayout title={pageTitle}>
+  <main class="wrap">
+    <section class="card">
+      <div class="eyebrow">You're in</div>
+      <h1>{pageTitle}</h1>
+      <p class="subtext">
+        {pageDescription} You’ll receive your report within 24 hours.
+      </p>
 
-      :root {
-        --bg: #0b1020;
-        --panel: rgba(255, 255, 255, 0.06);
-        --panel-border: rgba(255, 255, 255, 0.12);
-        --text: #f5f7fb;
-        --muted: #b8c0d4;
-        --accent: #5b5cf0;
-        --accent-hover: #4b4ce0;
-        --input-bg: rgba(255, 255, 255, 0.04);
-        --success-bg: rgba(91, 92, 240, 0.14);
-        --success-border: rgba(110, 231, 183, 0.25);
-        --success-panel: rgba(110, 231, 183, 0.08);
-        --error-bg: rgba(239, 68, 68, 0.12);
-        --error-border: rgba(239, 68, 68, 0.22);
-        --error-text: #fecaca;
-      }
+      <div class="grid">
+        <div class="panel">
+          <h2>Assessment Intake</h2>
 
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        background:
-          radial-gradient(circle at top left, rgba(91, 92, 240, 0.22), transparent 30%),
-          linear-gradient(180deg, #0b1020 0%, #11182d 100%);
-        color: var(--text);
-        font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-          "Segoe UI", sans-serif;
-        min-height: 100%;
-      }
-
-      .wrap {
-        max-width: 860px;
-        margin: 0 auto;
-        padding: 56px 20px 80px;
-      }
-
-      .card {
-        background: var(--panel);
-        border: 1px solid var(--panel-border);
-        border-radius: 20px;
-        padding: 32px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: var(--success-bg);
-        color: #d9dcff;
-        font-size: 14px;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-        margin-bottom: 20px;
-      }
-
-      h1 {
-        margin: 0 0 14px;
-        font-size: clamp(32px, 5vw, 48px);
-        line-height: 1.05;
-      }
-
-      .subtext {
-        margin: 0 0 28px;
-        color: var(--muted);
-        font-size: 18px;
-        line-height: 1.6;
-        max-width: 680px;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 28px;
-        margin-top: 28px;
-      }
-
-      .panel {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 18px;
-        padding: 24px;
-      }
-
-      h2 {
-        margin: 0 0 16px;
-        font-size: 22px;
-      }
-
-      .steps {
-        margin: 0;
-        padding-left: 20px;
-        color: var(--muted);
-        line-height: 1.7;
-      }
-
-      .steps li + li {
-        margin-top: 8px;
-      }
-
-      form {
-        display: grid;
-        gap: 16px;
-      }
-
-      label {
-        display: block;
-        font-size: 14px;
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-
-      .required {
-        color: #cbd2ff;
-      }
-
-      input,
-      textarea {
-        width: 100%;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: var(--input-bg);
-        color: var(--text);
-        border-radius: 12px;
-        padding: 14px 16px;
-        font-size: 16px;
-        outline: none;
-      }
-
-      input::placeholder,
-      textarea::placeholder {
-        color: #8f99b2;
-      }
-
-      input:focus,
-      textarea:focus {
-        border-color: rgba(91, 92, 240, 0.9);
-        box-shadow: 0 0 0 3px rgba(91, 92, 240, 0.18);
-      }
-
-      textarea {
-        min-height: 140px;
-        resize: vertical;
-      }
-
-      .helper {
-        margin-top: 6px;
-        color: var(--muted);
-        font-size: 13px;
-        line-height: 1.5;
-      }
-
-      .button {
-        appearance: none;
-        border: 0;
-        border-radius: 12px;
-        background: var(--accent);
-        color: white;
-        font-size: 16px;
-        font-weight: 700;
-        padding: 15px 18px;
-        cursor: pointer;
-        transition: background 0.2s ease, opacity 0.2s ease;
-      }
-
-      .button:hover {
-        background: var(--accent-hover);
-      }
-
-      .button:disabled {
-        opacity: 0.7;
-        cursor: wait;
-      }
-
-      .small {
-        color: var(--muted);
-        font-size: 14px;
-        line-height: 1.6;
-      }
-
-      .divider {
-        height: 1px;
-        background: rgba(255, 255, 255, 0.08);
-        margin: 26px 0;
-      }
-
-      .status {
-        display: none;
-        margin-top: 4px;
-        border-radius: 14px;
-        padding: 16px 18px;
-        font-size: 14px;
-        line-height: 1.6;
-      }
-
-      .status.show {
-        display: block;
-      }
-
-      .status.success {
-        background: var(--success-panel);
-        border: 1px solid var(--success-border);
-        color: #d1fae5;
-      }
-
-      .status.error {
-        background: var(--error-bg);
-        border: 1px solid var(--error-border);
-        color: var(--error-text);
-      }
-
-      .success-card {
-        display: none;
-        margin-top: 8px;
-        background: var(--success-panel);
-        border: 1px solid var(--success-border);
-        border-radius: 16px;
-        padding: 20px;
-      }
-
-      .success-card.show {
-        display: block;
-      }
-
-      .success-card h3 {
-        margin: 0 0 10px;
-        font-size: 20px;
-      }
-
-      .success-card p {
-        margin: 0;
-        color: #d1fae5;
-        line-height: 1.7;
-      }
-
-      .hidden-on-success.hide {
-        display: none;
-      }
-
-      @media (max-width: 840px) {
-        .grid {
-          grid-template-columns: 1fr;
-        }
-
-        .card {
-          padding: 24px;
-        }
-      }
-    </style>
-
-  </head>
-  <body>
-    <main class="wrap">
-      <section class="card">
-        <div class="eyebrow">You're in</div>
-        <h1>{pageTitle}</h1>
-        <p class="subtext">
-          {pageDescription} You’ll receive your report within 24 hours.
-        </p>
-
-        <div class="grid">
-          <div class="panel">
-            <h2>Assessment Intake</h2>
-
-            <form
-              id="intake-form"
-              action="https://formspree.io/f/mlgajonk"
-              method="POST"
-            >
-              <div class="hidden-on-success" id="form-fields">
-                <div>
-                  <label for="email">Email <span class="required">*</span></label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    autocomplete="email"
-                    placeholder="you@company.com"
-                  />
-                </div>
-
-                <div>
-                  <label for="repoUrl">Repository URL <span class="required">*</span></label>
-                  <input
-                    id="repoUrl"
-                    name="repo_url"
-                    type="url"
-                    required
-                    placeholder="https://github.com/your-org/your-repo"
-                  />
-                  <div class="helper">
-                    GitHub, GitLab, Bitbucket, or other repository link.
-                  </div>
-                </div>
-
-                <div>
-                  <label for="siteUrl">Site URL</label>
-                  <input
-                    id="siteUrl"
-                    name="site_url"
-                    type="url"
-                    placeholder="https://app.yourcompany.com"
-                  />
-                </div>
-
-                <div>
-                  <label for="notes">Notes</label>
-                  <textarea
-                    id="notes"
-                    name="notes"
-                    placeholder="Anything we should know before reviewing your framework?"
-                  ></textarea>
-                </div>
-
-                <input type="hidden" name="source" value="qa-align-assessment-v1" />
-                <input type="hidden" name="product" value="automation-assessment" />
-                <input type="hidden" name="price" value="149" />
-
-                <button class="button" id="submit-button" type="submit">Submit Framework</button>
-
-                <div id="form-status" class="status" aria-live="polite"></div>
+          <form
+            id="intake-form"
+            action="https://formspree.io/f/mlgajonk"
+            method="POST"
+          >
+            <div id="form-fields">
+              <div>
+                <label>Email *</label>
+                <input name="email" type="email" required />
               </div>
 
-              <div id="success-card" class="success-card" aria-live="polite">
-                <h3>Submission received. Analysis started.</h3>
-                <p>
-                  We’ve received your framework details and queued your assessment.
-                  You’ll get your report within 24 hours. If we need anything else,
-                  we’ll reach out by email.
-                </p>
+              <div>
+                <label>Repository URL *</label>
+                <input name="repo_url" type="url" required />
               </div>
-            </form>
-          </div>
 
-          <aside class="panel">
-            <h2>What happens next</h2>
-            <ol class="steps">
-              <li>We analyze your framework (no reruns required).</li>
-              <li>Identify top reliability risks.</li>
-              <li>Calculate cost to reach stable / reliable / production-ready.</li>
-              <li>Deliver report within 24 hours.</li>
-            </ol>
+              <div>
+                <label>Site URL</label>
+                <input name="site_url" type="url" />
+              </div>
 
-            <div class="divider"></div>
+              <div>
+                <label>Notes</label>
+                <textarea name="notes"></textarea>
+              </div>
 
-            <p class="small">
-              Deliverable includes trust level, issue breakdown, occurrence
-              counts, and estimated fix cost.
-            </p>
-          </aside>
+              <input type="hidden" name="source" value="qa-align-assessment-v1" />
+              <input type="hidden" name="product" value="automation-assessment" />
+              <input type="hidden" name="price" value="149" />
+
+              <button type="submit">Submit Framework</button>
+            </div>
+
+            <div id="success-card" style="display:none;">
+              Submission received. Analysis started.
+            </div>
+          </form>
         </div>
-      </section>
-    </main>
-    <script>
-      const form = document.getElementById('intake-form') as HTMLFormElement | null;
-      const submitButton = document.getElementById('submit-button') as HTMLButtonElement | null;
-      const formStatus = document.getElementById('form-status') as HTMLDivElement | null;
-      const formFields = document.getElementById('form-fields') as HTMLDivElement | null;
-      const successCard = document.getElementById('success-card') as HTMLDivElement | null;
+      </div>
+    </section>
+  </main>
 
-      function showStatus(message: string, type: 'success' | 'error') {
-        if (!formStatus) return;
-        formStatus.textContent = message;
-        formStatus.className = `status show ${type}`;
-      }
+  <!-- FORM HANDLER -->
+  <script>
+    const form = document.getElementById('intake-form');
+    const successCard = document.getElementById('success-card');
 
-      if (form && submitButton && formFields && successCard) {
-        form.addEventListener('submit', async (event) => {
-          event.preventDefault();
+    if (form) {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-          submitButton.disabled = true;
-          submitButton.textContent = 'Submitting...';
-
-          if (formStatus) {
-            formStatus.className = 'status';
-            formStatus.textContent = '';
-          }
-
-          try {
-            const response = await fetch(form.action, {
-              method: 'POST',
-              body: new FormData(form),
-              headers: {
-                Accept: 'application/json',
-              },
-            });
-
-            if (response.ok) {
-              formFields.classList.add('hide');
-              successCard.classList.add('show');
-              form.reset();
-              return;
-            }
-
-            let errorMessage = 'Submission failed. Please try again.';
-            try {
-              const data = await response.json();
-              if (
-                data &&
-                Array.isArray(data.errors) &&
-                data.errors.length > 0 &&
-                data.errors[0]?.message
-              ) {
-                errorMessage = data.errors[0].message;
-              }
-            } catch (_) {
-              // keep fallback message
-            }
-
-            showStatus(errorMessage, 'error');
-          } catch (_) {
-            showStatus('Network error. Please try again.', 'error');
-          } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Submit Framework';
-          }
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' }
         });
-      }
-    </script>
-    <script>
-      window.addEventListener('load', function () {
-        if (window.location.search.includes("paid=true")) {
-          window.dataLayer = window.dataLayer || [];
 
-          window.gtag = window.gtag || function () {
-            window.dataLayer.push(arguments);
-          };
+        if (res.ok) {
+          form.style.display = 'none';
+          successCard.style.display = 'block';
+        }
+      });
+    }
+  </script>
 
-          window.gtag('event', 'conversion', {
-            send_to: 'AW-18107787011/PxTyCOWX9qUcEIPOu7pD',
+  <!-- 🔥 CONVERSION EVENT (FIXED) -->
+  <script>
+    window.addEventListener('load', function () {
+      if (window.location.search.includes("paid=true")) {
+
+        if (typeof gtag === 'function') {
+          gtag('event', 'conversion', {
+            send_to: 'AW-18107787011/PxTyCOWX9qUcEIP0u7pD',
             value: 149.0,
             currency: 'USD'
           });
 
           console.log("QA ALIGN conversion fired");
+        } else {
+          console.warn("gtag not ready");
         }
-      });
-    </script>
-  )}
-     
-  </body>
-</html>
+
+      }
+    });
+  </script>
+
+</BaseLayout>
