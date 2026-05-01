@@ -2,7 +2,7 @@
 const pageTitle = 'Submit Your Framework for Analysis';
 const pageDescription =
   'Your payment is confirmed. Submit your framework or repository below to begin your assessment.';
-
+const paid = Astro.url.searchParams.get("paid") === "true";
 ---
 
 <html lang="en">
@@ -12,6 +12,7 @@ const pageDescription =
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     <style>
+
       :root {
         --bg: #0b1020;
         --panel: rgba(255, 255, 255, 0.06);
@@ -438,6 +439,15 @@ const pageDescription =
         });
       }
     </script>
-
+    {paid && (
+    <script is:inline>
+      gtag('event', 'conversion', {
+        'send_to': 'AW-18107787011/PxTyCOWX9qUcEIPOu7pD',
+        'value': 149.0,
+        'currency': 'USD'
+      });
+    </script>
+  )}
+     
   </body>
 </html>
