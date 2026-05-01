@@ -440,16 +440,22 @@ const paid = Astro.url.searchParams.get("paid") === "true";
         });
       }
     </script>
-   <script>
+    <script>
       window.addEventListener('load', function () {
         if (window.location.search.includes("paid=true")) {
-          gtag('event', 'conversion', {
+          window.dataLayer = window.dataLayer || [];
+
+          window.gtag = window.gtag || function () {
+            window.dataLayer.push(arguments);
+          };
+
+          window.gtag('event', 'conversion', {
             send_to: 'AW-18107787011/PxTyCOWX9qUcEIPOu7pD',
             value: 149.0,
             currency: 'USD'
           });
 
-          console.log("🔥 QA ALIGN conversion fired");
+          console.log("QA ALIGN conversion fired");
         }
       });
     </script>
