@@ -1,0 +1,433 @@
+---
+const {
+  eyebrow = "QA ALIGN",
+  title,
+  subtitle,
+  primaryCta = "Run Your Automation Assessment",
+  primaryHref = "/contact/",
+  secondaryCta = "Request Access to Implementation",
+  secondaryHref = "/contact/?context=implementation-access",
+  audience = [],
+  pains = [],
+  outcomes = [],
+  proofTitle = "What the assessment returns",
+  proof = [],
+  processTitle = "How QA ALIGN works",
+  process = ["Discover", "Locator Intelligence", "Execute", "Diagnose", "Decide"],
+  closingTitle = "Start with a deterministic signal review",
+  closingText = "The assessment is not AI-generated advice. It is a structured review of framework signals, failure evidence, locator risk, state control, and release decision readiness.",
+  context = "general"
+} = Astro.props;
+
+const primaryUrl = primaryHref.includes("?")
+  ? `${primaryHref}&context=${context}`
+  : `${primaryHref}?context=${context}`;
+
+const secondaryUrl = secondaryHref.includes("?")
+  ? secondaryHref
+  : `${secondaryHref}?context=${context}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title} | QA ALIGN</title>
+    <meta name="description" content={subtitle} />
+    <meta name="theme-color" content="#0b0e14" />
+  </head>
+
+  <body>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="/">QA ALIGN</a>
+        <nav>
+          <a href="/offerings/">Offerings</a>
+          <a href="/runbooks/">Runbooks</a>
+          <a class="nav-cta" href="/offerings/automation-assessment/">Run Assessment</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="offering-page">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">{eyebrow}</p>
+          <h1>{title}</h1>
+          <p class="subtitle">{subtitle}</p>
+
+          <div class="cta-row">
+            <a class="button primary" href={primaryUrl}>{primaryCta}</a>
+            <a class="button secondary" href={secondaryUrl}>{secondaryCta}</a>
+          </div>
+
+          <p class="microcopy">Free assessment request · NDA-backed intake · no AI guessing</p>
+        </div>
+
+        <aside class="hero-panel" aria-label="Assessment output preview">
+          <div class="report-card">
+            <div class="report-top">
+              <span>QA ALIGN Assessment</span>
+              <strong>GO / WARN / BLOCK</strong>
+            </div>
+            <div class="report-grid">
+              <div>
+                <span>Trust Level</span>
+                <strong>LOW → MEDIUM</strong>
+              </div>
+              <div>
+                <span>Issue Count</span>
+                <strong>4–12 signals</strong>
+              </div>
+              <div>
+                <span>Fix Path</span>
+                <strong>Stabilize → Reliable</strong>
+              </div>
+              <div>
+                <span>Cost to Fix</span>
+                <strong>Baseline / Good / Great</strong>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section two-col">
+        <div class="card">
+          <h2>Who this is for</h2>
+          <ul>
+            {audience.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>What is usually broken</h2>
+          <ul>
+            {pains.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <p class="eyebrow">Deterministic pipeline</p>
+          <h2>{processTitle}</h2>
+          <p>QA ALIGN turns automation evidence into decision-ready artifacts.</p>
+        </div>
+
+        <div class="pipeline">
+          {process.map((step, index) => (
+            <div class="pipe-step">
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{step}</strong>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="section two-col">
+        <div class="card accent">
+          <h2>{proofTitle}</h2>
+          <ul>
+            {proof.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>Specific outcomes</h2>
+          <ul>
+            {outcomes.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      <section class="section closing">
+        <h2>{closingTitle}</h2>
+        <p>{closingText}</p>
+
+        <div class="cta-row">
+          <a class="button primary" href={primaryUrl}>{primaryCta}</a>
+          <a class="button secondary" href={secondaryUrl}>{secondaryCta}</a>
+        </div>
+
+        <p class="nda">NDA note: your repository, framework signals, screenshots, logs, and assessment results are never shared publicly.</p>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #121827;
+    --text: #e6e9ef;
+    --muted: #aab2c5;
+    --link: #7aa2ff;
+    --border: #24304d;
+    --blue: #2563eb;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(11, 14, 20, 0.82);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .brand {
+    color: var(--text);
+    font-weight: 800;
+    letter-spacing: .02em;
+  }
+
+  nav {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  nav a {
+    color: var(--text);
+    font-size: 14px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+  }
+
+  .nav-cta {
+    border-color: var(--border);
+    background: rgba(255,255,255,.04);
+  }
+
+  .hero,
+  .section {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 72px 24px;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 44px;
+    align-items: center;
+  }
+
+  .eyebrow {
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: 12px;
+    font-weight: 800;
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: .95;
+    margin: 0 0 24px;
+    letter-spacing: -0.05em;
+  }
+
+  h2 {
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.03em;
+  }
+
+  .subtitle,
+  .section-head p,
+  .closing p {
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.65;
+    max-width: 760px;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    padding: 13px 18px;
+    font-weight: 800;
+    text-decoration: none;
+    border: 1px solid rgba(147, 197, 253, .25);
+    color: var(--text);
+    background: #111827;
+  }
+
+  .button.primary {
+    background: var(--blue);
+    border-color: #3b82f6;
+    color: white;
+  }
+
+  .button:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  .microcopy,
+  .nda {
+    color: #8b95a7;
+    font-size: 13px;
+    margin-top: 14px;
+  }
+
+  .hero-panel,
+  .card,
+  .closing {
+    background: linear-gradient(180deg, rgba(18, 24, 39, .96), rgba(11, 14, 20, .96));
+    border: 1px solid rgba(96, 165, 250, .22);
+    border-radius: 22px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.35);
+  }
+
+  .hero-panel { padding: 24px; }
+
+  .report-card {
+    border-radius: 18px;
+    padding: 22px;
+    background: #05070b;
+    border: 1px solid rgba(255,255,255,.08);
+  }
+
+  .report-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    color: #9ca3af;
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+
+  .report-top strong { color: #fbbf24; }
+
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .report-grid div {
+    padding: 14px;
+    border-radius: 14px;
+    background: #101827;
+    border: 1px solid rgba(255,255,255,.07);
+  }
+
+  .report-grid span {
+    display: block;
+    color: #8b95a7;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .report-grid strong {
+    color: #f9fafb;
+    font-size: 14px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .card { padding: 28px; }
+  .card.accent { border-color: rgba(37, 99, 235, .65); }
+
+  ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #b6c0d0;
+    line-height: 1.75;
+  }
+
+  li + li { margin-top: 6px; }
+
+  .section-head { margin-bottom: 26px; }
+
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .pipe-step {
+    padding: 18px;
+    border-radius: 16px;
+    background: var(--panel);
+    border: 1px solid rgba(96, 165, 250, .20);
+  }
+
+  .pipe-step span {
+    display: block;
+    color: #60a5fa;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .pipe-step strong {
+    display: block;
+    font-size: 15px;
+  }
+
+  .closing {
+    padding: 38px;
+    margin-bottom: 72px;
+  }
+
+  @media (max-width: 860px) {
+    .hero,
+    .two-col,
+    .pipeline {
+      grid-template-columns: 1fr;
+    }
+
+    .hero,
+    .section {
+      padding: 48px 18px;
+    }
+
+    .nav-inner {
+      padding: 14px 18px;
+    }
+  }
+</style>

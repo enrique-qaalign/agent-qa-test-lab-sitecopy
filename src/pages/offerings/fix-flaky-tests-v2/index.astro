@@ -1,0 +1,37 @@
+---
+import OfferingLanding from "../../../components/OfferingLandingV2.astro";
+---
+
+<OfferingLanding
+  context="flaky-tests"
+  eyebrow="Pain Offering"
+  title="Fix Flaky Tests at the System Level"
+  subtitle="Flaky tests are not random. They are usually evidence of broken state control, weak locator governance, hidden dependencies, or poor failure artifacts. QA ALIGN finds the system issue and returns a specific fix path."
+  audience={[
+    "QA Managers dealing with noisy CI and manual double-checking",
+    "SDET leads responsible for stabilizing automation without rewriting everything",
+    "Teams that need automation results they can actually trust"
+  ]}
+  pains={[
+    "Tests pass locally but fail in CI",
+    "Failures require reruns to understand",
+    "Selectors, fixtures, and state setup are not governed consistently",
+    "Green builds still do not create release confidence"
+  ]}
+  outcomes={[
+    "Trust level classification",
+    "Flake source breakdown",
+    "Locator and state-risk findings",
+    "Estimated cost to stabilize the suite",
+    "Recommended first remediation sprint"
+  ]}
+  proofTitle="Flaky test assessment output"
+  proof={[
+    "Issue breakdown with severity and evidence",
+    "Brittle locator count and selector-risk signal",
+    "State lifecycle findings",
+    "Baseline / Good / Great fix tiers"
+  ]}
+  closingTitle="Stop treating flakiness as a test problem"
+  closingText="QA ALIGN diagnoses the system that creates flaky outcomes. The assessment is deterministic, artifact-driven, and built to show what needs to change before automation can be trusted."
+/>
