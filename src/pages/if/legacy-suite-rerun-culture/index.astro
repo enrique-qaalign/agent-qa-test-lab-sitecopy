@@ -1,0 +1,24 @@
+---
+import IfLanding from "../../../components/IfLanding.astro";
+
+const proof = {
+  trustLevel: "low",
+  releaseDecision: "BLOCK",
+  framework: "selenium",
+  risksDetected: 11,
+  topFailure: "shared-browser-session",
+  estimatedFixCost: "$14,100",
+  engineerPlan: "generated"
+};
+---
+
+<IfLanding
+  title="If rerun culture is killing your release velocity"
+  subtitle="QA ALIGN turns unstable automation into clear release decisions without relying on black-box AI."
+  problemPoints={[
+    "Tests pass locally but fail in CI",
+    "Teams rely on reruns instead of root cause",
+    "Logs don't translate into decisions",
+  ]}
+  proof={proof}
+/>

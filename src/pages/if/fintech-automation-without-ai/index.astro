@@ -1,0 +1,21 @@
+---
+import IfLanding from "../../../components/IfLanding.astro";
+const proof = {
+  trustLevel: "low",
+  releaseDecision: "BLOCK",
+  risksDetected: 11,
+  auditability: "structured-artifacts",
+  decisionClarity: "deterministic",
+};
+---
+
+<IfLanding
+  title="If your FinTech team needs automation without black-box AI risk"
+  subtitle="QA ALIGN provides deterministic automation evidence for teams operating under strict oversight and governance."
+  problemPoints={[
+    "AI-driven tooling creates explainability concerns",
+    "Automation results require human validation",
+    "Teams need speed without introducing risk",
+  ]}
+  proof={proof}
+/>
