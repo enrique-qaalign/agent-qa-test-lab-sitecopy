@@ -25,6 +25,13 @@ const trustMatrix = [
 
 const problemEntries = [
   {
+    title: "Selenium Automation Assessment",
+    href: "/offerings/selenium-automation-assessment/",
+    summary:
+      "For teams with flaky Selenium tests, brittle locators, CI failures, and test results that no longer support trusted release decisions.",
+    image: "/images/problem-unstable-ci.png",
+  },
+  {
     title: "Fix Flaky Tests at the System Level",
     href: "/offerings/fix-flaky-tests/",
     summary:
@@ -234,26 +241,6 @@ import Hero from "../../components/Hero.astro";
         color: var(--text);
       }
 
-      /* .problem-card__image {
-        width: 100%;
-        height: 140px;
-        overflow: hidden;
-        border-bottom: 1px solid var(--border);
-      }
-      .problem-card__image img {
-        transition: transform 0.4s ease;
-      }
-
-      .problem-card:hover .problem-card__image img {
-        transform: scale(1.04);
-      }
-
-      .problem-card {
-        padding: 0;              /* 🔥 critical */
-        overflow: hidden;        /* keeps image clipped to rounded corners */
-        border-radius: 18px;     /* match your system */
-      } */
-
       .hero {
         padding: 28px 0 12px;
       }
@@ -354,6 +341,35 @@ import Hero from "../../components/Hero.astro";
         background: rgba(122, 162, 255, 0.12);
         border-color: #3a5ca8;
       }
+      display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(520px, 1.1fr);
+  gap: 64px;
+  align-items: center;
+}
+
+.hero-image {
+  width: 100%;
+}
+
+  .hero-video-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 22px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+  }
+
+  .hero-video-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
 
       .section-title {
         margin-top: 28px;
@@ -384,15 +400,11 @@ import Hero from "../../components/Hero.astro";
         font-size: 14px;
       }
 
-      @media (max-width: 920px) {
-        .grid2, .grid3, .grid4 {
-          grid-template-columns: 1fr;
-        }
-
-        .h1 {
-          font-size: 34px;
-        }
-      }
+        @media (max-width: 920px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+  }
     </style>
   </head>
 
@@ -405,7 +417,7 @@ import Hero from "../../components/Hero.astro";
             <a class="pill" href="/">Lab</a>
             <a class="pill" href="/offerings/">Offerings</a>
             <a class="pill" href="/#runbooks">Runbooks</a>
-            <a class="pill" href="https://buy.stripe.com/eVqcN74vpe5O1Eg86GdAk01">Run Assessment</a>
+            <a class="pill" href="/thank-you">Free Assessment</a>
           </div>
         </div>
       </div>
@@ -415,50 +427,12 @@ import Hero from "../../components/Hero.astro";
     <Hero
       title="Modernize QA Without Losing Release Confidence"
       description="QA ALIGN is a deterministic automation system for teams dealing with flaky tests, weak CI trust, poor failure diagnosability, and unclear release decisions. Start with the problem you need to solve first, then move into the right modernization path."
-      primaryHref="https://buy.stripe.com/eVqcN74vpe5O1Eg86GdAk01"
-      primaryText="Run Your Automation Assessment"
+      primaryHref="/thank-you"
+      primaryText="Get Your Free Automation Assessment"
       secondaryHref="/#sprints"
       secondaryText="See Sprint Proof"
-      imageSrc="/images/assessment-report.png"
-      imageAlt="QA automation assessment report"
+      videoId="2TQUZDrKTaw"
     />
-    <section class="report-preview" aria-labelledby="video-demo-title">
-      <p id="video-demo-title" class="report-preview__label">
-        See QA ALIGN in Action
-      </p>
-    
-      <div class="report-preview__frame">
-        <div class="video-frame">
-          <iframe
-            src="https://www.youtube.com/embed/Rpl2zjYRGAY?rel=0&modestbranding=1"
-            title="QA ALIGN Demo"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen
-          ></iframe>
-      <section class="hero">
-        <div class="h1">Modernize QA Without Losing Release Confidence</div>
-        <p class="lead">
-          QA ALIGN is a deterministic automation system for teams dealing with flaky tests,
-          weak CI trust, poor failure diagnosability, and unclear release decisions.
-          Start with the problem you need to solve first, then move into the right modernization path.
-        </p>
-
-        <div class="cta-row">
-          <a class="button primary" href="https://buy.stripe.com/eVqcN74vpe5O1Eg86GdAk01">Run Your Automation Assessment — $149</a>
-          <a class="button" href="/#sprints">See Sprint Proof</a>
-        </div>
-      </div>
-    </section>
-
-      <div class="video-cta">
-        <a class="button primary" href="https://buy.stripe.com/eVqcN74vpe5O1Eg86GdAk01">
-          Run Your Automation Assessment — $149
-        </a>
-        <p>
-          Start with a fixed-scope assessment before choosing a modernization path.
-        </p>
-      </div>
 
       <section class="section-title">
         <h2>Start with the problem you need to solve first</h2>
@@ -612,8 +586,8 @@ import Hero from "../../components/Hero.astro";
             <li>First correction priority</li>
           </ul>
           <div class="cta-row">
-          <a class="button primary" href="https://buy.stripe.com/eVqcN74vpe5O1Eg86GdAk01">
-            Run Your Automation Assessment — $149
+          <a class="button primary" href="/thank-you">
+            Get Your Free Automation Assessment
           </a>
           <a class="button" href="/#runbooks">Review QA ALIGN Proof</a>
           </div>
