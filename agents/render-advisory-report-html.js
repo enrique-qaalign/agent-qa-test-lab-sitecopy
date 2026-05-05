@@ -76,6 +76,14 @@ const html = `<!doctype html>
     .trust-low { color: var(--bad); }
     .trust-medium { color: var(--warn); }
     .trust-high { color: var(--good); }
+    .decision-block { color: var(--bad); font-weight: 800; }
+    .decision-warn { color: var(--warn); font-weight: 800; }
+    .decision-go { color: var(--good); font-weight: 800; }
+    .decision-unknown { color: var(--warn); font-weight: 800; }
+    .release-decision {
+      border-color: rgba(255, 107, 107, .45);
+      background: rgba(255, 107, 107, .06);
+    }
     @media (max-width: 800px) { .grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } .hero h1 { font-size: 24px; } }
   </style>
@@ -86,7 +94,7 @@ const html = `<!doctype html>
       <div class="eyebrow">QA ALIGN</div>
       <h1>${report.title}</h1>
       <p class="muted">${report.executiveSummary.summary}</p>
-      <div class="grid">
+      <div class="grid hero-grid">
         <div class="stat">
           <div class="eyebrow">Framework</div>
           <div>${report.executiveSummary.framework}</div>
@@ -94,6 +102,10 @@ const html = `<!doctype html>
         <div class="stat">
           <div class="eyebrow">Trust Level</div>
           <div class="trust-${report.executiveSummary.trustLevel}">${report.executiveSummary.trustLevel}</div>
+        </div>
+        <div class="stat release-decision">
+          <div class="eyebrow">Release Decision</div>
+          <div class="decision-${String(report.releaseDecision || "UNKNOWN").toLowerCase()}">${report.releaseDecision || "UNKNOWN"}</div>
         </div>
         <div class="stat">
           <div class="eyebrow">Path</div>
@@ -119,6 +131,22 @@ const html = `<!doctype html>
     <section class="card">
       <h2>Recommended Roadmap</h2>
       <ul>${list(report.roadmap || [])}</ul>
+    </section>
+
+    <section class="card">
+      <h2>Estimated Cost to Fix</h2>
+      <div class="grid">
+        <div><strong>Baseline</strong><br />$${report.estimatedCostToFix.baseline}</div>
+        <div><strong>Good</strong><br />$${report.estimatedCostToFix.good}</div>
+        <div><strong>Great</strong><br />$${report.estimatedCostToFix.great}</div>
+      </div>
+
+      <h3>Cost Breakdown</h3>
+      <ul>
+        ${report.costBreakdown.map(i =>
+          `<li>${i.title}: ${i.hours}h / $${i.cost}</li>`
+        ).join("")}
+      </ul>
     </section>
 
     <section class="card">
