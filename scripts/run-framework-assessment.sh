@@ -54,17 +54,17 @@ require_json "$INPUT"
 mkdir -p "$OUT_DIR"
 
 echo ""
-echo "[1/4] Running assessment agents..."
+echo "[1/5] Running assessment agents..."
 node agents/run-assessment-agents.js "$INPUT"
 
 echo ""
-echo "[2/4] Validating report artifacts..."
+echo "[2/5] Validating report artifacts..."
 require_json "$OUT_DIR/framework-assessment.json"
 require_json "$OUT_DIR/sprint-routing.json"
 require_json "$OUT_DIR/advisory-report.json"
 
 echo ""
-echo "[3/4] Rendering HTML report..."
+echo "[3/5] Rendering HTML report..."
 node agents/render-advisory-report-html.js \
   "$OUT_DIR/advisory-report.json" \
   "$OUT_DIR/advisory-report.html"
@@ -72,7 +72,14 @@ node agents/render-advisory-report-html.js \
 require_file "$OUT_DIR/advisory-report.html"
 
 echo ""
-echo "[4/4] Summary"
+echo "[4/5] Generating engineer remediation plan..."
+node scripts/render-engineer-fix-plan.cjs \
+  out/advisory-report.json \
+  out/framework-assessment.json \
+  out/sprint-routing.json
+
+echo ""
+echo "[5/5] Summary"
 echo "========================================"
 
 node - <<'NODE'
@@ -92,6 +99,8 @@ console.log("- out/framework-assessment.json");
 console.log("- out/sprint-routing.json");
 console.log("- out/advisory-report.json");
 console.log("- out/advisory-report.html");
+console.log("- out/fix-plan.engineer.md");
+console.log("- out/fix-plan.engineer.json");
 console.log("");
 console.log("Open report:");
 console.log("open out/advisory-report.html");
