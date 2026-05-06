@@ -5,6 +5,7 @@ const actionInputPath = process.argv[2];
 const compositeInputPath = process.argv[3];
 const outputPath =
   process.argv[4] || "test-results/test-generation/page-object-draft.json";
+const elementTypeInputPath = process.argv[5];
 
 if (!actionInputPath || !compositeInputPath) {
   console.error("Usage: node agents/page-object-draft-generation/run.js <action-method-candidates.json> <composite-action-candidates.json> [output.json]");
@@ -13,6 +14,13 @@ if (!actionInputPath || !compositeInputPath) {
 
 const actionInput = JSON.parse(fs.readFileSync(actionInputPath, "utf8"));
 const compositeInput = JSON.parse(fs.readFileSync(compositeInputPath, "utf8"));
+const elementTypeInput = elementTypeInputPath && fs.existsSync(elementTypeInputPath)
+  ? JSON.parse(fs.readFileSync(elementTypeInputPath, "utf8"))
+  : { elements: [] };
+
+const elementById = new Map(
+  (elementTypeInput.elements || []).map((el) => [el.elementId, el])
+);
 
 const GENERATED_DIR = "test-results/test-generation/generated-page-objects";
 fs.mkdirSync(GENERATED_DIR, { recursive: true });
@@ -22,9 +30,14 @@ const fileName = `${pageObject}.ts`;
 const filePath = path.join(GENERATED_DIR, fileName);
 
 function locatorExpr(method) {
+  const el = elementById.get(method.elementId);
+
+  if (el && el.locator) return el.locator;
+
   if (method.intent === "auth.username") return "page.getByLabel('Email')";
   if (method.intent === "auth.password") return "page.getByLabel('Password')";
   if (method.intent === "auth.submit") return "page.getByRole('button', { name: 'Sign in' })";
+
   return "page.locator('TODO')";
 }
 
