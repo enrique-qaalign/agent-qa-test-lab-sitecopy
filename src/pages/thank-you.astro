@@ -64,6 +64,27 @@ const consultationHref = "/contact/";
         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
       }
 
+      .brand-lockup {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 18px;
+      }
+
+      .brand-lockup a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .brand-logo {
+        display: block;
+        max-width: 220px;
+        width: 100%;
+        height: auto;
+        max-height: 72px;
+        object-fit: contain;
+      }
+
       .eyebrow {
         display: inline-flex;
         align-items: center;
@@ -309,6 +330,16 @@ const consultationHref = "/contact/";
   <body>
     <main class="wrap">
       <section class="card">
+        <div class="brand-lockup">
+          <a href="/" aria-label="QA ALIGN home">
+            <img
+              src="/qa-align-logo.png"
+              alt="QA ALIGN"
+              class="brand-logo"
+            />
+          </a>
+        </div>
+
         <div class="eyebrow">✓ You're in</div>
 
         <h1>{pageTitle}</h1>
