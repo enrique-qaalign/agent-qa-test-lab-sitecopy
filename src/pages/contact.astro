@@ -4,55 +4,296 @@ const runbook = Astro.url.searchParams.get('runbook');
 
 <html lang="en">
   <head>
-    <title>Request Access — QA ALIGN</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Book a Consultation — QA ALIGN</title>
+
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel-border: rgba(255, 255, 255, 0.12);
+        --text: #f5f7fb;
+        --muted: #b8c0d4;
+        --accent: #5b5cf0;
+        --accent-hover: #4b4ce0;
+        --input-bg: rgba(255, 255, 255, 0.04);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background:
+          radial-gradient(circle at top left, rgba(91, 92, 240, 0.22), transparent 30%),
+          linear-gradient(180deg, #0b1020 0%, #11182d 100%);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 56px 20px 80px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 22px;
+        padding: 34px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+      }
+
+      .brand-lockup {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+      }
+
+      .brand-lockup a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .brand-logo {
+        display: block;
+        max-width: 360px;
+        width: 100%;
+        height: auto;
+        max-height: 124px;
+        object-fit: contain;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(91, 92, 240, 0.14);
+        color: #d9dcff;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        margin: 0 0 14px;
+        font-size: clamp(38px, 6vw, 58px);
+        line-height: 1.02;
+      }
+
+      .subtext {
+        margin: 0 0 28px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 760px;
+      }
+
+      .runbook-note {
+        margin: 0 0 22px;
+        color: #d9dcff;
+        background: rgba(91, 92, 240, 0.12);
+        border: 1px solid rgba(91, 92, 240, 0.25);
+        border-radius: 14px;
+        padding: 14px 16px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 26px;
+        margin-top: 28px;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        padding: 24px;
+      }
+
+      h2 {
+        margin: 0 0 16px;
+        font-size: 24px;
+      }
+
+      .steps {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .steps li + li {
+        margin-top: 8px;
+      }
+
+      form {
+        display: grid;
+        gap: 15px;
+      }
+
+      label {
+        display: block;
+        font-size: 14px;
+        font-weight: 800;
+        margin-bottom: 7px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: var(--input-bg);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 13px 15px;
+        font-size: 15px;
+        outline: none;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: rgba(91, 92, 240, 0.9);
+        box-shadow: 0 0 0 3px rgba(91, 92, 240, 0.18);
+      }
+
+      textarea {
+        min-height: 132px;
+        resize: vertical;
+      }
+
+      button {
+        appearance: none;
+        border: 0;
+        border-radius: 12px;
+        background: var(--accent);
+        color: white;
+        font-size: 16px;
+        font-weight: 800;
+        padding: 15px 18px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      button:hover {
+        background: var(--accent-hover);
+      }
+
+      .small {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 840px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card {
+          padding: 24px;
+        }
+
+        .brand-logo {
+          max-width: 280px;
+          max-height: 96px;
+        }
+      }
+    </style>
   </head>
-  <body style="background:#0b0f14;color:#e6edf3;font-family:system-ui;padding:40px;max-width:700px;margin:auto;">
 
-    <h1>Request Access</h1>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <div class="brand-lockup">
+          <a href="/" aria-label="QA ALIGN home">
+            <img
+              src="/qa-align-logo.png"
+              alt="QA ALIGN"
+              class="brand-logo"
+            />
+          </a>
+        </div>
 
-    {runbook && (
-      <p style="color:#9fb3c8;">
-        You are requesting access to <strong>Runbook {runbook}</strong>
-      </p>
-    )}
+        <div class="eyebrow">Consultation request</div>
 
-    <p style="margin-top:20px;">
-      These runbooks contain implementation-level patterns for deterministic automation systems.
-    </p>
+        <h1>Book a Consultation</h1>
 
-    <hr style="margin:30px 0;border-color:#1f2a36;" />
+        <p class="subtext">
+          Share your current automation challenge. We’ll review the context and help you identify
+          the fastest path toward trusted release signals.
+        </p>
 
-    <h2>What happens next</h2>
-    <ul>
-      <li>We review your request</li>
-      <li>We align on your system and goals</li>
-      <li>You receive access + guidance on applying the patterns</li>
-    </ul>
+        {runbook && (
+          <p class="runbook-note">
+            You are requesting access to <strong>Runbook {runbook}</strong>.
+          </p>
+        )}
 
-    <hr style="margin:30px 0;border-color:#1f2a36;" />
+        <div class="grid">
+          <aside class="panel">
+            <h2>What happens next</h2>
+            <ul class="steps">
+              <li>We review your request.</li>
+              <li>We align on your system and goals.</li>
+              <li>You receive guidance on the next best step.</li>
+            </ul>
 
-    <h2>Request</h2>
+            <p class="small">
+              Use this for flaky tests, Selenium instability, CI trust issues,
+              release decision gaps, or framework modernization questions.
+            </p>
+          </aside>
 
-    <form action="https://formspree.io/f/mkopdare" method="POST">
-      
-      <input type="hidden" name="runbook" value={runbook || ''} />
+          <section class="panel">
+            <h2>Request</h2>
 
-      <label>Name</label><br/>
-      <input name="name" required style="width:100%;margin-bottom:15px;" />
+            <form action="https://formspree.io/f/mkopdare" method="POST">
+              <input type="hidden" name="runbook" value={runbook || ''} />
+              <input type="hidden" name="source" value="qa-align-consultation-request" />
 
-      <label>Email</label><br/>
-      <input name="email" type="email" required style="width:100%;margin-bottom:15px;" />
+              <div>
+                <label for="name">Name</label>
+                <input id="name" name="name" required />
+              </div>
 
-      <label>Company (optional)</label><br/>
-      <input name="company" style="width:100%;margin-bottom:15px;" />
+              <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required />
+              </div>
 
-      <label>What are you trying to solve?</label><br/>
-      <textarea name="message" rows="4" style="width:100%;margin-bottom:20px;"></textarea>
+              <div>
+                <label for="company">Company optional</label>
+                <input id="company" name="company" />
+              </div>
 
-      <button type="submit" style="padding:10px 20px;background:#2563eb;color:white;border:none;">
-        Submit Request
-      </button>
-    </form>
+              <div>
+                <label for="message">What are you trying to solve?</label>
+                <textarea id="message" name="message" rows="4"></textarea>
+              </div>
 
+              <button type="submit">
+                Submit Request →
+              </button>
+            </form>
+          </section>
+        </div>
+      </section>
+    </main>
   </body>
 </html>
