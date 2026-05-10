@@ -501,6 +501,8 @@ const consultationHref = "/contact/";
       }
 
       window.addEventListener('load', function () {
+      if (window.location.search.includes("paid=true")) {
+
         if (typeof gtag === 'function') {
           gtag('event', 'conversion', {
             send_to: 'AW-18107787011/PxTyCOWX9qUcEIP0u7pD'

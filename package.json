@@ -10,7 +10,9 @@
     "report:new": "node scripts/create-report-scaffold.mjs"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.2.4",
     "astro": "^5.16.6",
+    "tailwindcss": "^4.2.4",
     "xlsx": "^0.18.5"
   }
 }
